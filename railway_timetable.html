@@ -542,7 +542,21 @@
             // Filter stations to only those with trains and sort them
             const filteredStations = stations
                 .filter(station => usedStations.has(station.id))
-                .sort((a, b) => a.name.localeCompare(b.name));
+                .sort((a, b) => {
+                    // Convert nr to numbers and handle nulls
+                    const aNr = (a.nr === null || a.nr === undefined || a.nr === '') ? null : parseInt(a.nr);
+                    const bNr = (b.nr === null || b.nr === undefined || b.nr === '') ? null : parseInt(b.nr);
+                    
+                    // Sort by nr first (nulls last), then by name
+                    if (aNr === null && bNr === null) return a.name.localeCompare(b.name);
+                    if (aNr === null) return 1;
+                    if (bNr === null) return -1;
+                    if (aNr === bNr) return a.name.localeCompare(b.name);
+                    return aNr - bNr;
+                });
+            
+            // Debug: Log the sorted stations to see the order
+            console.log('Sorted stations:', filteredStations.map(s => `${s.name} (nr: ${s.nr})`));
             
             // Sort trains by departure time
             const sortedTrains = Object.values(timetableData).sort((a, b) => {
@@ -561,7 +575,7 @@
                     <th class="train-header" title="${route}">
                         <div class="train-info">
                             <div class="train-number">${train.train_number}</div>
-                            <div class="locomotive-number" style="font-size: 9px; color: #bdc3c7; margin-top: 2px;">${locomotiveInfo}</div>
+                            <div class="locomotive-number" style="font-size: 11px; color: #7f8c8d; margin-top: 2px;">${locomotiveInfo}</div>
                         </div>
                     </th>
                 `;
@@ -690,7 +704,18 @@
                 
                 const filteredStations = stations
                     .filter(station => usedStations.has(station.id))
-                    .sort((a, b) => a.name.localeCompare(b.name));
+                    .sort((a, b) => {
+                        // Convert nr to numbers and handle nulls
+                        const aNr = (a.nr === null || a.nr === undefined || a.nr === '') ? null : parseInt(a.nr);
+                        const bNr = (b.nr === null || b.nr === undefined || b.nr === '') ? null : parseInt(b.nr);
+                        
+                        // Sort by nr first (nulls last), then by name
+                        if (aNr === null && bNr === null) return a.name.localeCompare(b.name);
+                        if (aNr === null) return 1;
+                        if (bNr === null) return -1;
+                        if (aNr === bNr) return a.name.localeCompare(b.name);
+                        return aNr - bNr;
+                    });
                 
                 filteredStations.forEach(station => {
                     csvContent += `"${station.name}"`;

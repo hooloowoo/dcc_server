@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Train Generator - DCC Layout Control</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2c2c2c;
+            padding: 20px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #3498db;
+            font-size: 1.8rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e0e0e0;
+        }
+
+        .user-role {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .role-admin { background: #e74c3c; }
+        .role-operator { background: #f39c12; }
+        .role-viewer { background: #95a5a6; }
+
+        .back-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #29b6f6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .form-section {
+            background: #2c2c2c;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(79, 195, 247, 0.2);
+        }
+
+        .section-title {
+            color: #4fc3f7;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            color: #b0b0b0;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            background: rgba(65, 65, 75, 0.8);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            color: #e0e0e0;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+        }
+
+        .btn {
+            background: #4fc3f7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #29b6f6;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.success {
+            background: #66bb6a;
+        }
+
+        .btn.success:hover {
+            background: #4caf50;
+        }
+
+        .btn.danger {
+            background: #f44336;
+        }
+
+        .btn.danger:hover {
+            background: #d32f2f;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+
+        .message.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #e57373;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+
+        .message.warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.5);
+        }
+
+        .message.info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #64b5f6;
+            border: 1px solid rgba(33, 150, 243, 0.5);
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            background: #2c2c2c;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 25px;
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            display: none;
+        }
+
+        .progress-bar {
+            background: rgba(65, 65, 75, 0.8);
+            border-radius: 10px;
+            height: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 10px;
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+
+        .generation-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: rgba(79, 195, 247, 0.1);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+
+        .stat-label {
+            color: #b0b0b0;
+            margin-top: 5px;
+        }
+
+        .generated-trains {
+            margin-top: 20px;
+        }
+
+        .train-item {
+            background: rgba(65, 65, 75, 0.5);
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .train-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .train-number {
+            font-weight: bold;
+            color: #4fc3f7;
+            min-width: 80px;
+        }
+
+        .train-route {
+            color: #e0e0e0;
+            min-width: 200px;
+        }
+
+        .train-time {
+            color: #81c784;
+            font-family: 'Monaco', 'Menlo', monospace;
+            min-width: 100px;
+        }
+
+        .train-loco {
+            color: #ffb74d;
+            min-width: 120px;
+        }
+
+        .train-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+
+        .status-error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #e57373;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+
+        .status-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.5);
+        }
+
+        .conflict-details {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(244, 67, 54, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid #f44336;
+            font-size: 0.9rem;
+            color: #e57373;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                justify-content: stretch;
+            }
+            
+            .action-buttons .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .train-info {
+                flex-direction: column;
+                gap: 5px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 Automated Train Generator</h1>
+        <div class="header-right">
+            <div class="user-info">
+                <span id="userName">Loading...</span>
+                <span class="user-role" id="userRole"></span>
+            </div>
+            <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="messageArea"></div>
+
+        <form id="generationForm">
+            <div class="form-section">
+                <h2 class="section-title">⚙️ Generation Parameters</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="startTime">Start Time</label>
+                        <input type="time" id="startTime" name="start_time" value="06:00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">End Time</label>
+                        <input type="time" id="endTime" name="end_time" value="22:00" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trainFrequency">Train Frequency (minutes)</label>
+                        <input type="number" id="trainFrequency" name="train_frequency" value="30" min="5" max="180" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxSpeed">Default Max Speed (km/h)</label>
+                        <input type="number" id="maxSpeed" name="max_speed" value="80" min="20" max="300" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">🚂 Train Configuration</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="trainNamePrefix">Train Name Prefix</label>
+                        <input type="text" id="trainNamePrefix" name="train_name_prefix" value="AUTO" placeholder="e.g., AUTO, REG, IC">
+                    </div>
+                    <div class="form-group">
+                        <label for="trainType">Train Type</label>
+                        <select id="trainType" name="train_type">
+                            <option value="passenger">Passenger</option>
+                            <option value="freight">Freight</option>
+                            <option value="express">Express</option>
+                            <option value="local">Local</option>
+                            <option value="commuter">Commuter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="defaultWaitingTime">Default Station Waiting Time (minutes)</label>
+                        <input type="number" id="defaultWaitingTime" name="default_waiting_time" value="2" min="0" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label for="bidirectional">Generate Bidirectional Trains</label>
+                        <select id="bidirectional" name="bidirectional">
+                            <option value="true">Yes - Generate return trips</option>
+                            <option value="false">No - One direction only</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">🚉 Route Selection</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="routeMode">Route Generation Mode</label>
+                        <select id="routeMode" name="route_mode" onchange="toggleRouteOptions()">
+                            <option value="specific">Specific Route</option>
+                            <option value="all_routes">All Possible Routes</option>
+                            <option value="random">Random Routes</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="specificRouteGroup">
+                        <label for="departureStation">Departure Station</label>
+                        <select id="departureStation" name="departure_station_id">
+                            <option value="">-- Select departure station --</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="specificRouteGroup2">
+                        <label for="arrivalStation">Arrival Station</label>
+                        <select id="arrivalStation" name="arrival_station_id">
+                            <option value="">-- Select arrival station --</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="randomRoutesGroup" style="display: none;">
+                        <label for="numRandomRoutes">Number of Random Routes</label>
+                        <input type="number" id="numRandomRoutes" name="num_random_routes" value="5" min="1" max="50">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">🎯 Conflict Resolution</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="conflictStrategy">Conflict Resolution Strategy</label>
+                        <select id="conflictStrategy" name="conflict_strategy">
+                            <option value="skip">Skip Conflicting Trains</option>
+                            <option value="delay">Delay Conflicting Trains</option>
+                            <option value="reschedule">Reschedule to Available Slots</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxDelay">Maximum Delay (minutes)</label>
+                        <input type="number" id="maxDelay" name="max_delay" value="15" min="1" max="60">
+                    </div>
+                    <div class="form-group">
+                        <label for="allowOverlap">Allow Track Overlap</label>
+                        <select id="allowOverlap" name="allow_overlap">
+                            <option value="false">No - Strict track separation</option>
+                            <option value="true">Yes - Allow minimal overlap</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="prioritizeExisting">Prioritize Existing Trains</label>
+                        <select id="prioritizeExisting" name="prioritize_existing">
+                            <option value="true">Yes - Keep existing schedules</option>
+                            <option value="false">No - Generate fresh schedule</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn" onclick="previewGeneration()">
+                    👁️ Preview Generation
+                </button>
+                <button type="button" class="btn danger" onclick="clearAutoTrains()">
+                    🤖 Clear AUTO Trains
+                </button>
+                <button type="button" class="btn danger" id="clearAllBtn" onclick="clearExistingTrains()">
+                    🗑️ Clear All Trains
+                </button>
+                <button type="submit" class="btn success" id="generateBtn">
+                    🚀 Generate Trains
+                </button>
+            </div>
+        </form>
+
+        <div class="results-section" id="resultsSection">
+            <h2 class="section-title">📊 Generation Results</h2>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Ready to generate...</div>
+
+            <div class="generation-stats" id="generationStats" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-value" id="successCount">0</div>
+                    <div class="stat-label">Successful</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="conflictCount">0</div>
+                    <div class="stat-label">Conflicts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="skippedCount">0</div>
+                    <div class="stat-label">Skipped</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">Total Attempts</div>
+                </div>
+            </div>
+
+            <div class="generated-trains" id="generatedTrains">
+                <!-- Generated trains will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stations = [];
+        let isGenerating = false;
+        let currentUser = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadStations();
+            
+            // Form submission
+            document.getElementById('generationForm').addEventListener('submit', generateTrains);
+        });
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('auth_api.php?action=validate', {
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.valid && result.data.user) {
+                    currentUser = result.data.user;
+                    document.getElementById('userName').textContent = result.data.user.username;
+                    document.getElementById('userRole').textContent = result.data.user.role;
+                    document.getElementById('userRole').className = `user-role role-${result.data.user.role}`;
+                    
+                    // Check if user has required permissions for this page
+                    if (!['admin', 'operator'].includes(result.data.user.role)) {
+                        showMessage('Access denied. Admin or operator role required.', 'error');
+                        setTimeout(() => {
+                            window.location.href = 'dashboard.html';
+                        }, 3000);
+                        return;
+                    }
+                    
+                    // Hide admin-only buttons for non-admin users
+                    if (result.data.user.role !== 'admin') {
+                        const clearAllBtn = document.getElementById('clearAllBtn');
+                        if (clearAllBtn) {
+                            clearAllBtn.style.display = 'none';
+                        }
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadStations() {
+            try {
+                const response = await fetch('trains_api.php?action=stations', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    stations = data.data;
+                    populateStationSelects();
+                } else {
+                    showMessage('Failed to load stations: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading stations: ' + error.message, 'error');
+            }
+        }
+
+        function populateStationSelects() {
+            const departureSelect = document.getElementById('departureStation');
+            const arrivalSelect = document.getElementById('arrivalStation');
+            
+            const options = stations.map(station => 
+                `<option value="${station.id}">${station.name} (${station.id})</option>`
+            ).join('');
+            
+            departureSelect.innerHTML = '<option value="">-- Select departure station --</option>' + options;
+            arrivalSelect.innerHTML = '<option value="">-- Select arrival station --</option>' + options;
+        }
+
+        function toggleRouteOptions() {
+            const routeMode = document.getElementById('routeMode').value;
+            const specificGroups = document.querySelectorAll('[id^="specificRouteGroup"]');
+            const randomGroup = document.getElementById('randomRoutesGroup');
+            
+            if (routeMode === 'specific') {
+                specificGroups.forEach(group => group.style.display = 'flex');
+                randomGroup.style.display = 'none';
+            } else if (routeMode === 'random') {
+                specificGroups.forEach(group => group.style.display = 'none');
+                randomGroup.style.display = 'flex';
+            } else {
+                specificGroups.forEach(group => group.style.display = 'none');
+                randomGroup.style.display = 'none';
+            }
+        }
+
+        async function previewGeneration() {
+            const formData = new FormData(document.getElementById('generationForm'));
+            const params = Object.fromEntries(formData.entries());
+            
+            try {
+                showMessage('Calculating generation preview...', 'info');
+                
+                const response = await fetch('automated_train_generator_api.php?action=preview', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(params)
+                });
+                
+                let data;
+                if (!response.ok) {
+                    // Try to get the error message from the response
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error) {
+                            errorMessage = errorData.error;
+                        }
+                    } catch (e) {
+                        // If we can't parse JSON, keep the default message
+                    }
+                    throw new Error(errorMessage);
+                } else {
+                    data = await response.json();
+                }
+                
+                if (data.status === 'success') {
+                    const preview = data.data;
+                    let message = `Preview: Will attempt to generate ${preview.total_attempts} trains (${preview.locomotive_count} total locomotives, ~${preview.effective_locomotives} effectively available across ${preview.station_count} stations × ${preview.time_slots} time slots). Estimated ${preview.estimated_success} successful, ${preview.estimated_conflicts} conflicts, ${preview.routes} routes available.`;
+                    
+                    if (preview.warning) {
+                        message += `\n⚠️ ${preview.warning}`;
+                        showMessage(message, 'warning');
+                    } else {
+                        showMessage(message, 'info');
+                    }
+                } else {
+                    showMessage('Preview failed: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error generating preview: ' + error.message, 'error');
+            }
+        }
+
+        async function generateTrains(event) {
+            event.preventDefault();
+            
+            if (isGenerating) {
+                showMessage('Generation already in progress...', 'warning');
+                return;
+            }
+            
+            isGenerating = true;
+            const generateBtn = document.getElementById('generateBtn');
+            const originalText = generateBtn.innerHTML;
+            
+            generateBtn.innerHTML = '<div class="loading"><div class="spinner"></div>Generating...</div>';
+            generateBtn.disabled = true;
+            
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('generationStats').style.display = 'grid';
+            
+            // Reset counters
+            updateStats(0, 0, 0, 0);
+            updateProgress(0, 'Starting generation...');
+            
+            const formData = new FormData(event.target);
+            const params = Object.fromEntries(formData.entries());
+            
+            try {
+                const response = await fetch('automated_train_generator_api.php?action=generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(params)
+                });
+                
+                if (!response.ok) {
+                    // Try to get the error message from the response
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error) {
+                            errorMessage = errorData.error;
+                        }
+                    } catch (e) {
+                        // If we can't parse JSON, keep the default message
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                // Handle streaming response
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) break;
+                    
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // Keep incomplete line in buffer
+                    
+                    for (const line of lines) {
+                        if (line.trim()) {
+                            try {
+                                const update = JSON.parse(line);
+                                handleGenerationUpdate(update);
+                            } catch (e) {
+                                console.warn('Could not parse line:', line);
+                            }
+                        }
+                    }
+                }
+                
+                // Handle any remaining buffer
+                if (buffer.trim()) {
+                    try {
+                        const update = JSON.parse(buffer);
+                        handleGenerationUpdate(update);
+                    } catch (e) {
+                        console.warn('Could not parse final buffer:', buffer);
+                    }
+                }
+                
+                updateProgress(100, 'Generation completed!');
+                showMessage('Train generation completed successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Generation error:', error);
+                showMessage('Error generating trains: ' + error.message, 'error');
+                updateProgress(0, 'Generation failed');
+            } finally {
+                generateBtn.innerHTML = originalText;
+                generateBtn.disabled = false;
+                isGenerating = false;
+            }
+        }
+
+        function handleGenerationUpdate(update) {
+            if (update.type === 'progress') {
+                updateProgress(update.percentage, update.message);
+                updateStats(update.stats.success, update.stats.conflicts, update.stats.skipped, update.stats.total);
+            } else if (update.type === 'train_created') {
+                addTrainToResults(update.train, 'success');
+            } else if (update.type === 'train_conflict') {
+                addTrainToResults(update.train, 'conflict', update.conflict_details);
+            } else if (update.type === 'train_skipped') {
+                addTrainToResults(update.train, 'skipped', update.reason);
+            } else if (update.type === 'error') {
+                showMessage('Generation error: ' + update.message, 'error');
+            }
+        }
+
+        function updateProgress(percentage, message) {
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = message;
+        }
+
+        function updateStats(success, conflicts, skipped, total) {
+            document.getElementById('successCount').textContent = success;
+            document.getElementById('conflictCount').textContent = conflicts;
+            document.getElementById('skippedCount').textContent = skipped;
+            document.getElementById('totalCount').textContent = total;
+        }
+
+        function addTrainToResults(train, status, details = null) {
+            const container = document.getElementById('generatedTrains');
+            
+            const trainDiv = document.createElement('div');
+            trainDiv.className = 'train-item';
+            
+            let statusClass = 'status-success';
+            let statusText = 'Created';
+            
+            if (status === 'conflict') {
+                statusClass = 'status-error';
+                statusText = 'Conflict';
+            } else if (status === 'skipped') {
+                statusClass = 'status-warning';
+                statusText = 'Skipped';
+            }
+            
+            trainDiv.innerHTML = `
+                <div class="train-info">
+                    <div class="train-number">${train.train_number || 'N/A'}</div>
+                    <div class="train-route">${train.route || 'N/A'}</div>
+                    <div class="train-time">${train.departure_time || 'N/A'}</div>
+                    <div class="train-loco">${train.locomotive || 'N/A'}</div>
+                </div>
+                <div class="train-status ${statusClass}">${statusText}</div>
+            `;
+            
+            if (details) {
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'conflict-details';
+                detailsDiv.textContent = details;
+                trainDiv.appendChild(detailsDiv);
+            }
+            
+            container.appendChild(trainDiv);
+            
+            // Auto-scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function clearExistingTrains() {
+            if (!confirm('Are you sure you want to delete ALL existing trains? This cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                showMessage('Clearing all trains...', 'info');
+                
+                const response = await fetch('automated_train_generator_api.php?action=clear_all', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                let data;
+                if (!response.ok) {
+                    // Try to get the error message from the response
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error) {
+                            errorMessage = errorData.error;
+                        }
+                    } catch (e) {
+                        // If we can't parse JSON, keep the default message
+                    }
+                    throw new Error(errorMessage);
+                } else {
+                    data = await response.json();
+                }
+                
+                if (data.status === 'success') {
+                    showMessage(`Successfully cleared ${data.deleted_count} trains.`, 'success');
+                    document.getElementById('generatedTrains').innerHTML = '';
+                    updateStats(0, 0, 0, 0);
+                } else {
+                    showMessage('Failed to clear trains: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error clearing trains: ' + error.message, 'error');
+            }
+        }
+
+        async function clearAutoTrains() {
+            if (!confirm('Are you sure you want to delete all AUTO trains? This cannot be undone.')) {
+                return;
+            }
+            
+            try {
+                showMessage('Clearing AUTO trains...', 'info');
+                
+                const response = await fetch('automated_train_generator_api.php?action=clear_auto', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                
+                let data;
+                if (!response.ok) {
+                    // Try to get the error message from the response
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.error) {
+                            errorMessage = errorData.error;
+                        }
+                    } catch (e) {
+                        // If we can't parse JSON, keep the default message
+                    }
+                    throw new Error(errorMessage);
+                } else {
+                    data = await response.json();
+                }
+                
+                if (data.status === 'success') {
+                    if (data.deleted_count === 0) {
+                        showMessage('No AUTO trains found to delete.', 'info');
+                    } else {
+                        showMessage(`Successfully cleared ${data.deleted_count} AUTO trains.`, 'success');
+                        // Remove AUTO train entries from the display
+                        const generatedTrainsDiv = document.getElementById('generatedTrains');
+                        if (generatedTrainsDiv) {
+                            const trainElements = generatedTrainsDiv.querySelectorAll('.train-card');
+                            let removedCount = 0;
+                            trainElements.forEach(element => {
+                                const trainNumber = element.querySelector('.train-number')?.textContent;
+                                if (trainNumber && trainNumber.startsWith('AUTO')) {
+                                    element.remove();
+                                    removedCount++;
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    showMessage('Failed to clear AUTO trains: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error clearing AUTO trains: ' + error.message, 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
+            
+            // Auto-hide success and info messages after 5 seconds
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    if (messageArea.innerHTML.includes(message)) {
+                        messageArea.innerHTML = '';
+                    }
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

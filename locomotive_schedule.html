@@ -387,6 +387,20 @@
                 return;
             }
 
+            // Sort schedules by departure time
+            const sortedSchedules = [...schedules].sort((a, b) => {
+                const timeA = a.departure_time || '00:00';
+                const timeB = b.departure_time || '00:00';
+                
+                // Convert time strings to comparable format (HH:MM to minutes)
+                const timeToMinutes = (timeStr) => {
+                    const [hours, minutes] = timeStr.split(':').map(Number);
+                    return hours * 60 + minutes;
+                };
+                
+                return timeToMinutes(timeA) - timeToMinutes(timeB);
+            });
+
             const tableHtml = `
                 <table class="schedule-table">
                     <thead>
@@ -400,7 +414,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${schedules.map(schedule => `
+                        ${sortedSchedules.map(schedule => `
                             <tr>
                                 <td>
                                     <div class="train-number">${schedule.train_number || schedule.train_name || 'Unknown'}</div>

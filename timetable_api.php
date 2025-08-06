@@ -411,7 +411,7 @@ function getStationsWithTracks($conn) {
         FROM dcc_stations s
         LEFT JOIN dcc_station_tracks st ON s.id = st.station_id AND st.is_active = 1
         GROUP BY s.id
-        ORDER BY s.name
+        ORDER BY CASE WHEN s.nr IS NULL THEN 1 ELSE 0 END, s.nr, s.name
     ");
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);

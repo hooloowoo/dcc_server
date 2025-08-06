@@ -729,6 +729,12 @@
                 </div>
                 
                 <div class="form-group">
+                    <label for="turnaroundTime">Turnaround Time (minutes)</label>
+                    <input type="number" id="turnaroundTime" name="turnaround_time_minutes" min="1" max="120" value="10" title="Minimum time required between consecutive train assignments">
+                    <small style="color: #95a5a6; font-size: 0.8rem;">Minimum time in minutes required between consecutive train assignments for this locomotive</small>
+                </div>
+                
+                <div class="form-group">
                     <label for="notes">Notes</label>
                     <textarea id="notes" name="notes" rows="3"></textarea>
                 </div>

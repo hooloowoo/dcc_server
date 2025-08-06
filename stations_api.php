@@ -51,6 +51,13 @@ function validateStationData($data, $isUpdate = false) {
         $errors[] = "SVG icon cannot exceed 2000 characters";
     }
     
+    // Validate nr (number) field if provided
+    if (isset($data['nr']) && $data['nr'] !== null && $data['nr'] !== '') {
+        if (!is_numeric($data['nr']) || intval($data['nr']) < 0) {
+            $errors[] = "Station number (nr) must be a positive integer";
+        }
+    }
+    
     return $errors;
 }
 
@@ -76,7 +83,7 @@ try {
             if ($stationId) {
                 // Get specific station
                 $stmt = $conn->prepare("
-                    SELECT id, name, description, svg_icon, created_at, updated_at 
+                    SELECT id, nr, name, description, svg_icon, created_at, updated_at 
                     FROM dcc_stations 
                     WHERE id = ?
                 ");
@@ -104,12 +111,12 @@ try {
                 $orderDir = strtoupper($_GET['dir'] ?? 'ASC') === 'DESC' ? 'DESC' : 'ASC';
                 
                 // Validate order by field
-                $allowedOrderFields = ['id', 'name', 'created_at', 'updated_at'];
+                $allowedOrderFields = ['id', 'nr', 'name', 'created_at', 'updated_at'];
                 if (!in_array($orderBy, $allowedOrderFields)) {
-                    $orderBy = 'name';
+                    $orderBy = 'nr';
                 }
                 
-                $sql = "SELECT id, name, description, svg_icon, created_at, updated_at FROM dcc_stations";
+                $sql = "SELECT id, nr, name, description, svg_icon, created_at, updated_at FROM dcc_stations";
                 $params = [];
                 
                 if (!empty($search)) {
@@ -174,6 +181,7 @@ try {
             }
             
             $id = strtoupper(trim($input['id']));
+            $nr = isset($input['nr']) && $input['nr'] !== '' ? intval($input['nr']) : null;
             $name = trim($input['name']);
             $description = isset($input['description']) ? trim($input['description']) : null;
             $svgIcon = isset($input['svg_icon']) ? trim($input['svg_icon']) : null;
@@ -203,14 +211,14 @@ try {
             }
             
             $stmt = $conn->prepare("
-                INSERT INTO dcc_stations (id, name, description, svg_icon) 
-                VALUES (?, ?, ?, ?)
+                INSERT INTO dcc_stations (id, nr, name, description, svg_icon) 
+                VALUES (?, ?, ?, ?, ?)
             ");
             
-            if ($stmt->execute([$id, $name, $description, $svgIcon])) {
+            if ($stmt->execute([$id, $nr, $name, $description, $svgIcon])) {
                 // Fetch the created station
                 $stmt = $conn->prepare("
-                    SELECT id, name, description, svg_icon, created_at, updated_at 
+                    SELECT id, nr, name, description, svg_icon, created_at, updated_at 
                     FROM dcc_stations 
                     WHERE id = ?
                 ");
@@ -292,20 +300,21 @@ try {
                 break;
             }
             
+            $nr = isset($input['nr']) && $input['nr'] !== '' ? intval($input['nr']) : null;
             $name = trim($input['name']);
             $description = isset($input['description']) ? trim($input['description']) : null;
             $svgIcon = isset($input['svg_icon']) ? trim($input['svg_icon']) : null;
             
             $stmt = $conn->prepare("
                 UPDATE dcc_stations 
-                SET name = ?, description = ?, svg_icon = ?, updated_at = CURRENT_TIMESTAMP 
+                SET nr = ?, name = ?, description = ?, svg_icon = ?, updated_at = CURRENT_TIMESTAMP 
                 WHERE id = ?
             ");
             
-            if ($stmt->execute([$name, $description, $svgIcon, $stationId])) {
+            if ($stmt->execute([$nr, $name, $description, $svgIcon, $stationId])) {
                 // Fetch the updated station
                 $stmt = $conn->prepare("
-                    SELECT id, name, description, svg_icon, created_at, updated_at 
+                    SELECT id, nr, name, description, svg_icon, created_at, updated_at 
                     FROM dcc_stations 
                     WHERE id = ?
                 ");

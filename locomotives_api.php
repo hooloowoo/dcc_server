@@ -259,8 +259,8 @@ function handleCreate($conn) {
     $stmt = $conn->prepare("
         INSERT INTO dcc_locomotives (
             dcc_address, class, number, name, manufacturer, scale, era, country, railway_company,
-            locomotive_type, max_speed_kmh, sound_decoder, functions_count, function_mapping, notes, is_active
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            locomotive_type, max_speed_kmh, sound_decoder, functions_count, function_mapping, notes, is_active, turnaround_time_minutes
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
     
     $stmt->execute([
@@ -279,7 +279,8 @@ function handleCreate($conn) {
         (int)($input['functions_count'] ?? 0),
         $function_mapping,
         $input['notes'] ?? null,
-        !empty($input['is_active']) ? 1 : 0
+        !empty($input['is_active']) ? 1 : 0,
+        isset($input['turnaround_time_minutes']) ? (int)$input['turnaround_time_minutes'] : 10
     ]);
     
     $locomotive_id = $conn->lastInsertId();
@@ -408,6 +409,10 @@ function handleUpdate($conn) {
     if (isset($input['is_active'])) {
         $fields[] = "is_active = ?";
         $params[] = !empty($input['is_active']) ? 1 : 0;
+    }
+    if (isset($input['turnaround_time_minutes'])) {
+        $fields[] = "turnaround_time_minutes = ?";
+        $params[] = (int)$input['turnaround_time_minutes'];
     }
     
     if (empty($fields)) {

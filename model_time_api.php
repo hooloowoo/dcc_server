@@ -200,7 +200,7 @@ function handleStartStop($conn) {
 function handleReset($conn) {
     $stmt = $conn->prepare("
         UPDATE model_time_config 
-        SET real_start_timestamp = NOW(), updated_at = NOW() 
+        SET start_time = '00:00:00', real_start_timestamp = NOW(), updated_at = NOW() 
         WHERE id = 1
     ");
     $stmt->execute();

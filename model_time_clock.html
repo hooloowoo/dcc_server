@@ -94,20 +94,27 @@
             font-weight: bold;
             color: #333;
             transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .clock-number.n12 { top: 12px; left: 50%; }
-        .clock-number.n1 { top: 25px; right: 25px; }
-        .clock-number.n2 { top: 45px; right: 12px; }
-        .clock-number.n3 { top: 50%; right: 8px; }
-        .clock-number.n4 { bottom: 45px; right: 12px; }
-        .clock-number.n5 { bottom: 25px; right: 25px; }
-        .clock-number.n6 { bottom: 12px; left: 50%; }
-        .clock-number.n7 { bottom: 25px; left: 25px; }
-        .clock-number.n8 { bottom: 45px; left: 12px; }
-        .clock-number.n9 { top: 50%; left: 8px; }
-        .clock-number.n10 { top: 45px; left: 12px; }
-        .clock-number.n11 { top: 25px; left: 25px; }
+        /* Position numbers in a perfect circle using trigonometric calculations */
+        /* Center is at 50%,50%. Radius is 40% from center. Starting at 12 o'clock (top) going clockwise */
+        .clock-number.n12 { top: 10%; left: 50%; }
+        .clock-number.n1 { top: 16.35%; left: 71.65%; }
+        .clock-number.n2 { top: 28.35%; left: 86.60%; }
+        .clock-number.n3 { top: 50%; left: 90%; }
+        .clock-number.n4 { top: 71.65%; left: 86.60%; }
+        .clock-number.n5 { top: 83.65%; left: 71.65%; }
+        .clock-number.n6 { top: 90%; left: 50%; }
+        .clock-number.n7 { top: 83.65%; left: 28.35%; }
+        .clock-number.n8 { top: 71.65%; left: 13.40%; }
+        .clock-number.n9 { top: 50%; left: 10%; }
+        .clock-number.n10 { top: 28.35%; left: 13.40%; }
+        .clock-number.n11 { top: 16.35%; left: 28.35%; }
 
         .clock-hand {
             position: absolute;
@@ -453,10 +460,26 @@
             const minuteAngle = minutes * 6; // 6 degrees per minute
             const secondAngle = seconds * 6; // 6 degrees per second
 
-            // Apply rotations
-            document.getElementById('hourHand').style.transform = `rotate(${hourAngle}deg)`;
-            document.getElementById('minuteHand').style.transform = `rotate(${minuteAngle}deg)`;
-            document.getElementById('secondHand').style.transform = `rotate(${secondAngle}deg)`;
+            const hourHand = document.getElementById('hourHand');
+            const minuteHand = document.getElementById('minuteHand');
+            const secondHand = document.getElementById('secondHand');
+
+            // Handle the transition from 59 to 0 seconds to prevent backward animation
+            if (seconds === 0) {
+                // Temporarily disable transition for the second hand to prevent backward animation
+                secondHand.style.transition = 'none';
+                secondHand.style.transform = `rotate(${secondAngle}deg)`;
+                // Re-enable transition after a brief delay
+                setTimeout(() => {
+                    secondHand.style.transition = 'transform 0.5s ease-in-out';
+                }, 50);
+            } else {
+                secondHand.style.transform = `rotate(${secondAngle}deg)`;
+            }
+
+            // Apply rotations to hour and minute hands
+            hourHand.style.transform = `rotate(${hourAngle}deg)`;
+            minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
         }
 
         // Start/stop time toggle

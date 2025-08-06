@@ -315,7 +315,7 @@ try {
             $connections = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Get all stations
-            $stmt = $conn->query("SELECT id, name FROM dcc_stations ORDER BY name");
+            $stmt = $conn->query("SELECT id, name FROM dcc_stations ORDER BY CASE WHEN nr IS NULL THEN 1 ELSE 0 END, nr, name");
             $stations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             echo json_encode([

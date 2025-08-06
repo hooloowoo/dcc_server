@@ -451,6 +451,7 @@
                 <thead>
                     <tr>
                         <th class="sortable" onclick="sortTable('id')">Station ID</th>
+                        <th class="sortable" onclick="sortTable('nr')">Nr</th>
                         <th class="sortable" onclick="sortTable('name')">Name</th>
                         <th>Description</th>
                         <th class="sortable" onclick="sortTable('created_at')">Created</th>
@@ -489,6 +490,14 @@
                         <div style="font-size: 12px; color: #666; margin-top: 4px;">
                             <strong>Format:</strong> Maximum 8 characters using A-Z and 0-9<br>
                             <strong>Examples:</strong> CTRL001A, NJCT002B, YARD03C, TERM4D, EAST, WEST
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="stationNr">Station Number</label>
+                        <input type="number" id="stationNr" class="form-input" min="0" step="1"
+                               placeholder="Optional ordering number for timetables">
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            Used to order stations in timetables. Leave empty for alphabetical ordering.
                         </div>
                     </div>
                     <div class="form-group">
@@ -873,6 +882,7 @@
                 return `
                 <tr>
                     <td><span class="station-id">${station.id}</span></td>
+                    <td>${station.nr || ''}</td>
                     <td><strong>${escapeHtml(station.name)}</strong></td>
                     <td><span class="station-description">${station.description ? escapeHtml(station.description) : '-'}</span></td>
                     <td>${formatDateTime(station.created_at)}</td>
@@ -990,6 +1000,7 @@
             editingStationId = null;
             document.getElementById('modalTitle').textContent = 'Add New Station';
             document.getElementById('stationCode').value = '';
+            document.getElementById('stationNr').value = '';
             document.getElementById('stationName').value = '';
             document.getElementById('stationDescription').value = '';
             document.getElementById('stationSvg').value = '';
@@ -1012,6 +1023,7 @@
                     editingStationId = stationId;
                     document.getElementById('modalTitle').textContent = 'Edit Station';
                     document.getElementById('stationCode').value = result.data.id;
+                    document.getElementById('stationNr').value = result.data.nr || '';
                     document.getElementById('stationName').value = result.data.name;
                     document.getElementById('stationDescription').value = result.data.description || '';
                     document.getElementById('stationSvg').value = result.data.svg_icon || '';
@@ -1034,6 +1046,7 @@
             
             try {
                 const name = document.getElementById('stationName').value.trim();
+                const nr = document.getElementById('stationNr').value.trim();
                 const description = document.getElementById('stationDescription').value.trim();
                 const svgIcon = document.getElementById('stationSvg').value.trim();
                 
@@ -1044,6 +1057,7 @@
                 
                 const data = {
                     name: name,
+                    nr: nr || null,
                     description: description || null,
                     svg_icon: svgIcon || null
                 };

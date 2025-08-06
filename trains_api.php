@@ -228,9 +228,9 @@ function handleGet($conn) {
 
 function handleGetStations($conn) {
     $stmt = $conn->prepare("
-        SELECT id, name, description 
+        SELECT id, nr, name, description 
         FROM dcc_stations 
-        ORDER BY name
+        ORDER BY CASE WHEN nr IS NULL THEN 1 ELSE 0 END, nr, name
     ");
     $stmt->execute();
     $stations = $stmt->fetchAll(PDO::FETCH_ASSOC);

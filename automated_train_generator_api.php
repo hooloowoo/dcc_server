@@ -303,7 +303,7 @@ class AutomatedTrainGenerator {
                 'max_speed_kmh' => $input['max_speed'],
                 'locomotive_id' => $locomotive['id'],
                 'station_times' => $validation['station_times'],
-                'waiting_times' => $this->getDefaultWaitingTimes($validation['station_times'], $input['default_waiting_time'])
+                'waiting_times' => $this->getDefaultWaitingTimes($validation['station_times'], $input['default_waiting_time'] ?? 2)
             ];
             
             $trainId = $this->createMultiHopTrain($trainData);
@@ -398,15 +398,15 @@ class AutomatedTrainGenerator {
             // Create the train
             $trainData = [
                 'train_number' => $this->generateTrainNumber($input, $attemptCount),
-                'train_name' => $input['train_name_prefix'] . '-' . $attemptCount,
-                'train_type' => $input['train_type'],
+                'train_name' => ($input['train_name_prefix'] ?? 'AUTO') . '-' . $attemptCount,
+                'train_type' => $input['train_type'] ?? 'passenger',
                 'route' => $route,
                 'departure_time' => $departureTime,
                 'arrival_time' => $validation['arrival_time'],
                 'max_speed_kmh' => $input['max_speed'],
                 'locomotive_id' => $locomotive['id'],
                 'station_times' => $validation['station_times'],
-                'waiting_times' => $this->getDefaultWaitingTimes($validation['station_times'], $input['default_waiting_time'])
+                'waiting_times' => $this->getDefaultWaitingTimes($validation['station_times'], $input['default_waiting_time'] ?? 2)
             ];
             
             $trainId = $this->createMultiHopTrain($trainData);
@@ -1141,6 +1141,31 @@ class AutomatedTrainGenerator {
                 'success' => false,
                 'error' => $e->getMessage()
             ];
+        }
+    }
+    
+    /**
+     * Validate route - dispatcher to correct validation method
+     */
+    private function validateRoute($route, $departureTime, $maxSpeed) {
+        // Check if this is a multi-hop route
+        if (isset($route['stations']) && count($route['stations']) > 2) {
+            return $this->validateMultiHopRoute($route, $departureTime, $maxSpeed);
+        } else {
+            // Simple point-to-point route
+            $departure = isset($route['departure_station']) ? $route['departure_station'] : 
+                        (isset($route['stations'][0]['id']) ? $route['stations'][0]['id'] : null);
+            $arrival = isset($route['arrival_station']) ? $route['arrival_station'] : 
+                      (isset($route['stations'][1]['id']) ? $route['stations'][1]['id'] : null);
+            
+            if (!$departure || !$arrival) {
+                return [
+                    'success' => false,
+                    'error' => 'Invalid route: missing departure or arrival station'
+                ];
+            }
+            
+            return $this->validateSimpleRoute($departure, $arrival, $departureTime, $maxSpeed);
         }
     }
     

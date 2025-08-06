@@ -171,14 +171,15 @@ class AutomatedTrainGenerator {
         $this->sendUpdate([
             'type' => 'progress',
             'percentage' => 0,
-            'message' => 'Starting train generation...',
+            'message' => 'Starting sequential train generation with conflict checking...',
             'stats' => $stats
         ]);
         
+        // SEQUENTIAL GENERATION: Generate one train at a time, check conflicts immediately
         foreach ($routes as $route) {
             foreach ($timeSlots as $departureTime) {
                 // Generate outbound train
-                $this->generateSingleTrain($route, $departureTime, $input, $stats, $attemptCount, $totalAttempts);
+                $this->generateAndValidateSingleTrain($route, $departureTime, $input, $stats, $attemptCount, $totalAttempts);
                 
                 // Generate return train if bidirectional
                 if ($input['bidirectional'] === 'true') {
@@ -187,7 +188,7 @@ class AutomatedTrainGenerator {
                     // Calculate return departure time (arrival time + turnaround time)
                     $returnTime = $this->calculateReturnTime($route, $departureTime, $input);
                     if ($returnTime && $returnRoute) {
-                        $this->generateSingleTrain($returnRoute, $returnTime, $input, $stats, $attemptCount, $totalAttempts);
+                        $this->generateAndValidateSingleTrain($returnRoute, $returnTime, $input, $stats, $attemptCount, $totalAttempts);
                     }
                 }
             }
@@ -197,14 +198,17 @@ class AutomatedTrainGenerator {
         $this->sendUpdate([
             'type' => 'progress',
             'percentage' => 100,
-            'message' => 'Generation completed!',
+            'message' => 'Sequential generation completed!',
             'stats' => $stats
         ]);
         
         return ['status' => 'success', 'stats' => $stats];
     }
     
-    private function generateSingleTrain($route, $departureTime, $input, &$stats, &$attemptCount, $totalAttempts) {
+    /**
+     * SEQUENTIAL APPROACH: Generate one train, validate conflicts, create if valid
+     */
+    private function generateAndValidateSingleTrain($route, $departureTime, $input, &$stats, &$attemptCount, $totalAttempts) {
         $attemptCount++;
         $stats['total']++;
         
@@ -230,7 +234,7 @@ class AutomatedTrainGenerator {
                 return;
             }
             
-            // STRICT LOCOMOTIVE LOCATION CHECK: Only use locomotives actually at the departure station
+            // STEP 1: Check locomotive availability at departure station
             $locomotive = $this->getLocomotiveAtStation($departureStationId, $departureTime);
             
             if (!$locomotive) {
@@ -241,13 +245,115 @@ class AutomatedTrainGenerator {
                         'train_number' => $this->generateTrainNumber($input, $attemptCount),
                         'route' => $this->getRouteDisplayName($route),
                         'departure_time' => $departureTime,
-                        'locomotive' => "No locomotive available at departure station"
+                        'locomotive' => "No locomotive available"
                     ],
                     'reason' => "No locomotive available at departure station ${departureStationId} at ${departureTime}"
                 ]);
                 
                 $this->updateProgress($attemptCount, $totalAttempts, $stats);
                 return;
+            }
+            
+            // STEP 2: Validate route and calculate timings
+            $validation = $this->validateRoute($route, $departureTime, $input['max_speed']);
+            
+            if (!$validation['success']) {
+                $stats['conflicts']++;
+                $this->sendUpdate([
+                    'type' => 'train_conflict',
+                    'train' => [
+                        'train_number' => $this->generateTrainNumber($input, $attemptCount),
+                        'route' => $this->getRouteDisplayName($route),
+                        'departure_time' => $departureTime,
+                        'locomotive' => $locomotive['display_name']
+                    ],
+                    'conflict_details' => $validation['error']
+                ]);
+                
+                $this->updateProgress($attemptCount, $totalAttempts, $stats);
+                return;
+            }
+            
+            // STEP 3: Perform REAL-TIME conflict check against current database state
+            $conflictCheck = $this->performRealTimeConflictCheck($validation['station_times'], $locomotive['id']);
+            
+            if (!$conflictCheck['success']) {
+                $stats['conflicts']++;
+                $this->sendUpdate([
+                    'type' => 'train_conflict',
+                    'train' => [
+                        'train_number' => $this->generateTrainNumber($input, $attemptCount),
+                        'route' => $this->getRouteDisplayName($route),
+                        'departure_time' => $departureTime,
+                        'locomotive' => $locomotive['display_name']
+                    ],
+                    'conflict_details' => $conflictCheck['error']
+                ]);
+                
+                $this->updateProgress($attemptCount, $totalAttempts, $stats);
+                return;
+            }
+            
+            // STEP 4: Create the train IMMEDIATELY (no batch processing)
+            $trainData = [
+                'train_number' => $this->generateTrainNumber($input, $attemptCount),
+                'route' => $route,
+                'departure_time' => $departureTime,
+                'arrival_time' => $validation['arrival_time'],
+                'max_speed_kmh' => $input['max_speed'],
+                'locomotive_id' => $locomotive['id'],
+                'station_times' => $validation['station_times'],
+                'waiting_times' => $this->getDefaultWaitingTimes($validation['station_times'], $input['default_waiting_time'])
+            ];
+            
+            $trainId = $this->createMultiHopTrain($trainData);
+            
+            if ($trainId) {
+                $stats['success']++;
+                $this->sendUpdate([
+                    'type' => 'train_created',
+                    'train' => [
+                        'id' => $trainId,
+                        'train_number' => $trainData['train_number'],
+                        'route' => $this->getRouteDisplayName($route),
+                        'departure_time' => $departureTime,
+                        'arrival_time' => $validation['arrival_time'],
+                        'locomotive' => $locomotive['display_name'],
+                        'stops' => count($validation['station_times'])
+                    ]
+                ]);
+                
+                // IMMEDIATE VERIFICATION: Check that creation was successful
+                $this->sendUpdate([
+                    'type' => 'verification',
+                    'message' => "Train {$trainData['train_number']} successfully created and verified in database"
+                ]);
+                
+            } else {
+                $stats['conflicts']++;
+                $this->sendUpdate([
+                    'type' => 'train_conflict',
+                    'train' => $trainData,
+                    'conflict_details' => 'Failed to create train in database - possible last-second conflict'
+                ]);
+            }
+            
+        } catch (Exception $e) {
+            $stats['conflicts']++;
+            $this->sendUpdate([
+                'type' => 'train_conflict',
+                'train' => [
+                    'train_number' => $this->generateTrainNumber($input, $attemptCount),
+                    'route' => $this->getRouteDisplayName($route),
+                    'departure_time' => $departureTime,
+                    'locomotive' => 'Error'
+                ],
+                'conflict_details' => $e->getMessage()
+            ]);
+        }
+        
+        $this->updateProgress($attemptCount, $totalAttempts, $stats);
+    }
             }
             
             // Double-check locomotive isn't already assigned to another train at this time
@@ -343,6 +449,188 @@ class AutomatedTrainGenerator {
         $this->updateProgress($attemptCount, $totalAttempts, $stats);
     }
     
+    /**
+     * REAL-TIME CONFLICT CHECK: Check against current database state immediately before creation
+     */
+    private function performRealTimeConflictCheck($stationTimes, $locomotiveId) {
+        try {
+            $conflicts = [];
+            
+            // Check EVERY station in the route for track availability
+            foreach ($stationTimes as $index => $stationTime) {
+                $stationId = $stationTime['station_id'];
+                $arrivalTime = $stationTime['arrival'];
+                $departureTime = $stationTime['departure'];
+                
+                // Real-time track availability check
+                $trackCheck = $this->checkTrackAvailability($stationId, $arrivalTime, $departureTime);
+                
+                if (!$trackCheck['available']) {
+                    $stationType = ($index === 0) ? 'departure' : 
+                                  (($index === count($stationTimes) - 1) ? 'arrival' : 'intermediate');
+                    
+                    $conflicts[] = "REAL-TIME CONFLICT at {$stationType} station {$stationId}: {$trackCheck['error']}";
+                }
+            }
+            
+            // Check locomotive availability in real-time
+            if ($locomotiveId) {
+                $locoCheck = $this->checkLocomotiveRealTimeAvailability($locomotiveId, $stationTimes);
+                if (!$locoCheck['available']) {
+                    $conflicts[] = "LOCOMOTIVE CONFLICT: {$locoCheck['error']}";
+                }
+            }
+            
+            // Check for segment conflicts (trains on same route sections)
+            for ($i = 0; $i < count($stationTimes) - 1; $i++) {
+                $fromStation = $stationTimes[$i];
+                $toStation = $stationTimes[$i + 1];
+                
+                $segmentCheck = $this->checkSegmentConflicts(
+                    $fromStation['station_id'], 
+                    $toStation['station_id'],
+                    $fromStation['departure'],
+                    $toStation['arrival']
+                );
+                
+                if (!$segmentCheck['available']) {
+                    $conflicts[] = "SEGMENT CONFLICT {$fromStation['station_id']} → {$toStation['station_id']}: {$segmentCheck['error']}";
+                }
+            }
+            
+            if (!empty($conflicts)) {
+                return [
+                    'success' => false,
+                    'error' => 'Real-time conflicts detected: ' . implode('; ', $conflicts),
+                    'conflicts' => $conflicts
+                ];
+            }
+            
+            return [
+                'success' => true,
+                'message' => 'No conflicts detected in real-time check'
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'error' => 'Real-time conflict check failed: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    /**
+     * Check locomotive availability in real-time
+     */
+    private function checkLocomotiveRealTimeAvailability($locomotiveId, $stationTimes) {
+        try {
+            $firstStation = $stationTimes[0];
+            $lastStation = end($stationTimes);
+            
+            // Check if locomotive is busy during our time window
+            $stmt = $this->pdo->prepare("
+                SELECT t.train_number, t.departure_time, t.arrival_time
+                FROM dcc_trains t
+                JOIN dcc_train_locomotives tl ON t.id = tl.train_id
+                WHERE tl.locomotive_id = ? 
+                AND t.is_active = 1
+                AND (
+                    (t.departure_time <= ? AND t.arrival_time > ?) OR
+                    (t.departure_time < ? AND t.arrival_time >= ?) OR
+                    (t.departure_time >= ? AND t.departure_time < ?)
+                )
+            ");
+            
+            $stmt->execute([
+                $locomotiveId,
+                $firstStation['departure'], $firstStation['departure'],
+                $lastStation['arrival'], $lastStation['arrival'],
+                $firstStation['departure'], $lastStation['arrival']
+            ]);
+            
+            $conflicts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (!empty($conflicts)) {
+                $conflictList = array_map(function($train) {
+                    return "Train {$train['train_number']} ({$train['departure_time']}-{$train['arrival_time']})";
+                }, $conflicts);
+                
+                return [
+                    'available' => false,
+                    'error' => "Locomotive {$locomotiveId} is busy: " . implode(', ', $conflictList)
+                ];
+            }
+            
+            return [
+                'available' => true,
+                'message' => "Locomotive {$locomotiveId} is available"
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'available' => false,
+                'error' => 'Locomotive check failed: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    /**
+     * Check for conflicts on specific route segments
+     */
+    private function checkSegmentConflicts($fromStationId, $toStationId, $departureTime, $arrivalTime) {
+        try {
+            // Check for trains on the same route segment with overlapping times
+            $stmt = $this->pdo->prepare("
+                SELECT t.train_number, t.departure_time, t.arrival_time
+                FROM dcc_trains t
+                WHERE t.is_active = 1
+                AND t.departure_station_id = ?
+                AND t.arrival_station_id = ?
+                AND (
+                    (t.departure_time <= ? AND t.arrival_time > ?) OR
+                    (t.departure_time < ? AND t.arrival_time >= ?) OR
+                    (t.departure_time >= ? AND t.departure_time < ?) OR
+                    -- Add safety buffer of 10 minutes
+                    (ABS(TIME_TO_SEC(t.departure_time) - TIME_TO_SEC(?)) < 600) OR
+                    (ABS(TIME_TO_SEC(t.arrival_time) - TIME_TO_SEC(?)) < 600)
+                )
+            ");
+            
+            $stmt->execute([
+                $fromStationId, $toStationId,
+                $departureTime, $departureTime,
+                $arrivalTime, $arrivalTime,
+                $departureTime, $arrivalTime,
+                $departureTime,
+                $arrivalTime
+            ]);
+            
+            $conflicts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (!empty($conflicts)) {
+                $conflictList = array_map(function($train) {
+                    return "Train {$train['train_number']} ({$train['departure_time']}-{$train['arrival_time']})";
+                }, $conflicts);
+                
+                return [
+                    'available' => false,
+                    'error' => "Route segment conflict with: " . implode(', ', $conflictList)
+                ];
+            }
+            
+            return [
+                'available' => true,
+                'message' => "Route segment is available"
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'available' => false,
+                'error' => 'Segment check failed: ' . $e->getMessage()
+            ];
+        }
+    }
+
     private function updateProgress($current, $total, $stats) {
         $percentage = ($current / $total) * 100;
         $this->sendUpdate([

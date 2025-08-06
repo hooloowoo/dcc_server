@@ -34,6 +34,31 @@ curl -X POST "https://highball.eu/dcc/automated_train_generator_api.php?action=r
 
 ## Key Enhancements Made
 
+### Sequential Train Generation with Real-Time Conflict Checking
+```php
+// BEFORE: Batch generation with potential race conditions
+foreach ($routes as $route) {
+    $this->generateSingleTrain($route, $departureTime, $input, $stats);
+}
+
+// AFTER: Sequential generation with immediate conflict validation
+foreach ($routes as $route) {
+    $this->generateAndValidateSingleTrain($route, $departureTime, $input, $stats);
+    // Each train is fully validated and created before the next one
+}
+```
+
+### Real-Time Database State Checking
+```php
+// NEW: Check conflicts against current database state immediately before creation
+$conflictCheck = $this->performRealTimeConflictCheck($validation['station_times'], $locomotive['id']);
+if (!$conflictCheck['success']) {
+    // Reject train immediately - no database inconsistency
+    return;
+}
+$trainId = $this->createMultiHopTrain($trainData); // Only create if no conflicts
+```
+
 ### Ultra-Conservative Track Checking
 ```php
 // BEFORE: Basic track counting

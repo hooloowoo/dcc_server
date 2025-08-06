@@ -50,7 +50,14 @@ class AutomatedTrainGenerator {
                     return ['status' => 'error', 'error' => 'Authentication required. Admin or operator role needed.'];
                 }
                 return $this->generateTrains();
-            case 'check_conflicts':
+            case 'debug_tracks':
+            // Debug endpoint to analyze track availability at a specific station
+            if (!isset($_GET['station_id'])) {
+                return $this->sendResponse(['error' => 'station_id parameter required'], 400);
+            }
+            return $this->debugTrackAvailability($_GET['station_id']);
+            
+        case 'check_conflicts':
                 // Public read-only check for conflicts - no authentication required
                 return $this->checkStationConflicts();
             case 'resolve_conflicts':
@@ -1481,6 +1488,100 @@ class AutomatedTrainGenerator {
         }
     }
     
+    /**
+     * Debug track availability at a specific station
+     */
+    private function debugTrackAvailability($stationId) {
+        try {
+            // Get station info
+            $stmt = $this->pdo->prepare("SELECT name FROM dcc_stations WHERE id = ?");
+            $stmt->execute([$stationId]);
+            $station = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$station) {
+                return [
+                    'error' => "Station {$stationId} not found",
+                    'station_id' => $stationId
+                ];
+            }
+            
+            // Get track count
+            $stmt = $this->pdo->prepare("
+                SELECT COUNT(*) as track_count, 
+                       GROUP_CONCAT(CONCAT('Track ', track_number, ' (', track_name, ')') SEPARATOR ', ') as track_list
+                FROM dcc_station_tracks 
+                WHERE station_id = ? AND is_active = 1
+            ");
+            $stmt->execute([$stationId]);
+            $trackInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            // Get all trains using this station
+            $stmt = $this->pdo->prepare("
+                SELECT 
+                    train_number, departure_station_id, arrival_station_id,
+                    departure_time, arrival_time,
+                    CASE 
+                        WHEN departure_station_id = ? THEN 'DEPARTURE'
+                        WHEN arrival_station_id = ? THEN 'ARRIVAL'
+                        ELSE 'OTHER'
+                    END as usage_type
+                FROM dcc_trains 
+                WHERE is_active = 1 
+                AND (departure_station_id = ? OR arrival_station_id = ?)
+                ORDER BY 
+                    CASE WHEN departure_station_id = ? THEN departure_time ELSE arrival_time END
+            ");
+            $stmt->execute([$stationId, $stationId, $stationId, $stationId, $stationId]);
+            $trains = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Analyze conflicts for each hour of the day
+            $hourlyAnalysis = [];
+            for ($hour = 0; $hour < 24; $hour++) {
+                $timeStart = sprintf('%02d:00:00', $hour);
+                $timeEnd = sprintf('%02d:59:59', $hour);
+                
+                $hourTrains = array_filter($trains, function($train) use ($timeStart, $timeEnd, $stationId) {
+                    $relevantTime = ($train['departure_station_id'] === $stationId) ? 
+                        $train['departure_time'] : $train['arrival_time'];
+                    return $relevantTime >= $timeStart && $relevantTime <= $timeEnd;
+                });
+                
+                if (!empty($hourTrains)) {
+                    $hourlyAnalysis[$hour] = [
+                        'time_window' => $timeStart . ' - ' . $timeEnd,
+                        'train_count' => count($hourTrains),
+                        'exceeds_capacity' => count($hourTrains) > $trackInfo['track_count'],
+                        'trains' => array_map(function($train) use ($stationId) {
+                            $time = ($train['departure_station_id'] === $stationId) ? 
+                                $train['departure_time'] : $train['arrival_time'];
+                            return $train['train_number'] . ' (' . $train['usage_type'] . ' at ' . $time . ')';
+                        }, $hourTrains)
+                    ];
+                }
+            }
+            
+            return [
+                'station_id' => $stationId,
+                'station_name' => $station['name'],
+                'track_count' => $trackInfo['track_count'],
+                'track_list' => $trackInfo['track_list'],
+                'total_trains' => count($trains),
+                'effective_capacity' => max(1, $trackInfo['track_count'] - 1), // Reserve 1 for emergency
+                'hourly_analysis' => $hourlyAnalysis,
+                'peak_conflicts' => array_filter($hourlyAnalysis, function($hour) {
+                    return $hour['exceeds_capacity'];
+                }),
+                'all_trains' => $trains
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'error' => 'Debug failed: ' . $e->getMessage(),
+                'station_id' => $stationId
+            ];
+        }
+    }
+
     private function checkStationConflicts() {
         try {
             // Public read-only analysis of station conflicts
@@ -1857,8 +1958,7 @@ class AutomatedTrainGenerator {
     
     /**
      * Check if tracks are available at a station during a specific time period
-     * Includes realistic dwell time and buffer considerations
-     * ULTRA-CONSERVATIVE VERSION to prevent overcrowding
+     * SIMPLIFIED AND RELIABLE VERSION - Fixed complex SQL issues
      */
     private function checkTrackAvailability($stationId, $arrivalTime, $departureTime) {
         // Get total number of tracks at the station
@@ -1874,63 +1974,96 @@ class AutomatedTrainGenerator {
         if ($totalTracks == 0) {
             return [
                 'available' => false,
-                'error' => "No tracks available at station {$stationId}",
+                'error' => "No tracks configured for station {$stationId}",
                 'total_tracks' => 0,
-                'occupied_tracks' => 0
+                'occupied_tracks' => 0,
+                'conflicting_trains' => 'Station has no tracks configured'
             ];
         }
         
-        // ULTRA-CONSERVATIVE: Add much larger buffer times to prevent any possibility of conflicts
-        $arrivalTimeWithBuffer = date('H:i:s', strtotime($arrivalTime) - 900); // 15 min before
-        $departureTimeWithBuffer = date('H:i:s', strtotime($departureTime) + 900); // 15 min after
+        // SAFE TIME BUFFER CALCULATION - Handle edge cases properly
+        $arrivalTimeWithBuffer = $arrivalTime;
+        $departureTimeWithBuffer = $departureTime;
         
-        // For terminus stations (arrival = departure), add MINIMUM 30 minute dwell time
-        if ($arrivalTime === $departureTime) {
-            $departureTimeWithBuffer = date('H:i:s', strtotime($arrivalTime) + 1800); // 30 min minimum
+        // Add 15-minute buffers (safely)
+        try {
+            $arrivalSeconds = strtotime("1970-01-01 $arrivalTime") - 900; // 15 min before
+            $departureSeconds = strtotime("1970-01-01 $departureTime") + 900; // 15 min after
+            
+            // Handle day boundaries - if buffer goes negative, start from 00:00
+            if ($arrivalSeconds < 0) {
+                $arrivalTimeWithBuffer = '00:00:00';
+            } else {
+                $arrivalTimeWithBuffer = date('H:i:s', $arrivalSeconds);
+            }
+            
+            // Handle day boundaries - if buffer exceeds 24 hours, cap at 23:59
+            if ($departureSeconds >= 86400) {
+                $departureTimeWithBuffer = '23:59:59';
+            } else {
+                $departureTimeWithBuffer = date('H:i:s', $departureSeconds);
+            }
+        } catch (Exception $e) {
+            // Fallback to original times if time calculation fails
+            $arrivalTimeWithBuffer = $arrivalTime;
+            $departureTimeWithBuffer = $departureTime;
         }
         
-        // Count ALL potential conflicts with expanded time windows
+        // For terminus stations (same arrival/departure time), enforce minimum dwell time
+        if ($arrivalTime === $departureTime) {
+            try {
+                $departureSeconds = strtotime("1970-01-01 $arrivalTime") + 1800; // 30 min minimum
+                if ($departureSeconds >= 86400) {
+                    $departureTimeWithBuffer = '23:59:59';
+                } else {
+                    $departureTimeWithBuffer = date('H:i:s', $departureSeconds);
+                }
+            } catch (Exception $e) {
+                $departureTimeWithBuffer = $departureTime;
+            }
+        }
+        
+        // SIMPLIFIED CONFLICT DETECTION - Count trains using this station during our time window
+        $conflictingTrains = [];
+        $occupiedTracks = 0;
+        
+        // Check trains departing from this station
         $stmt = $this->pdo->prepare("
-            SELECT COUNT(DISTINCT t.id) as occupied_count,
-                   GROUP_CONCAT(DISTINCT CONCAT(t.train_number, ' (', 
-                       CASE 
-                           WHEN t.departure_station_id = ? THEN CONCAT('dep:', t.departure_time)
-                           WHEN t.arrival_station_id = ? THEN CONCAT('arr:', t.arrival_time)
-                           ELSE CONCAT(t.departure_time, '->', t.arrival_time)
-                       END, ')') SEPARATOR ', ') as conflicting_trains
-            FROM dcc_trains t
-            WHERE t.is_active = 1
-            AND (
-                -- Trains departing from this station (with extended buffer)
-                (t.departure_station_id = ? AND t.departure_time BETWEEN ? AND ?) OR
-                -- Trains arriving at this station (with extended buffer)
-                (t.arrival_station_id = ? AND t.arrival_time BETWEEN ? AND ?) OR
-                -- Trains that start and end at this station (local operations) - VERY conservative
-                (t.departure_station_id = ? AND t.arrival_station_id = ? AND 
-                 t.departure_time <= ? AND 
-                 DATE_ADD(CONCAT(CURDATE(), ' ', t.arrival_time), INTERVAL 45 MINUTE) >= ?) OR
-                -- Additional check: Any train that might be using this station as a pass-through
-                (t.departure_station_id = ? AND t.departure_time <= ? AND t.arrival_time >= ?) OR
-                (t.arrival_station_id = ? AND t.arrival_time >= ? AND t.departure_time <= ?)
-            )
+            SELECT train_number, departure_time
+            FROM dcc_trains 
+            WHERE is_active = 1 
+            AND departure_station_id = ? 
+            AND departure_time BETWEEN ? AND ?
         ");
+        $stmt->execute([$stationId, $arrivalTimeWithBuffer, $departureTimeWithBuffer]);
+        $departingTrains = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        $stmt->execute([
-            $stationId, $stationId,
-            $stationId, $arrivalTimeWithBuffer, $departureTimeWithBuffer,
-            $stationId, $arrivalTimeWithBuffer, $departureTimeWithBuffer,
-            $stationId, $stationId, $departureTimeWithBuffer, $arrivalTimeWithBuffer,
-            $stationId, $departureTimeWithBuffer, $arrivalTimeWithBuffer,
-            $stationId, $arrivalTimeWithBuffer, $departureTimeWithBuffer
-        ]);
+        foreach ($departingTrains as $train) {
+            $conflictingTrains[] = "Train {$train['train_number']} departing at {$train['departure_time']}";
+            $occupiedTracks++;
+        }
         
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $occupiedTracks = $result['occupied_count'];
-        $conflictingTrains = $result['conflicting_trains'];
+        // Check trains arriving at this station
+        $stmt = $this->pdo->prepare("
+            SELECT train_number, arrival_time
+            FROM dcc_trains 
+            WHERE is_active = 1 
+            AND arrival_station_id = ? 
+            AND arrival_time BETWEEN ? AND ?
+        ");
+        $stmt->execute([$stationId, $arrivalTimeWithBuffer, $departureTimeWithBuffer]);
+        $arrivingTrains = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        // ULTRA-CONSERVATIVE: Reserve 1 track for emergencies if station has more than 1 track
+        foreach ($arrivingTrains as $train) {
+            $conflictingTrains[] = "Train {$train['train_number']} arriving at {$train['arrival_time']}";
+            $occupiedTracks++;
+        }
+        
+        // CONSERVATIVE APPROACH: Reserve 1 track for emergencies if station has > 1 track
         $effectiveAvailableTracks = $totalTracks > 1 ? $totalTracks - 1 : $totalTracks;
         $availableTracks = $effectiveAvailableTracks - $occupiedTracks;
+        
+        $conflictingTrainsText = empty($conflictingTrains) ? 'None' : implode('; ', $conflictingTrains);
         
         return [
             'available' => $availableTracks > 0,
@@ -1938,9 +2071,15 @@ class AutomatedTrainGenerator {
             'effective_tracks' => $effectiveAvailableTracks,
             'occupied_tracks' => $occupiedTracks,
             'available_tracks' => $availableTracks,
-            'conflicting_trains' => $conflictingTrains,
+            'conflicting_trains' => $conflictingTrainsText,
+            'buffer_times' => [
+                'arrival_buffer' => $arrivalTimeWithBuffer,
+                'departure_buffer' => $departureTimeWithBuffer,
+                'original_arrival' => $arrivalTime,
+                'original_departure' => $departureTime
+            ],
             'error' => $availableTracks <= 0 ? 
-                "All effective tracks at station {$stationId} are occupied during {$arrivalTime}-{$departureTime}. Using ultra-conservative scheduling with 15min buffers and 1 emergency track reserved. Conflicts: {$conflictingTrains}" : null
+                "Station {$stationId} has {$occupiedTracks} trains during time window {$arrivalTimeWithBuffer}-{$departureTimeWithBuffer}, exceeding {$effectiveAvailableTracks} effective tracks (1 reserved for emergency). Total tracks: {$totalTracks}" : null
         ];
     }
     

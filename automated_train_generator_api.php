@@ -50,6 +50,15 @@ class AutomatedTrainGenerator {
                     return ['status' => 'error', 'error' => 'Authentication required. Admin or operator role needed.'];
                 }
                 return $this->generateTrains();
+            case 'check_conflicts':
+                // Public read-only check for conflicts - no authentication required
+                return $this->checkStationConflicts();
+            case 'resolve_conflicts':
+                // Resolve track conflicts requires admin or operator role
+                if (!$user || !in_array($user['role'], ['admin', 'operator'])) {
+                    return ['status' => 'error', 'error' => 'Authentication required. Admin or operator role needed.'];
+                }
+                return $this->resolveTrackConflicts();
             case 'clear_all':
                 // Clear all trains requires admin role only
                 if (!$user || $user['role'] !== 'admin') {
@@ -962,70 +971,222 @@ class AutomatedTrainGenerator {
     private function checkMultiHopConflicts($stationTimes) {
         $conflicts = [];
         
-        // Check each segment of the multi-hop route for conflicts
+        // COMPREHENSIVE TRACK AVAILABILITY CHECK - Check EVERY station in the route
+        foreach ($stationTimes as $index => $stationTime) {
+            $stationId = $stationTime['station_id'];
+            $arrivalTime = $stationTime['arrival'];
+            $departureTime = $stationTime['departure'];
+            
+            // Get station name for better error messages
+            $stationName = $this->getStationName($stationId);
+            
+            // Check track availability with proper arrival/departure times
+            $trackAvailability = $this->checkTrackAvailability($stationId, $arrivalTime, $departureTime);
+            
+            if (!$trackAvailability['available']) {
+                $stationType = 'intermediate';
+                if ($index === 0) {
+                    $stationType = 'departure';
+                } elseif ($index === count($stationTimes) - 1) {
+                    $stationType = 'arrival';
+                }
+                
+                $conflicts[] = "TRACK CONFLICT at {$stationType} station '{$stationName}' ({$stationId}): " .
+                              "No tracks available from {$arrivalTime} to {$departureTime}. " .
+                              "Occupied: {$trackAvailability['occupied_tracks']}/{$trackAvailability['total_tracks']} tracks. " .
+                              "Conflicting trains: {$trackAvailability['conflicting_trains']}";
+            }
+        }
+        
+        // ADDITIONAL VALIDATION: Check for impossible scheduling scenarios
         for ($i = 0; $i < count($stationTimes) - 1; $i++) {
             $currentStation = $stationTimes[$i];
             $nextStation = $stationTimes[$i + 1];
             
-            // Check for overlapping trains on this segment
-            $stmt = $this->pdo->prepare("
-                SELECT train_number 
-                FROM dcc_trains 
-                WHERE departure_station_id = ? 
-                AND arrival_station_id = ? 
-                AND (
-                    (departure_time <= ? AND arrival_time > ?) 
-                    OR (departure_time < ? AND arrival_time >= ?)
-                    OR (departure_time >= ? AND departure_time < ?)
-                )
-            ");
+            // Verify departure time is not before arrival time at same station
+            if ($currentStation['departure'] < $currentStation['arrival']) {
+                $conflicts[] = "SCHEDULING ERROR: Departure time {$currentStation['departure']} is before arrival time {$currentStation['arrival']} at station {$currentStation['station_id']}";
+            }
+            
+            // Verify next arrival is after current departure
+            if ($nextStation['arrival'] <= $currentStation['departure']) {
+                $conflicts[] = "SCHEDULING ERROR: Next station arrival {$nextStation['arrival']} is not after departure {$currentStation['departure']} from previous station";
+            }
+        }
+        
+        // SEGMENT-BY-SEGMENT CONFLICT CHECK - Check each leg of the journey
+        for ($i = 0; $i < count($stationTimes) - 1; $i++) {
+            $currentStation = $stationTimes[$i];
+            $nextStation = $stationTimes[$i + 1];
             
             $segmentDepTime = $currentStation['departure'];
             $segmentArrTime = $nextStation['arrival'];
+            
+            // Check for overlapping trains on this specific segment
+            $stmt = $this->pdo->prepare("
+                SELECT t.train_number, t.departure_time, t.arrival_time
+                FROM dcc_trains t
+                WHERE t.is_active = 1
+                AND t.departure_station_id = ? 
+                AND t.arrival_station_id = ? 
+                AND (
+                    -- Direct time overlap
+                    (t.departure_time <= ? AND t.arrival_time > ?) 
+                    OR (t.departure_time < ? AND t.arrival_time >= ?)
+                    OR (t.departure_time >= ? AND t.departure_time < ?)
+                    -- Buffer overlap (trains too close together)
+                    OR (ABS(TIME_TO_SEC(t.departure_time) - TIME_TO_SEC(?)) < 600)  -- 10 min buffer
+                    OR (ABS(TIME_TO_SEC(t.arrival_time) - TIME_TO_SEC(?)) < 600)    -- 10 min buffer
+                )
+            ");
             
             $stmt->execute([
                 $currentStation['station_id'], 
                 $nextStation['station_id'], 
                 $segmentDepTime, $segmentDepTime, 
                 $segmentArrTime, $segmentArrTime, 
-                $segmentDepTime, $segmentArrTime
+                $segmentDepTime, $segmentArrTime,
+                $segmentDepTime,
+                $segmentArrTime
             ]);
             
-            if ($stmt->rowCount() > 0) {
-                $conflicts[] = "Overlapping train on segment " . ($i + 1);
+            $overlappingTrains = $stmt->fetchAll();
+            if (!empty($overlappingTrains)) {
+                $trainList = array_map(function($train) {
+                    return "{$train['train_number']} ({$train['departure_time']}-{$train['arrival_time']})";
+                }, $overlappingTrains);
+                
+                $fromStation = $this->getStationName($currentStation['station_id']);
+                $toStation = $this->getStationName($nextStation['station_id']);
+                
+                $conflicts[] = "ROUTE SEGMENT CONFLICT: {$fromStation} → {$toStation} segment ({$segmentDepTime}-{$segmentArrTime}) " .
+                              "conflicts with existing trains: " . implode(', ', $trainList);
             }
         }
         
         return $conflicts;
     }
     
-    private function estimateTravelTime($fromStation, $toStation, $maxSpeed) {
-        // Simplified travel time estimation
-        // In a real implementation, this would use actual route distances
-        // Reduced range to prevent overnight trains
-        return rand(15, 90); // 15-90 minutes (reduced from 30-120)
+    private function estimateTravelTime($fromStation, $toStation, $locomotiveMaxSpeed, $locomotiveId = null) {
+        // Get the distance and track speed limit between stations
+        $stmt = $this->pdo->prepare("
+            SELECT distance_km, track_speed_limit 
+            FROM dcc_station_connections 
+            WHERE (from_station_id = ? AND to_station_id = ?) 
+               OR (bidirectional = 1 AND from_station_id = ? AND to_station_id = ?)
+            LIMIT 1
+        ");
+        $stmt->execute([$fromStation, $toStation, $toStation, $fromStation]);
+        
+        $connection = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$connection) {
+            // No direct connection found, return default time
+            return 30;
+        }
+        
+        $distance_km = floatval($connection['distance_km']);
+        $track_speed_limit = intval($connection['track_speed_limit']) ?: 80; // Default if null
+        
+        // Get actual locomotive max speed if locomotive ID is provided
+        $actual_locomotive_speed = $locomotiveMaxSpeed;
+        if ($locomotiveId) {
+            $locoStmt = $this->pdo->prepare("SELECT max_speed_kmh FROM dcc_locomotives WHERE id = ?");
+            $locoStmt->execute([$locomotiveId]);
+            $locoData = $locoStmt->fetch(PDO::FETCH_ASSOC);
+            if ($locoData && $locoData['max_speed_kmh']) {
+                $actual_locomotive_speed = intval($locoData['max_speed_kmh']);
+            }
+        }
+        
+        // Calculate actual speed as minimum of locomotive speed and track speed limit
+        $actual_speed = min($actual_locomotive_speed, $track_speed_limit);
+        
+        // Calculate travel time: Time = Distance ÷ Speed
+        $travel_time_hours = $distance_km / $actual_speed;
+        $travel_time_minutes = $travel_time_hours * 60;
+        
+        // Add acceleration/deceleration time (2-5 minutes depending on distance)
+        $accel_decel_time = min(5, max(2, $distance_km * 0.5));
+        $total_time = $travel_time_minutes + $accel_decel_time;
+        
+        // Round to nearest minute and ensure minimum time of 5 minutes
+        return max(5, round($total_time));
+    }
+    
+    // Helper function to get locomotive max speed
+    private function getLocomotiveMaxSpeed($locomotiveId) {
+        $stmt = $this->pdo->prepare("SELECT max_speed_kmh FROM dcc_locomotives WHERE id = ? AND is_active = 1");
+        $stmt->execute([$locomotiveId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? intval($result['max_speed_kmh']) : 80; // Default to 80 km/h if not found
     }
     
     private function checkBasicConflicts($departure, $arrival, $depTime, $arrTime) {
         $conflicts = [];
         
-        // Check for overlapping trains on the same route
+        // COMPREHENSIVE STATION TRACK AVAILABILITY CHECK
+        // Check departure station track availability
+        $departureTrackAvailability = $this->checkTrackAvailability($departure, $depTime, $depTime);
+        if (!$departureTrackAvailability['available']) {
+            $depStationName = $this->getStationName($departure);
+            $conflicts[] = "DEPARTURE STATION CONFLICT: Station '{$depStationName}' ({$departure}) " .
+                          "has no available tracks at departure time {$depTime}. " .
+                          "Occupied: {$departureTrackAvailability['occupied_tracks']}/{$departureTrackAvailability['total_tracks']} tracks. " .
+                          "Conflicting trains: {$departureTrackAvailability['conflicting_trains']}";
+        }
+        
+        // Check arrival station track availability
+        $arrivalTrackAvailability = $this->checkTrackAvailability($arrival, $arrTime, $arrTime);
+        if (!$arrivalTrackAvailability['available']) {
+            $arrStationName = $this->getStationName($arrival);
+            $conflicts[] = "ARRIVAL STATION CONFLICT: Station '{$arrStationName}' ({$arrival}) " .
+                          "has no available tracks at arrival time {$arrTime}. " .
+                          "Occupied: {$arrivalTrackAvailability['occupied_tracks']}/{$arrivalTrackAvailability['total_tracks']} tracks. " .
+                          "Conflicting trains: {$arrivalTrackAvailability['conflicting_trains']}";
+        }
+        
+        // DIRECT ROUTE CONFLICT CHECK - Look for trains on the same route with overlapping times
         $stmt = $this->pdo->prepare("
-            SELECT train_number 
-            FROM dcc_trains 
-            WHERE departure_station_id = ? 
-            AND arrival_station_id = ? 
+            SELECT t.train_number, t.departure_time, t.arrival_time, t.locomotive_number
+            FROM dcc_trains t 
+            WHERE t.is_active = 1
+            AND t.departure_station_id = ? 
+            AND t.arrival_station_id = ? 
             AND (
-                (departure_time <= ? AND arrival_time > ?) 
-                OR (departure_time < ? AND arrival_time >= ?)
-                OR (departure_time >= ? AND departure_time < ?)
+                -- Direct time overlap scenarios
+                (t.departure_time <= ? AND t.arrival_time > ?) 
+                OR (t.departure_time < ? AND t.arrival_time >= ?)
+                OR (t.departure_time >= ? AND t.departure_time < ?)
+                -- Safety buffer overlap (trains too close together)
+                OR (ABS(TIME_TO_SEC(t.departure_time) - TIME_TO_SEC(?)) < 900)  -- 15 min departure buffer
+                OR (ABS(TIME_TO_SEC(t.arrival_time) - TIME_TO_SEC(?)) < 900)    -- 15 min arrival buffer
             )
         ");
         
-        $stmt->execute([$departure, $arrival, $depTime, $depTime, $arrTime, $arrTime, $depTime, $arrTime]);
+        $stmt->execute([
+            $departure, 
+            $arrival, 
+            $depTime, $depTime, 
+            $arrTime, $arrTime, 
+            $depTime, $arrTime,
+            $depTime,
+            $arrTime
+        ]);
         
-        if ($stmt->rowCount() > 0) {
-            $conflicts[] = "Overlapping train schedules detected";
+        $overlappingTrains = $stmt->fetchAll();
+        if (!empty($overlappingTrains)) {
+            $trainList = array_map(function($train) {
+                return "Train {$train['train_number']} (Loco: {$train['locomotive_number']}) " .
+                       "running {$train['departure_time']}-{$train['arrival_time']}";
+            }, $overlappingTrains);
+            
+            $depStationName = $this->getStationName($departure);
+            $arrStationName = $this->getStationName($arrival);
+            
+            $conflicts[] = "ROUTE SCHEDULING CONFLICT: Route {$depStationName} → {$arrStationName} " .
+                          "({$depTime}-{$arrTime}) conflicts with existing trains: " . 
+                          implode('; ', $trainList);
         }
         
         return $conflicts;
@@ -1059,7 +1220,7 @@ class AutomatedTrainGenerator {
         return $waitingTimes;
     }
     
-    private function calculateReturnTime($route, $departureTime, $input) {
+    private function calculateReturnTime($route, $departureTime, $input, $locomotiveId = null) {
         // Calculate when the locomotive will be available for return trip
         $departureStationId = isset($route['departure_station']) ? $route['departure_station'] : 
                              (isset($route['stations'][0]['id']) ? $route['stations'][0]['id'] : null);
@@ -1071,8 +1232,13 @@ class AutomatedTrainGenerator {
             // Multi-hop route with pre-calculated time
             $travelTime = $route['total_estimated_time'];
         } else {
-            // Simple route - estimate travel time
-            $travelTime = $this->estimateTravelTime($departureStationId, $arrivalStationId, $input['max_speed']);
+            // Simple route - estimate travel time with locomotive speed if available
+            $maxSpeed = $input['max_speed'];
+            if ($locomotiveId) {
+                $locoSpeed = $this->getLocomotiveMaxSpeed($locomotiveId);
+                $maxSpeed = min($maxSpeed, $locoSpeed);
+            }
+            $travelTime = $this->estimateTravelTime($departureStationId, $arrivalStationId, $maxSpeed, $locomotiveId);
         }
         
         $arrivalTime = strtotime($departureTime) + ($travelTime * 60);
@@ -1315,6 +1481,292 @@ class AutomatedTrainGenerator {
         }
     }
     
+    private function checkStationConflicts() {
+        try {
+            // Public read-only analysis of station conflicts
+            $conflictingStations = [];
+            $summary = [
+                'total_stations_checked' => 0,
+                'stations_with_conflicts' => 0,
+                'total_trains_affected' => 0,
+                'worst_station' => null,
+                'worst_conflict_count' => 0
+            ];
+            
+            // Get all stations and their track counts
+            $stmt = $this->pdo->query("
+                SELECT s.id, s.name, COUNT(st.id) as track_count
+                FROM dcc_stations s
+                LEFT JOIN dcc_station_tracks st ON s.id = st.station_id AND st.is_active = 1
+                WHERE s.is_active = 1
+                GROUP BY s.id, s.name
+                HAVING track_count > 0
+                ORDER BY s.name
+            ");
+            $stations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $summary['total_stations_checked'] = count($stations);
+            
+            foreach ($stations as $station) {
+                $stationId = $station['id'];
+                $trackCount = $station['track_count'];
+                
+                // Find all trains using this station in the next 24 hours
+                $stmt = $this->pdo->prepare("
+                    SELECT 
+                        t.id, t.train_number, t.departure_station_id, t.arrival_station_id,
+                        t.departure_time, t.arrival_time,
+                        CASE 
+                            WHEN t.departure_station_id = ? THEN t.departure_time
+                            WHEN t.arrival_station_id = ? THEN t.arrival_time
+                            ELSE LEAST(t.departure_time, t.arrival_time)
+                        END as usage_time,
+                        CASE 
+                            WHEN t.departure_station_id = ? AND t.arrival_station_id = ? THEN 'transit'
+                            WHEN t.departure_station_id = ? THEN 'departure'
+                            WHEN t.arrival_station_id = ? THEN 'arrival'
+                            ELSE 'unknown'
+                        END as usage_type
+                    FROM dcc_trains t
+                    WHERE t.is_active = 1 
+                    AND (t.departure_station_id = ? OR t.arrival_station_id = ?)
+                    ORDER BY usage_time ASC
+                ");
+                $stmt->execute([$stationId, $stationId, $stationId, $stationId, $stationId, $stationId, $stationId, $stationId]);
+                $stationTrains = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                if (empty($stationTrains)) {
+                    continue;
+                }
+                
+                // Group trains by hourly time windows for conflict analysis
+                $timeWindows = [];
+                foreach ($stationTrains as $train) {
+                    $time = $train['usage_time'];
+                    $window = floor(strtotime($time) / 3600) * 3600; // 1-hour windows
+                    
+                    if (!isset($timeWindows[$window])) {
+                        $timeWindows[$window] = [];
+                    }
+                    $timeWindows[$window][] = $train;
+                }
+                
+                // Check each time window for overcrowding
+                $stationConflicts = [];
+                foreach ($timeWindows as $window => $trains) {
+                    if (count($trains) > $trackCount) {
+                        $stationConflicts[] = [
+                            'window_start' => date('H:i', $window),
+                            'window_end' => date('H:i', $window + 3600),
+                            'trains_count' => count($trains),
+                            'tracks_available' => $trackCount,
+                            'excess_trains' => count($trains) - $trackCount,
+                            'affected_trains' => array_map(function($t) {
+                                return $t['train_number'] . ' (' . $t['usage_type'] . ' ' . $t['usage_time'] . ')';
+                            }, $trains)
+                        ];
+                        $summary['total_trains_affected'] += count($trains);
+                    }
+                }
+                
+                if (!empty($stationConflicts)) {
+                    $totalConflicts = array_sum(array_column($stationConflicts, 'excess_trains'));
+                    $conflictingStations[] = [
+                        'station_id' => $station['id'],
+                        'station_name' => $station['name'],
+                        'track_count' => $trackCount,
+                        'total_trains' => count($stationTrains),
+                        'conflict_windows' => count($stationConflicts),
+                        'total_excess_trains' => $totalConflicts,
+                        'conflicts' => $stationConflicts
+                    ];
+                    
+                    if ($totalConflicts > $summary['worst_conflict_count']) {
+                        $summary['worst_conflict_count'] = $totalConflicts;
+                        $summary['worst_station'] = $station['name'];
+                    }
+                }
+            }
+            
+            $summary['stations_with_conflicts'] = count($conflictingStations);
+            
+            return [
+                'status' => 'success',
+                'timestamp' => date('Y-m-d H:i:s'),
+                'summary' => $summary,
+                'conflicting_stations' => $conflictingStations,
+                'recommendations' => $this->generateConflictRecommendations($conflictingStations)
+            ];
+            
+        } catch (Exception $e) {
+            return [
+                'status' => 'error',
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+    
+    private function generateConflictRecommendations($conflictingStations) {
+        $recommendations = [];
+        
+        if (empty($conflictingStations)) {
+            $recommendations[] = "✅ No track conflicts detected! All stations have adequate capacity.";
+            return $recommendations;
+        }
+        
+        $recommendations[] = "⚠️ Track capacity issues detected at " . count($conflictingStations) . " station(s).";
+        
+        foreach ($conflictingStations as $station) {
+            if ($station['total_excess_trains'] > 10) {
+                $recommendations[] = "🚨 CRITICAL: {$station['station_name']} has {$station['total_excess_trains']} excess trains - consider removing AUTO trains or adding more tracks.";
+            } elseif ($station['total_excess_trains'] > 5) {
+                $recommendations[] = "⚠️ HIGH: {$station['station_name']} has {$station['total_excess_trains']} excess trains - reduce train frequency.";
+            } else {
+                $recommendations[] = "⚡ MEDIUM: {$station['station_name']} has {$station['total_excess_trains']} excess trains - minor adjustments needed.";
+            }
+        }
+        
+        $recommendations[] = "💡 Use action=resolve_conflicts (requires authentication) to automatically remove excess AUTO trains.";
+        $recommendations[] = "💡 Consider increasing train frequency intervals or reducing the number of generated routes.";
+        
+        return $recommendations;
+    }
+    
+    private function resolveTrackConflicts() {
+        try {
+            $this->pdo->beginTransaction();
+            
+            // Find all stations with track conflicts
+            $conflictingStations = [];
+            $removedTrains = [];
+            
+            // Get all stations and their track counts
+            $stmt = $this->pdo->query("
+                SELECT s.id, s.name, COUNT(st.id) as track_count
+                FROM dcc_stations s
+                LEFT JOIN dcc_station_tracks st ON s.id = st.station_id AND st.is_active = 1
+                WHERE s.is_active = 1
+                GROUP BY s.id, s.name
+                HAVING track_count > 0
+            ");
+            $stations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($stations as $station) {
+                $stationId = $station['id'];
+                $trackCount = $station['track_count'];
+                
+                // Find all time periods where trains overlap at this station
+                $stmt = $this->pdo->prepare("
+                    SELECT 
+                        t.id, t.train_number, t.departure_station_id, t.arrival_station_id,
+                        t.departure_time, t.arrival_time,
+                        CASE 
+                            WHEN t.departure_station_id = ? THEN t.departure_time
+                            WHEN t.arrival_station_id = ? THEN t.arrival_time
+                            ELSE LEAST(t.departure_time, t.arrival_time)
+                        END as usage_time,
+                        CASE 
+                            WHEN t.departure_station_id = ? AND t.arrival_station_id = ? THEN 'transit'
+                            WHEN t.departure_station_id = ? THEN 'departure'
+                            WHEN t.arrival_station_id = ? THEN 'arrival'
+                            ELSE 'unknown'
+                        END as usage_type
+                    FROM dcc_trains t
+                    WHERE t.is_active = 1 
+                    AND (t.departure_station_id = ? OR t.arrival_station_id = ?)
+                    ORDER BY usage_time ASC
+                ");
+                $stmt->execute([$stationId, $stationId, $stationId, $stationId, $stationId, $stationId, $stationId, $stationId]);
+                $stationTrains = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                // Group trains by 30-minute time windows and check for conflicts
+                $timeWindows = [];
+                foreach ($stationTrains as $train) {
+                    $time = $train['usage_time'];
+                    $window = floor(strtotime($time) / 1800) * 1800; // 30-minute windows
+                    
+                    if (!isset($timeWindows[$window])) {
+                        $timeWindows[$window] = [];
+                    }
+                    $timeWindows[$window][] = $train;
+                }
+                
+                // Check each time window for overcrowding
+                foreach ($timeWindows as $window => $trains) {
+                    if (count($trains) > $trackCount) {
+                        $conflictingStations[] = [
+                            'station' => $station,
+                            'window' => date('H:i', $window),
+                            'trains' => count($trains),
+                            'tracks' => $trackCount,
+                            'excess' => count($trains) - $trackCount
+                        ];
+                        
+                        // Remove excess AUTO trains (prioritize keeping non-AUTO trains)
+                        $autoTrains = array_filter($trains, fn($t) => strpos($t['train_number'], 'AUTO') === 0);
+                        $nonAutoTrains = array_filter($trains, fn($t) => strpos($t['train_number'], 'AUTO') !== 0);
+                        
+                        // Sort AUTO trains by train number to remove them consistently
+                        usort($autoTrains, fn($a, $b) => strcmp($a['train_number'], $b['train_number']));
+                        
+                        $trainsToRemove = count($trains) - $trackCount;
+                        $removed = 0;
+                        
+                        // Remove AUTO trains first
+                        foreach ($autoTrains as $train) {
+                            if ($removed >= $trainsToRemove) break;
+                            
+                            $stmt = $this->pdo->prepare("DELETE FROM dcc_trains WHERE id = ?");
+                            $stmt->execute([$train['id']]);
+                            
+                            $removedTrains[] = [
+                                'train_number' => $train['train_number'],
+                                'station' => $station['name'],
+                                'time' => $train['usage_time'],
+                                'type' => $train['usage_type']
+                            ];
+                            $removed++;
+                        }
+                        
+                        // If still need to remove more, remove non-AUTO trains
+                        if ($removed < $trainsToRemove) {
+                            foreach ($nonAutoTrains as $train) {
+                                if ($removed >= $trainsToRemove) break;
+                                
+                                $stmt = $this->pdo->prepare("DELETE FROM dcc_trains WHERE id = ?");
+                                $stmt->execute([$train['id']]);
+                                
+                                $removedTrains[] = [
+                                    'train_number' => $train['train_number'],
+                                    'station' => $station['name'],
+                                    'time' => $train['usage_time'],
+                                    'type' => $train['usage_type']
+                                ];
+                                $removed++;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            $this->pdo->commit();
+            
+            return [
+                'status' => 'success',
+                'message' => 'Track conflicts resolved',
+                'conflicts_found' => count($conflictingStations),
+                'trains_removed' => count($removedTrains),
+                'details' => [
+                    'conflicting_stations' => $conflictingStations,
+                    'removed_trains' => $removedTrains
+                ]
+            ];
+            
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        }
+    }
+    
     private function clearAllTrains() {
         try {
             $this->pdo->beginTransaction();
@@ -1401,6 +1853,142 @@ class AutomatedTrainGenerator {
             $this->pdo->rollBack();
             throw $e;
         }
+    }
+    
+    /**
+     * Check if tracks are available at a station during a specific time period
+     * Includes realistic dwell time and buffer considerations
+     * ULTRA-CONSERVATIVE VERSION to prevent overcrowding
+     */
+    private function checkTrackAvailability($stationId, $arrivalTime, $departureTime) {
+        // Get total number of tracks at the station
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(*) as track_count
+            FROM dcc_station_tracks 
+            WHERE station_id = ? AND is_active = 1
+        ");
+        $stmt->execute([$stationId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $totalTracks = $result['track_count'];
+        
+        if ($totalTracks == 0) {
+            return [
+                'available' => false,
+                'error' => "No tracks available at station {$stationId}",
+                'total_tracks' => 0,
+                'occupied_tracks' => 0
+            ];
+        }
+        
+        // ULTRA-CONSERVATIVE: Add much larger buffer times to prevent any possibility of conflicts
+        $arrivalTimeWithBuffer = date('H:i:s', strtotime($arrivalTime) - 900); // 15 min before
+        $departureTimeWithBuffer = date('H:i:s', strtotime($departureTime) + 900); // 15 min after
+        
+        // For terminus stations (arrival = departure), add MINIMUM 30 minute dwell time
+        if ($arrivalTime === $departureTime) {
+            $departureTimeWithBuffer = date('H:i:s', strtotime($arrivalTime) + 1800); // 30 min minimum
+        }
+        
+        // Count ALL potential conflicts with expanded time windows
+        $stmt = $this->pdo->prepare("
+            SELECT COUNT(DISTINCT t.id) as occupied_count,
+                   GROUP_CONCAT(DISTINCT CONCAT(t.train_number, ' (', 
+                       CASE 
+                           WHEN t.departure_station_id = ? THEN CONCAT('dep:', t.departure_time)
+                           WHEN t.arrival_station_id = ? THEN CONCAT('arr:', t.arrival_time)
+                           ELSE CONCAT(t.departure_time, '->', t.arrival_time)
+                       END, ')') SEPARATOR ', ') as conflicting_trains
+            FROM dcc_trains t
+            WHERE t.is_active = 1
+            AND (
+                -- Trains departing from this station (with extended buffer)
+                (t.departure_station_id = ? AND t.departure_time BETWEEN ? AND ?) OR
+                -- Trains arriving at this station (with extended buffer)
+                (t.arrival_station_id = ? AND t.arrival_time BETWEEN ? AND ?) OR
+                -- Trains that start and end at this station (local operations) - VERY conservative
+                (t.departure_station_id = ? AND t.arrival_station_id = ? AND 
+                 t.departure_time <= ? AND 
+                 DATE_ADD(CONCAT(CURDATE(), ' ', t.arrival_time), INTERVAL 45 MINUTE) >= ?) OR
+                -- Additional check: Any train that might be using this station as a pass-through
+                (t.departure_station_id = ? AND t.departure_time <= ? AND t.arrival_time >= ?) OR
+                (t.arrival_station_id = ? AND t.arrival_time >= ? AND t.departure_time <= ?)
+            )
+        ");
+        
+        $stmt->execute([
+            $stationId, $stationId,
+            $stationId, $arrivalTimeWithBuffer, $departureTimeWithBuffer,
+            $stationId, $arrivalTimeWithBuffer, $departureTimeWithBuffer,
+            $stationId, $stationId, $departureTimeWithBuffer, $arrivalTimeWithBuffer,
+            $stationId, $departureTimeWithBuffer, $arrivalTimeWithBuffer,
+            $stationId, $arrivalTimeWithBuffer, $departureTimeWithBuffer
+        ]);
+        
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $occupiedTracks = $result['occupied_count'];
+        $conflictingTrains = $result['conflicting_trains'];
+        
+        // ULTRA-CONSERVATIVE: Reserve 1 track for emergencies if station has more than 1 track
+        $effectiveAvailableTracks = $totalTracks > 1 ? $totalTracks - 1 : $totalTracks;
+        $availableTracks = $effectiveAvailableTracks - $occupiedTracks;
+        
+        return [
+            'available' => $availableTracks > 0,
+            'total_tracks' => $totalTracks,
+            'effective_tracks' => $effectiveAvailableTracks,
+            'occupied_tracks' => $occupiedTracks,
+            'available_tracks' => $availableTracks,
+            'conflicting_trains' => $conflictingTrains,
+            'error' => $availableTracks <= 0 ? 
+                "All effective tracks at station {$stationId} are occupied during {$arrivalTime}-{$departureTime}. Using ultra-conservative scheduling with 15min buffers and 1 emergency track reserved. Conflicts: {$conflictingTrains}" : null
+        ];
+    }
+    
+    /**
+     * Find an available track at a station for a specific time period
+     */
+    private function findAvailableTrack($stationId, $arrivalTime, $departureTime) {
+        // Get all tracks at the station
+        $stmt = $this->pdo->prepare("
+            SELECT id, track_number, track_name, track_type
+            FROM dcc_station_tracks 
+            WHERE station_id = ? AND is_active = 1
+            ORDER BY track_type = 'platform' DESC, track_number ASC
+        ");
+        $stmt->execute([$stationId]);
+        $tracks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (empty($tracks)) {
+            return null;
+        }
+        
+        // Check each track for availability
+        foreach ($tracks as $track) {
+            $stmt = $this->pdo->prepare("
+                SELECT COUNT(*) as conflicts
+                FROM dcc_trains t
+                WHERE t.is_active = 1
+                AND (
+                    (t.departure_station_id = ? AND t.departure_time >= ? AND t.departure_time <= ?) OR
+                    (t.arrival_station_id = ? AND t.arrival_time >= ? AND t.arrival_time <= ?) OR
+                    (t.departure_station_id = ? AND t.arrival_station_id = ? AND t.departure_time <= ? AND t.arrival_time >= ?)
+                )
+            ");
+            
+            $stmt->execute([
+                $stationId, $arrivalTime, $departureTime,
+                $stationId, $arrivalTime, $departureTime,
+                $stationId, $stationId, $departureTime, $arrivalTime
+            ]);
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($result['conflicts'] == 0) {
+                return $track;
+            }
+        }
+        
+        return null; // No available tracks
     }
 }
 

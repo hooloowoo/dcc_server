@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Time Clock - DCC Layout Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2c2c2c;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .back-link {
+            color: #3498db;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .clock-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .analog-clock {
+            width: 300px;
+            height: 300px;
+            border: 8px solid #2c2c2c;
+            border-radius: 50%;
+            background: #f8f8f8;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .clock-face {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .clock-number {
+            position: absolute;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            transform: translate(-50%, -50%);
+        }
+
+        .clock-number.n12 { top: 12px; left: 50%; }
+        .clock-number.n1 { top: 25px; right: 25px; }
+        .clock-number.n2 { top: 45px; right: 12px; }
+        .clock-number.n3 { top: 50%; right: 8px; }
+        .clock-number.n4 { bottom: 45px; right: 12px; }
+        .clock-number.n5 { bottom: 25px; right: 25px; }
+        .clock-number.n6 { bottom: 12px; left: 50%; }
+        .clock-number.n7 { bottom: 25px; left: 25px; }
+        .clock-number.n8 { bottom: 45px; left: 12px; }
+        .clock-number.n9 { top: 50%; left: 8px; }
+        .clock-number.n10 { top: 45px; left: 12px; }
+        .clock-number.n11 { top: 25px; left: 25px; }
+
+        .clock-hand {
+            position: absolute;
+            background: #333;
+            border-radius: 4px;
+            transform-origin: bottom center;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .hour-hand {
+            width: 6px;
+            height: 80px;
+            top: 70px;
+            left: 50%;
+            margin-left: -3px;
+            z-index: 3;
+        }
+
+        .minute-hand {
+            width: 4px;
+            height: 110px;
+            top: 40px;
+            left: 50%;
+            margin-left: -2px;
+            z-index: 2;
+        }
+
+        .second-hand {
+            width: 2px;
+            height: 120px;
+            top: 30px;
+            left: 50%;
+            margin-left: -1px;
+            background: #e74c3c;
+            z-index: 4;
+        }
+
+        .center-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #333;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+        }
+
+        .digital-time {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #e0e0e0;
+            text-align: center;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .time-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .info-card {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .info-card h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .info-card .value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .status-running {
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+
+        .status-stopped {
+            background: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .controls {
+            background: #2c2c2c;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .analog-clock {
+                width: 250px;
+                height: 250px;
+            }
+
+            .digital-time {
+                font-size: 2rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Model Time Clock</h1>
+        <div class="header-controls">
+            <a href="model_time_control.html" class="back-link">⚙️ Settings</a>
+            <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="clock-container">
+            <div class="analog-clock">
+                <div class="clock-face">
+                    <div class="clock-number n12">12</div>
+                    <div class="clock-number n1">1</div>
+                    <div class="clock-number n2">2</div>
+                    <div class="clock-number n3">3</div>
+                    <div class="clock-number n4">4</div>
+                    <div class="clock-number n5">5</div>
+                    <div class="clock-number n6">6</div>
+                    <div class="clock-number n7">7</div>
+                    <div class="clock-number n8">8</div>
+                    <div class="clock-number n9">9</div>
+                    <div class="clock-number n10">10</div>
+                    <div class="clock-number n11">11</div>
+                    
+                    <div class="clock-hand hour-hand" id="hourHand"></div>
+                    <div class="clock-hand minute-hand" id="minuteHand"></div>
+                    <div class="clock-hand second-hand" id="secondHand"></div>
+                    <div class="center-dot"></div>
+                </div>
+            </div>
+
+            <div class="digital-time" id="digitalTime">--:--:--</div>
+        </div>
+
+        <div class="time-info">
+            <div class="info-card">
+                <h3>Current Model Time</h3>
+                <div class="value" id="modelTime12h">--:-- --</div>
+            </div>
+            <div class="info-card">
+                <h3>Time Multiplier</h3>
+                <div class="value" id="timeMultiplier">--x</div>
+            </div>
+            <div class="info-card">
+                <h3>Status</h3>
+                <div class="value" id="timeStatus">
+                    <span id="statusText">--</span>
+                    <span class="status-indicator" id="statusIndicator"></span>
+                </div>
+            </div>
+            <div class="info-card">
+                <h3>Start Time</h3>
+                <div class="value" id="startTime">--:--</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-success" id="startBtn" onclick="toggleTime()">▶️ Start</button>
+            <button class="btn btn-danger" id="stopBtn" onclick="toggleTime()" style="display: none;">⏸️ Stop</button>
+            <button class="btn btn-secondary" onclick="resetTime()">🔄 Reset</button>
+            <button class="btn" onclick="window.open('model_time_control.html', '_blank')">⚙️ Configure</button>
+        </div>
+
+        <div id="errorMessage"></div>
+    </div>
+
+    <script>
+        let currentConfig = null;
+        let updateInterval = null;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadModelTime();
+            startUpdateLoop();
+        });
+
+        // API fetch wrapper
+        async function apiFetch(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    credentials: 'include',
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('API fetch error:', error);
+                throw error;
+            }
+        }
+
+        // Load current model time and configuration
+        async function loadModelTime() {
+            try {
+                const response = await apiFetch('model_time_api.php?action=get_current_time');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    updateDisplay(result.data);
+                } else {
+                    throw new Error(result.error || 'Failed to load model time');
+                }
+            } catch (error) {
+                console.error('Error loading model time:', error);
+                showError('Error loading model time: ' + error.message);
+            }
+        }
+
+        // Update all display elements
+        function updateDisplay(data) {
+            currentConfig = data;
+
+            // Update digital time display
+            const digitalTime = document.getElementById('digitalTime');
+            digitalTime.textContent = data.model_time_24h;
+
+            // Update analog clock
+            updateAnalogClock(data.current_model_time);
+
+            // Update info cards
+            document.getElementById('modelTime12h').textContent = data.model_time_12h;
+            document.getElementById('timeMultiplier').textContent = data.time_multiplier + 'x';
+            document.getElementById('startTime').textContent = data.start_time.substring(0, 5); // Remove seconds
+
+            // Update status
+            const statusText = document.getElementById('statusText');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+
+            if (data.is_running) {
+                statusText.textContent = 'Running';
+                statusIndicator.className = 'status-indicator status-running';
+                startBtn.style.display = 'none';
+                stopBtn.style.display = 'inline-block';
+            } else {
+                statusText.textContent = 'Stopped';
+                statusIndicator.className = 'status-indicator status-stopped';
+                startBtn.style.display = 'inline-block';
+                stopBtn.style.display = 'none';
+            }
+        }
+
+        // Update analog clock hands
+        function updateAnalogClock(timeString) {
+            const [hours, minutes, seconds] = timeString.split(':').map(Number);
+
+            // Calculate angles (360 degrees = 12 hours for hour hand, 60 minutes/seconds for others)
+            const hourAngle = (hours % 12) * 30 + (minutes * 0.5); // 30 degrees per hour + minute adjustment
+            const minuteAngle = minutes * 6; // 6 degrees per minute
+            const secondAngle = seconds * 6; // 6 degrees per second
+
+            // Apply rotations
+            document.getElementById('hourHand').style.transform = `rotate(${hourAngle}deg)`;
+            document.getElementById('minuteHand').style.transform = `rotate(${minuteAngle}deg)`;
+            document.getElementById('secondHand').style.transform = `rotate(${secondAngle}deg)`;
+        }
+
+        // Start/stop time toggle
+        async function toggleTime() {
+            try {
+                const isRunning = currentConfig && currentConfig.is_running;
+                
+                const response = await apiFetch('model_time_api.php?action=start_stop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        is_running: !isRunning
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    loadModelTime(); // Refresh display
+                } else {
+                    throw new Error(result.error || 'Failed to toggle time');
+                }
+            } catch (error) {
+                console.error('Error toggling time:', error);
+                showError('Error: ' + error.message);
+            }
+        }
+
+        // Reset time
+        async function resetTime() {
+            if (!confirm('Are you sure you want to reset the model time?')) {
+                return;
+            }
+
+            try {
+                const response = await apiFetch('model_time_api.php?action=reset', {
+                    method: 'POST'
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    loadModelTime(); // Refresh display
+                } else {
+                    throw new Error(result.error || 'Failed to reset time');
+                }
+            } catch (error) {
+                console.error('Error resetting time:', error);
+                showError('Error: ' + error.message);
+            }
+        }
+
+        // Start update loop
+        function startUpdateLoop() {
+            // Update every second when running, every 5 seconds when stopped
+            updateInterval = setInterval(() => {
+                if (currentConfig && currentConfig.is_running) {
+                    loadModelTime();
+                }
+            }, 1000);
+
+            // Also check for config changes every 5 seconds
+            setInterval(() => {
+                if (!currentConfig || !currentConfig.is_running) {
+                    loadModelTime();
+                }
+            }, 5000);
+        }
+
+        // Show error message
+        function showError(message) {
+            const container = document.getElementById('errorMessage');
+            container.innerHTML = `<div class="error">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        // Handle page visibility change to pause/resume updates
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                if (updateInterval) {
+                    clearInterval(updateInterval);
+                }
+            } else {
+                loadModelTime();
+                startUpdateLoop();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dwell Time Configuration - DCC Railway System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+        }
+        .content-header {
+            background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
+            color: #2c3e50;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .config-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .config-card .card-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border: none;
+            border-radius: 8px;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            border: none;
+            border-radius: 8px;
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+        }
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        .station-row {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .station-row:hover {
+            background: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.html">
+                <i class="fas fa-train me-2"></i>DCC Railway System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">
+                            <i class="fas fa-home me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="trains.html">
+                            <i class="fas fa-subway me-2"></i>Trains
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dwell_time_config.html">
+                            <i class="fas fa-clock me-2"></i>Dwell Times
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <h1 class="display-6 mb-0">
+                <i class="fas fa-clock me-3"></i>Dwell Time Configuration
+            </h1>
+            <p class="lead mb-0">Configure default dwell times and station-specific settings</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Default Dwell Times -->
+            <div class="col-md-6">
+                <div class="card config-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cog me-2"></i>Default Dwell Times
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="defaultDwellForm">
+                            <div class="mb-3">
+                                <label for="defaultIntermediate" class="form-label">
+                                    <i class="fas fa-stop-circle me-2"></i>Intermediate Stations
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="defaultIntermediate" 
+                                           value="2" min="0" max="60" step="1">
+                                    <span class="input-group-text">minutes</span>
+                                </div>
+                                <small class="form-text text-muted">Default dwell time for intermediate stops</small>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="defaultTechnical" class="form-label">
+                                    <i class="fas fa-tools me-2"></i>Technical Stops
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="defaultTechnical" 
+                                           value="1" min="0" max="60" step="1">
+                                    <span class="input-group-text">minutes</span>
+                                </div>
+                                <small class="form-text text-muted">Default dwell time for technical stops</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="defaultOrigin" class="form-label">
+                                    <i class="fas fa-play-circle me-2"></i>Origin Stations
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="defaultOrigin" 
+                                           value="0" min="0" max="60" step="1">
+                                    <span class="input-group-text">minutes</span>
+                                </div>
+                                <small class="form-text text-muted">Default dwell time for origin stations</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="defaultDestination" class="form-label">
+                                    <i class="fas fa-flag-checkered me-2"></i>Destination Stations
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="defaultDestination" 
+                                           value="0" min="0" max="60" step="1">
+                                    <span class="input-group-text">minutes</span>
+                                </div>
+                                <small class="form-text text-muted">Default dwell time for destination stations</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Default Settings
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Station-Specific Overrides -->
+            <div class="col-md-6">
+                <div class="card config-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-map-marker-alt me-2"></i>Station-Specific Overrides
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="stationSearch" class="form-label">Search Stations</label>
+                            <input type="text" class="form-control" id="stationSearch" 
+                                   placeholder="Type station name or ID...">
+                        </div>
+                        
+                        <div id="stationList" class="mb-3">
+                            <!-- Station list will be populated here -->
+                        </div>
+
+                        <button type="button" class="btn btn-success" onclick="saveStationOverrides()">
+                            <i class="fas fa-save me-2"></i>Save Station Overrides
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Train Schedules -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card config-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list me-2"></i>Update Existing Schedules
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Apply new dwell time settings to existing train schedules:</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-warning me-2" onclick="updateAllSchedules()">
+                                    <i class="fas fa-sync-alt me-2"></i>Update All Schedules
+                                </button>
+                                <small class="form-text text-muted d-block mt-2">
+                                    This will update all existing schedules with new default dwell times
+                                </small>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="button" class="btn btn-info" onclick="showScheduleList()">
+                                    <i class="fas fa-eye me-2"></i>Preview Changes
+                                </button>
+                                <small class="form-text text-muted d-block mt-2">
+                                    Preview which schedules will be affected
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let stations = [];
+        let stationOverrides = {};
+
+        // Load initial configuration
+        async function loadConfiguration() {
+            try {
+                // Load default dwell times from API
+                const response = await fetch('dwell_time_api.php?action=get_defaults');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const defaults = data.defaults;
+                    document.getElementById('defaultIntermediate').value = defaults.intermediate || 2;
+                    document.getElementById('defaultTechnical').value = defaults.technical || 1;
+                    document.getElementById('defaultOrigin').value = defaults.origin || 0;
+                    document.getElementById('defaultDestination').value = defaults.destination || 0;
+                }
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+            }
+
+            // Load stations
+            await loadStations();
+            
+            // Load station overrides
+            await loadStationOverrides();
+        }
+
+        // Load stations list
+        async function loadStations() {
+            try {
+                const response = await fetch('stations_api.php?action=list');
+                const data = await response.json();
+                
+                if (data.success) {
+                    stations = data.stations;
+                    renderStationList();
+                }
+            } catch (error) {
+                console.error('Error loading stations:', error);
+            }
+        }
+
+        // Load station-specific overrides
+        async function loadStationOverrides() {
+            try {
+                const response = await fetch('dwell_time_api.php?action=get_overrides');
+                const data = await response.json();
+                
+                if (data.success) {
+                    stationOverrides = data.overrides || {};
+                    renderStationList();
+                }
+            } catch (error) {
+                console.error('Error loading station overrides:', error);
+            }
+        }
+
+        // Render station list with override inputs
+        function renderStationList() {
+            const container = document.getElementById('stationList');
+            const searchTerm = document.getElementById('stationSearch').value.toLowerCase();
+            
+            const filteredStations = stations.filter(station => 
+                station.station_name.toLowerCase().includes(searchTerm) ||
+                station.station_id.toLowerCase().includes(searchTerm)
+            );
+
+            container.innerHTML = filteredStations.map(station => `
+                <div class="station-row">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <strong>${station.station_name}</strong><br>
+                            <small class="text-muted">${station.station_id}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Intermediate Stops</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control" 
+                                       id="override_${station.station_id}_intermediate"
+                                       value="${stationOverrides[station.station_id]?.intermediate || ''}"
+                                       placeholder="Use default" min="0" max="60" step="1">
+                                <span class="input-group-text">min</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Technical Stops</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" class="form-control" 
+                                       id="override_${station.station_id}_technical"
+                                       value="${stationOverrides[station.station_id]?.technical || ''}"
+                                       placeholder="Use default" min="0" max="60" step="1">
+                                <span class="input-group-text">min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Save default dwell times
+        document.getElementById('defaultDwellForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const defaults = {
+                intermediate: parseInt(document.getElementById('defaultIntermediate').value),
+                technical: parseInt(document.getElementById('defaultTechnical').value),
+                origin: parseInt(document.getElementById('defaultOrigin').value),
+                destination: parseInt(document.getElementById('defaultDestination').value)
+            };
+
+            try {
+                const response = await fetch('dwell_time_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'save_defaults',
+                        defaults: defaults
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Default dwell times saved successfully!');
+                } else {
+                    alert('Error saving defaults: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error saving defaults:', error);
+                alert('Error saving defaults. Please try again.');
+            }
+        });
+
+        // Save station overrides
+        async function saveStationOverrides() {
+            const overrides = {};
+            
+            stations.forEach(station => {
+                const intermediateEl = document.getElementById(`override_${station.station_id}_intermediate`);
+                const technicalEl = document.getElementById(`override_${station.station_id}_technical`);
+                
+                if (intermediateEl && intermediateEl.value) {
+                    if (!overrides[station.station_id]) overrides[station.station_id] = {};
+                    overrides[station.station_id].intermediate = parseInt(intermediateEl.value);
+                }
+                
+                if (technicalEl && technicalEl.value) {
+                    if (!overrides[station.station_id]) overrides[station.station_id] = {};
+                    overrides[station.station_id].technical = parseInt(technicalEl.value);
+                }
+            });
+
+            try {
+                const response = await fetch('dwell_time_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'save_overrides',
+                        overrides: overrides
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Station overrides saved successfully!');
+                    stationOverrides = overrides;
+                } else {
+                    alert('Error saving overrides: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error saving overrides:', error);
+                alert('Error saving overrides. Please try again.');
+            }
+        }
+
+        // Update all schedules
+        async function updateAllSchedules() {
+            if (!confirm('This will update all existing train schedules with the new dwell time settings. Continue?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('dwell_time_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'update_all_schedules'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert(`Successfully updated ${data.updated_count} schedule stops!`);
+                } else {
+                    alert('Error updating schedules: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error updating schedules:', error);
+                alert('Error updating schedules. Please try again.');
+            }
+        }
+
+        // Show schedule preview
+        async function showScheduleList() {
+            try {
+                const response = await fetch('dwell_time_api.php?action=preview_changes');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const schedules = data.schedules;
+                    const message = `The following ${schedules.length} schedules will be updated:\n\n` +
+                        schedules.map(s => `• ${s.train_number} (${s.train_name}): ${s.stop_count} stops`).join('\n');
+                    alert(message);
+                } else {
+                    alert('Error loading schedule preview: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error loading preview:', error);
+                alert('Error loading preview. Please try again.');
+            }
+        }
+
+        // Search functionality
+        document.getElementById('stationSearch').addEventListener('input', () => {
+            renderStationList();
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadConfiguration);
+    </script>
+</body>
+</html>

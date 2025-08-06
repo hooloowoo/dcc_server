@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Station Tracks - DCC Layout Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: rgb(32, 32, 40);
+            margin: 0;
+            padding: 0;
+            color: #e0e0e0;
+        }
+
+        .user-header {
+            background: rgb(26, 26, 32);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .role-admin { background: #e74c3c; }
+        .role-operator { background: #f39c12; }
+        .role-viewer { background: #95a5a6; }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            color: #e0e0e0;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: #b0b0b0;
+            font-size: 1.1em;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgb(40, 40, 48);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            color: #b0b0b0;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: rgb(40, 40, 48);
+            color: #e0e0e0;
+            font-size: 14px;
+            width: 300px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: rgb(40, 40, 48);
+            color: #e0e0e0;
+            font-size: 14px;
+            min-width: 150px;
+        }
+
+        .data-table {
+            background: rgb(40, 40, 48);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table th {
+            background: rgb(32, 32, 40);
+            color: #e0e0e0;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .data-table td {
+            color: #e0e0e0;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .track-type {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .type-platform { background: rgba(52, 152, 219, 0.2); color: #5dade2; }
+        .type-through { background: rgba(46, 204, 113, 0.2); color: #58d68d; }
+        .type-siding { background: rgba(155, 89, 182, 0.2); color: #bb8fce; }
+        .type-freight { background: rgba(230, 126, 34, 0.2); color: #f0b27a; }
+        .type-maintenance { background: rgba(231, 76, 60, 0.2); color: #ec7063; }
+        .type-storage { background: rgba(149, 165, 166, 0.2); color: #aab7b8; }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-active { background: rgba(39, 174, 96, 0.2); color: #58d68d; }
+        .status-inactive { background: rgba(231, 76, 60, 0.2); color: #ec7063; }
+
+        .boolean-badge {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .boolean-yes { background: rgba(39, 174, 96, 0.2); color: #58d68d; }
+        .boolean-no { background: rgba(231, 76, 60, 0.2); color: #ec7063; }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .metric {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background: rgb(40, 40, 48);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #e0e0e0;
+        }
+
+        .close {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: rgb(32, 32, 40);
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(231, 76, 60, 0.5);
+            color: #ec7063;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .success-message {
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid rgba(39, 174, 96, 0.5);
+            color: #58d68d;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #b0b0b0;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            color: #b0b0b0;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .info-card {
+            background: rgb(40, 40, 48);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-card h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .info-card p {
+            color: #b0b0b0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-header">
+        <div class="user-info">
+            <span class="user-name" id="userName">Loading...</span>
+            <span class="user-role" id="userRole"></span>
+        </div>
+        <button class="logout-btn">Logout</button>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <div class="page-title">
+                    <h1>Station Tracks</h1>
+                    <div class="page-subtitle">Manage tracks within stations and their accessibility</div>
+                </div>
+                <div class="nav-controls">
+                    <a href="station_connections.html" class="btn btn-secondary">← Station Connections</a>
+                    <a href="stations.html" class="btn btn-secondary">Stations</a>
+                    <a href="dashboard.html" class="btn btn-primary">Dashboard</a>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <h3>Station Track Management</h3>
+                <p>Configure tracks within each station and define which tracks are accessible from neighboring stations. 
+                Each track can have different types (platform, through, siding, freight, maintenance, storage) and specific 
+                accessibility rules that determine which neighboring stations can route trains to which tracks.</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('tracks')">Station Tracks</button>
+                <button class="tab" onclick="switchTab('accessibility')">Track Accessibility</button>
+                <button class="tab" onclick="switchTab('routing')">Route Planning</button>
+            </div>
+
+            <!-- Tracks Tab -->
+            <div id="tracksTab" class="tab-content active">
+                <div class="controls-bar">
+                    <div class="search-controls">
+                        <input type="text" id="tracksSearchInput" class="search-input" placeholder="Search tracks..." 
+                               onkeyup="handleTracksSearch()">
+                        <select id="stationFilter" class="filter-select" onchange="handleTracksSearch()">
+                            <option value="">All Stations</option>
+                        </select>
+                        <select id="typeFilter" class="filter-select" onchange="handleTracksSearch()">
+                            <option value="">All Track Types</option>
+                            <option value="platform">Platform</option>
+                            <option value="through">Through</option>
+                            <option value="siding">Siding</option>
+                            <option value="freight">Freight</option>
+                            <option value="maintenance">Maintenance</option>
+                            <option value="storage">Storage</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="clearTracksSearch()">Clear</button>
+                        <button class="btn btn-secondary" onclick="refreshTracks()">🔄 Refresh</button>
+                    </div>
+                    <button id="addTrackBtn" class="btn btn-success" onclick="openAddTrackModal()" style="display: none;">
+                        + Add Track
+                    </button>
+                </div>
+
+                <div id="tracksErrorMessage"></div>
+                <div id="tracksSuccessMessage"></div>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Station</th>
+                                <th>Track</th>
+                                <th>Type</th>
+                                <th>Length</th>
+                                <th>Electrified</th>
+                                <th>Max Train</th>
+                                <th>Platform Height</th>
+                                <th>Access Rules</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tracksTableBody">
+                            <tr><td colspan="10" class="loading">Loading tracks...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Accessibility Tab -->
+            <div id="accessibilityTab" class="tab-content">
+                <div class="controls-bar">
+                    <div class="search-controls">
+                        <select id="accessStationFilter" class="filter-select" onchange="handleAccessibilitySearch()">
+                            <option value="">All Stations</option>
+                        </select>
+                        <select id="accessFromFilter" class="filter-select" onchange="handleAccessibilitySearch()">
+                            <option value="">All From Stations</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="clearAccessibilitySearch()">Clear</button>
+                        <button class="btn btn-secondary" onclick="refreshAccessibility()">🔄 Refresh</button>
+                    </div>
+                    <button id="addAccessibilityBtn" class="btn btn-success" onclick="openAddAccessibilityModal()" style="display: none;">
+                        + Add Accessibility Rule
+                    </button>
+                </div>
+
+                <div id="accessibilityErrorMessage"></div>
+                <div id="accessibilitySuccessMessage"></div>
+
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Station</th>
+                                <th>Track</th>
+                                <th>From Station</th>
+                                <th>Accessible</th>
+                                <th>Default Route</th>
+                                <th>Speed Limit</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accessibilityTableBody">
+                            <tr><td colspan="8" class="loading">Loading accessibility rules...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Routing Tab -->
+            <div id="routingTab" class="tab-content">
+                <div class="controls-bar">
+                    <div class="search-controls">
+                        <select id="routeFromStation" class="filter-select">
+                            <option value="">Select From Station</option>
+                        </select>
+                        <select id="routeToStation" class="filter-select">
+                            <option value="">Select To Station</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="findAvailableTracks()">Find Available Tracks</button>
+                    </div>
+                </div>
+
+                <div id="routingErrorMessage"></div>
+                <div id="routingSuccessMessage"></div>
+
+                <div id="routingResults" class="data-table" style="display: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Track Number</th>
+                                <th>Track Name</th>
+                                <th>Track Type</th>
+                                <th>Default Route</th>
+                                <th>Speed Limit</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="routingTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Track Modal -->
+    <div id="trackModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="trackModalTitle">Add Track</h2>
+                <span class="close" onclick="closeTrackModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="trackModalErrorMessage"></div>
+                
+                <form id="trackForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="trackStationId">Station</label>
+                            <select id="trackStationId" name="station_id" required>
+                                <option value="">Select station...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="trackNumber">Track Number</label>
+                            <input type="text" id="trackNumber" name="track_number" required maxlength="8" 
+                                   placeholder="e.g., 1, 2A, PLAT1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trackName">Track Name</label>
+                        <input type="text" id="trackName" name="track_name" required maxlength="100" 
+                               placeholder="e.g., Platform 1, Through Track">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="trackType">Track Type</label>
+                            <select id="trackType" name="track_type">
+                                <option value="platform">Platform</option>
+                                <option value="through">Through</option>
+                                <option value="siding">Siding</option>
+                                <option value="freight">Freight</option>
+                                <option value="maintenance">Maintenance</option>
+                                <option value="storage">Storage</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="trackLengthMeters">Track Length (meters)</label>
+                            <input type="number" id="trackLengthMeters" name="max_length_meters" 
+                                   step="0.1" min="0" placeholder="e.g., 200.0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="maxTrainLengthMeters">Max Train Length (meters)</label>
+                            <input type="number" id="maxTrainLengthMeters" name="max_train_length_meters" 
+                                   step="0.1" min="0" placeholder="e.g., 150.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="platformHeightMm">Platform Height (mm)</label>
+                            <input type="number" id="platformHeightMm" name="platform_height_mm" 
+                                   min="0" placeholder="e.g., 760">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="electrified" name="is_electrified" checked>
+                                <label for="electrified">Electrified</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="trackIsActive" name="is_active" checked>
+                                <label for="trackIsActive">Active</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="autoAccessibility" name="auto_accessibility" checked>
+                                <label for="autoAccessibility">Auto-create accessibility rules</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trackNotes">Notes</label>
+                        <textarea id="trackNotes" name="notes" placeholder="Additional notes about this track..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeTrackModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveTrack()" id="saveTrackBtn">Save Track</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility Modal -->
+    <div id="accessibilityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="accessibilityModalTitle">Add Accessibility Rule</h2>
+                <span class="close" onclick="closeAccessibilityModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="accessibilityModalErrorMessage"></div>
+                
+                <form id="accessibilityForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="accessStationId">Station</label>
+                            <select id="accessStationId" name="station_id" required onchange="loadTracksForStation()">
+                                <option value="">Select station...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="accessTrackId">Track</label>
+                            <select id="accessTrackId" name="track_id" required>
+                                <option value="">Select track...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="accessFromStationId">From Station</label>
+                            <select id="accessFromStationId" name="from_station_id" required>
+                                <option value="">Select from station...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="accessSpeedLimit">Speed Limit (km/h)</label>
+                            <input type="number" id="accessSpeedLimit" name="speed_limit_kmh" 
+                                   min="1" max="200" value="50" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="accessIsAccessible" name="is_accessible" checked>
+                                <label for="accessIsAccessible">Accessible</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="accessDefaultRoute" name="default_route">
+                                <label for="accessDefaultRoute">Default Route</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accessRouteNotes">Route Notes</label>
+                        <textarea id="accessRouteNotes" name="route_notes" placeholder="Notes about this routing option..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAccessibilityModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveAccessibility()" id="saveAccessibilityBtn">Save Rule</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let tracks = [];
+        let accessibility = [];
+        let stations = [];
+        let editingTrackId = null;
+        let editingAccessibilityId = null;
+        let currentTab = 'tracks';
+
+        // Check authentication on page load
+        async function checkAuth() {
+            try {
+                const response = await fetch('auth_api.php?action=validate');
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.valid) {
+                    const profileResponse = await fetch('auth_api.php?action=profile');
+                    const profileResult = await profileResponse.json();
+                    
+                    if (profileResult.status === 'success') {
+                        currentUser = profileResult.data;
+                        updateUserHeader();
+                        return true;
+                    }
+                }
+                
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            }
+        }
+
+        function updateUserHeader() {
+            const userNameElement = document.getElementById('userName');
+            const userRoleElement = document.getElementById('userRole');
+            const logoutBtn = document.querySelector('.logout-btn');
+            const addTrackBtn = document.getElementById('addTrackBtn');
+            const addAccessibilityBtn = document.getElementById('addAccessibilityBtn');
+            
+            if (currentUser) {
+                const userName = currentUser.first_name && currentUser.last_name 
+                    ? `${currentUser.first_name} ${currentUser.last_name}` 
+                    : currentUser.username;
+                userNameElement.textContent = userName;
+                
+                userRoleElement.textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                userRoleElement.className = `user-role role-${currentUser.role}`;
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Logout';
+                logoutBtn.onclick = logout;
+                
+                if (currentUser.role === 'admin' || currentUser.role === 'operator') {
+                    addTrackBtn.style.display = 'block';
+                    addAccessibilityBtn.style.display = 'block';
+                } else {
+                    addTrackBtn.style.display = 'none';
+                    addAccessibilityBtn.style.display = 'none';
+                }
+            } else {
+                userNameElement.textContent = 'Guest User';
+                userRoleElement.textContent = 'View Only';
+                userRoleElement.className = 'user-role role-viewer';
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Login';
+                logoutBtn.onclick = () => window.location.href = 'login.html';
+                
+                addTrackBtn.style.display = 'none';
+                addAccessibilityBtn.style.display = 'none';
+            }
+            
+            renderTracksTable();
+            renderAccessibilityTable();
+        }
+
+        async function logout() {
+            try {
+                await fetch('auth_api.php?action=logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function requireAuth(action = 'perform this action') {
+            if (!currentUser) {
+                alert(`Please login to ${action}. Click "Login" in the top right corner.`);
+                return false;
+            }
+            if (currentUser.role !== 'admin' && currentUser.role !== 'operator') {
+                alert('You do not have permission to edit. Only administrators and operators can make changes.');
+                return false;
+            }
+            return true;
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            // Activate selected tab
+            document.querySelector(`.tab:nth-child(${tabName === 'tracks' ? '1' : tabName === 'accessibility' ? '2' : '3'})`).classList.add('active');
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            
+            currentTab = tabName;
+            
+            // Load data for the active tab
+            if (tabName === 'tracks') {
+                loadTracks();
+            } else if (tabName === 'accessibility') {
+                loadAccessibility();
+            } else if (tabName === 'routing') {
+                // Routing tab doesn't auto-load data
+            }
+        }
+
+        async function loadStations() {
+            try {
+                const response = await fetch('stations_api.php');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    stations = result.data || [];
+                    populateStationSelects();
+                } else {
+                    console.error('Failed to load stations:', result.error);
+                }
+            } catch (error) {
+                console.error('Error loading stations:', error);
+            }
+        }
+
+        function populateStationSelects() {
+            const selects = [
+                'stationFilter', 'trackStationId', 'accessStationFilter', 'accessFromFilter',
+                'accessStationId', 'accessFromStationId', 'routeFromStation', 'routeToStation'
+            ];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                
+                // Clear existing options except the first
+                const firstOption = select.firstElementChild;
+                select.innerHTML = '';
+                if (firstOption) select.appendChild(firstOption);
+                
+                stations.forEach(station => {
+                    const option = new Option(`${station.name} (${station.id})`, station.id);
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        async function loadTracks() {
+            try {
+                const search = document.getElementById('tracksSearchInput').value;
+                const stationFilter = document.getElementById('stationFilter').value;
+                const typeFilter = document.getElementById('typeFilter').value;
+                
+                let url = 'station_tracks_api.php?';
+                const params = new URLSearchParams();
+                if (search) params.append('search', search);
+                if (stationFilter) params.append('station_id', stationFilter);
+                
+                // Add cache busting parameter to ensure fresh data
+                params.append('_t', Date.now());
+                
+                const response = await fetch('station_tracks_api.php?' + params.toString());
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    tracks = result.data || [];
+                    
+                    // Debug: log the first track to see if electrified status is updated
+                    if (tracks.length > 0) {
+                        console.log('Reloaded tracks - first track electrified status:', tracks[0].electrified);
+                    }
+                    
+                    // Apply client-side type filter
+                    if (typeFilter) {
+                        tracks = tracks.filter(track => track.track_type === typeFilter);
+                    }
+                    
+                    renderTracksTable();
+                } else {
+                    showTracksError('Failed to load tracks: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error loading tracks:', error);
+                showTracksError('Error loading tracks: ' + error.message);
+            }
+        }
+
+        function renderTracksTable() {
+            const tbody = document.getElementById('tracksTableBody');
+            
+            if (tracks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="no-data">No tracks found</td></tr>';
+                return;
+            }
+            
+            const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.role === 'operator');
+            
+            tbody.innerHTML = tracks.map(track => `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(track.station_name)}</strong><br>
+                        <small>${track.station_id}</small>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(track.track_number)}</strong><br>
+                        <small>${escapeHtml(track.track_name)}</small>
+                    </td>
+                    <td><span class="track-type type-${track.track_type}">${track.track_type}</span></td>
+                    <td class="metric">${track.max_length_meters ? track.max_length_meters + 'm' : '-'}</td>
+                    <td><span class="boolean-badge boolean-${track.electrified ? 'yes' : 'no'}">${track.electrified ? 'Yes' : 'No'}</span></td>
+                    <td class="metric">${track.max_train_length_meters ? track.max_train_length_meters + 'm' : '-'}</td>
+                    <td class="metric">${track.platform_height_mm ? track.platform_height_mm + 'mm' : '-'}</td>
+                    <td class="metric">${track.accessible_from_count}/${track.total_access_rules}</td>
+                    <td><span class="status-badge status-${track.track_active ? 'active' : 'inactive'}">${track.track_active ? 'Active' : 'Inactive'}</span></td>
+                    <td>
+                        <div class="actions">
+                            ${canEdit ? `
+                                <button class="btn btn-primary btn-small" onclick="editTrack(${track.track_id})">Edit</button>
+                                <button class="btn btn-danger btn-small" onclick="deleteTrack(${track.track_id}, '${escapeHtml(track.track_number)}', '${escapeHtml(track.track_name)}')">Delete</button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadAccessibility() {
+            try {
+                const stationFilter = document.getElementById('accessStationFilter').value;
+                const fromFilter = document.getElementById('accessFromFilter').value;
+                
+                const params = new URLSearchParams({ action: 'accessibility' });
+                if (stationFilter) params.append('station_id', stationFilter);
+                if (fromFilter) params.append('from_station_id', fromFilter);
+                
+                const response = await fetch('station_tracks_api.php?' + params.toString());
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    accessibility = result.data || [];
+                    renderAccessibilityTable();
+                } else {
+                    showAccessibilityError('Failed to load accessibility rules: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error loading accessibility:', error);
+                showAccessibilityError('Error loading accessibility: ' + error.message);
+            }
+        }
+
+        function renderAccessibilityTable() {
+            const tbody = document.getElementById('accessibilityTableBody');
+            
+            if (accessibility.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No accessibility rules found</td></tr>';
+                return;
+            }
+            
+            const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.role === 'operator');
+            
+            tbody.innerHTML = accessibility.map(rule => `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(rule.station_name)}</strong><br>
+                        <small>${rule.station_id}</small>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(rule.track_number)}</strong><br>
+                        <small>${escapeHtml(rule.track_name)}</small><br>
+                        <span class="track-type type-${rule.track_type}">${rule.track_type}</span>
+                    </td>
+                    <td>
+                        <strong>${escapeHtml(rule.from_station_name)}</strong><br>
+                        <small>${rule.from_station_id}</small>
+                    </td>
+                    <td><span class="boolean-badge boolean-${rule.is_accessible ? 'yes' : 'no'}">${rule.is_accessible ? 'Yes' : 'No'}</span></td>
+                    <td><span class="boolean-badge boolean-${rule.default_route ? 'yes' : 'no'}">${rule.default_route ? 'Yes' : 'No'}</span></td>
+                    <td class="metric">${rule.speed_limit_kmh} km/h</td>
+                    <td><small>${escapeHtml(rule.route_notes || '-')}</small></td>
+                    <td>
+                        <div class="actions">
+                            ${canEdit ? `
+                                <button class="btn btn-primary btn-small" onclick="editAccessibility(${rule.accessibility_id})">Edit</button>
+                                <button class="btn btn-danger btn-small" onclick="deleteAccessibility(${rule.accessibility_id}, '${escapeHtml(rule.track_number)}', '${escapeHtml(rule.from_station_name)}')">Delete</button>
+                            ` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function findAvailableTracks() {
+            const fromStation = document.getElementById('routeFromStation').value;
+            const toStation = document.getElementById('routeToStation').value;
+            
+            if (!fromStation || !toStation) {
+                showRoutingError('Please select both from and to stations');
+                return;
+            }
+            
+            if (fromStation === toStation) {
+                showRoutingError('From and to stations cannot be the same');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`station_tracks_api.php?action=available&from_station=${fromStation}&to_station=${toStation}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    renderRoutingResults(result.data);
+                } else {
+                    showRoutingError('Failed to find available tracks: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error finding available tracks:', error);
+                showRoutingError('Error finding available tracks: ' + error.message);
+            }
+        }
+
+        function renderRoutingResults(tracks) {
+            const resultsDiv = document.getElementById('routingResults');
+            const tbody = document.getElementById('routingTableBody');
+            
+            if (tracks.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-data">No accessible tracks found for this route</td></tr>';
+            } else {
+                tbody.innerHTML = tracks.map(track => `
+                    <tr>
+                        <td><strong>${escapeHtml(track.track_number)}</strong></td>
+                        <td>${escapeHtml(track.track_name)}</td>
+                        <td><span class="track-type type-${track.track_type}">${track.track_type}</span></td>
+                        <td><span class="boolean-badge boolean-${track.default_route ? 'yes' : 'no'}">${track.default_route ? 'Yes' : 'No'}</span></td>
+                        <td class="metric">${track.access_speed_limit} km/h</td>
+                        <td><small>${escapeHtml(track.route_notes || '-')}</small></td>
+                    </tr>
+                `).join('');
+            }
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        // Modal functions
+        function openAddTrackModal() {
+            if (!requireAuth('add tracks')) return;
+            
+            editingTrackId = null;
+            document.getElementById('trackModalTitle').textContent = 'Add Track';
+            document.getElementById('trackForm').reset();
+            document.getElementById('electrified').checked = true;
+            document.getElementById('trackIsActive').checked = true;
+            document.getElementById('autoAccessibility').checked = true;
+            document.getElementById('trackType').value = 'platform';
+            document.getElementById('saveTrackBtn').textContent = 'Save Track';
+            clearTrackModalError();
+            
+            // Pre-select station if one is currently filtered
+            const currentStationFilter = document.getElementById('stationFilter').value;
+            if (currentStationFilter) {
+                document.getElementById('trackStationId').value = currentStationFilter;
+            }
+            
+            document.getElementById('trackModal').style.display = 'block';
+        }
+
+        function closeTrackModal() {
+            document.getElementById('trackModal').style.display = 'none';
+        }
+
+        async function editTrack(trackId) {
+            if (!requireAuth('edit tracks')) return;
+            
+            try {
+                const response = await fetch(`station_tracks_api.php?track_id=${trackId}`);
+                const data = await response.json();
+                
+                if (data.status !== 'success') {
+                    showTracksError('Failed to load track data: ' + (data.error || 'Unknown error'));
+                    return;
+                }
+                
+                const track = data.data;
+                
+                // Debug logging
+                console.log('Track data received:', track);
+                console.log('Electrified field:', track.electrified, 'Type:', typeof track.electrified);
+                console.log('Active field:', track.track_active, 'Type:', typeof track.track_active);
+                console.log('Is_active field:', track.is_active, 'Type:', typeof track.is_active);
+                
+                // Set editing mode
+                editingTrackId = trackId;
+                document.getElementById('trackModalTitle').textContent = 'Edit Track';
+                document.getElementById('saveTrackBtn').textContent = 'Update Track';
+                
+                // Populate form fields
+                document.getElementById('trackStationId').value = track.station_id;
+                document.getElementById('trackNumber').value = track.track_number || '';
+                document.getElementById('trackName').value = track.track_name || '';
+                document.getElementById('trackType').value = track.track_type || 'platform';
+                // Helper function to parse boolean values from database
+                function parseBooleanValue(value) {
+                    return value === 1 || value === true || value === '1' || value === 'true';
+                }
+                
+                console.log('Raw electrified value:', track.electrified, 'Type:', typeof track.electrified);
+                console.log('Parsed electrified value:', parseBooleanValue(track.electrified));
+                
+                document.getElementById('trackLengthMeters').value = track.max_length_meters || '';
+                document.getElementById('maxTrainLengthMeters').value = track.max_train_length_meters || '';
+                document.getElementById('platformHeightMm').value = track.platform_height_mm || '';
+                document.getElementById('electrified').checked = parseBooleanValue(track.electrified);
+                document.getElementById('trackIsActive').checked = parseBooleanValue(track.track_active) || parseBooleanValue(track.is_active);
+                document.getElementById('autoAccessibility').checked = false; // Not relevant for editing
+                document.getElementById('trackNotes').value = track.notes || '';
+                
+                clearTrackModalError();
+                document.getElementById('trackModal').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading track:', error);
+                showTracksError('Failed to load track data');
+            }
+        }
+
+        function openAddAccessibilityModal() {
+            if (!requireAuth('add accessibility rules')) return;
+            
+            editingAccessibilityId = null;
+            document.getElementById('accessibilityModalTitle').textContent = 'Add Accessibility Rule';
+            document.getElementById('accessibilityForm').reset();
+            document.getElementById('accessIsAccessible').checked = true;
+            document.getElementById('accessSpeedLimit').value = 50;
+            document.getElementById('saveAccessibilityBtn').textContent = 'Save Rule';
+            clearAccessibilityModalError();
+            document.getElementById('accessibilityModal').style.display = 'block';
+        }
+
+        function closeAccessibilityModal() {
+            document.getElementById('accessibilityModal').style.display = 'none';
+        }
+
+        async function loadTracksForStation() {
+            const stationId = document.getElementById('accessStationId').value;
+            const trackSelect = document.getElementById('accessTrackId');
+            
+            trackSelect.innerHTML = '<option value="">Select track...</option>';
+            
+            if (!stationId) return;
+            
+            try {
+                const response = await fetch(`station_tracks_api.php?station_id=${stationId}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    result.data.forEach(track => {
+                        const option = new Option(`${track.track_number} - ${track.track_name}`, track.track_id);
+                        trackSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading tracks for station:', error);
+            }
+        }
+
+        async function saveTrack() {
+            if (!requireAuth('save tracks')) return;
+            
+            try {
+                const formData = new FormData(document.getElementById('trackForm'));
+                const data = Object.fromEntries(formData.entries());
+                
+                // Convert checkbox values explicitly (checkboxes don't appear in FormData when unchecked)
+                data.is_electrified = document.getElementById('electrified').checked;
+                data.is_active = document.getElementById('trackIsActive').checked;
+                data.auto_accessibility = document.getElementById('autoAccessibility').checked;
+                
+                // Debug logging
+                console.log('Save track data before sending:', data);
+                console.log('Electrified checkbox state:', document.getElementById('electrified').checked);
+                console.log('Active checkbox state:', document.getElementById('trackIsActive').checked);
+                
+                // Convert numeric values
+                if (data.max_length_meters) data.max_length_meters = parseFloat(data.max_length_meters);
+                if (data.max_train_length_meters) data.max_train_length_meters = parseFloat(data.max_train_length_meters);
+                if (data.platform_height_mm) data.platform_height_mm = parseInt(data.platform_height_mm);
+                
+                const url = editingTrackId 
+                    ? `station_tracks_api.php?track_id=${editingTrackId}`
+                    : 'station_tracks_api.php';
+                const method = editingTrackId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showTracksSuccess(result.message || 'Track saved successfully');
+                    closeTrackModal();
+                    loadTracks();
+                } else {
+                    showTrackModalError(result.error);
+                }
+            } catch (error) {
+                console.error('Error saving track:', error);
+                showTrackModalError('Error saving track: ' + error.message);
+            }
+        }
+
+        async function saveAccessibility() {
+            if (!requireAuth('save accessibility rules')) return;
+            
+            try {
+                const formData = new FormData(document.getElementById('accessibilityForm'));
+                const data = Object.fromEntries(formData.entries());
+                
+                // Convert checkbox values
+                data.is_accessible = document.getElementById('accessIsAccessible').checked;
+                data.default_route = document.getElementById('accessDefaultRoute').checked;
+                
+                // Convert numeric values
+                data.track_id = parseInt(data.track_id);
+                data.speed_limit_kmh = parseInt(data.speed_limit_kmh);
+                
+                const url = editingAccessibilityId 
+                    ? `station_tracks_api.php?action=accessibility&accessibility_id=${editingAccessibilityId}`
+                    : 'station_tracks_api.php?action=accessibility';
+                const method = editingAccessibilityId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showAccessibilitySuccess(result.message || 'Accessibility rule saved successfully');
+                    closeAccessibilityModal();
+                    loadAccessibility();
+                } else {
+                    showAccessibilityModalError(result.error);
+                }
+            } catch (error) {
+                console.error('Error saving accessibility rule:', error);
+                showAccessibilityModalError('Error saving accessibility rule: ' + error.message);
+            }
+        }
+
+        // Search functions
+        function handleTracksSearch() {
+            loadTracks();
+        }
+
+        function clearTracksSearch() {
+            document.getElementById('tracksSearchInput').value = '';
+            document.getElementById('stationFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            loadTracks();
+        }
+
+        function refreshTracks() {
+            loadTracks();
+        }
+
+        function handleAccessibilitySearch() {
+            loadAccessibility();
+        }
+
+        function clearAccessibilitySearch() {
+            document.getElementById('accessStationFilter').value = '';
+            document.getElementById('accessFromFilter').value = '';
+            loadAccessibility();
+        }
+
+        function refreshAccessibility() {
+            loadAccessibility();
+        }
+
+        // Message functions
+        function showTracksError(message) {
+            const errorDiv = document.getElementById('tracksErrorMessage');
+            errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+            setTimeout(() => { errorDiv.innerHTML = ''; }, 5000);
+        }
+
+        function showTracksSuccess(message) {
+            const successDiv = document.getElementById('tracksSuccessMessage');
+            successDiv.innerHTML = `<div class="success-message">${message}</div>`;
+            setTimeout(() => { successDiv.innerHTML = ''; }, 5000);
+        }
+
+        function showAccessibilityError(message) {
+            const errorDiv = document.getElementById('accessibilityErrorMessage');
+            errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+            setTimeout(() => { errorDiv.innerHTML = ''; }, 5000);
+        }
+
+        function showAccessibilitySuccess(message) {
+            const successDiv = document.getElementById('accessibilitySuccessMessage');
+            successDiv.innerHTML = `<div class="success-message">${message}</div>`;
+            setTimeout(() => { successDiv.innerHTML = ''; }, 5000);
+        }
+
+        function showRoutingError(message) {
+            const errorDiv = document.getElementById('routingErrorMessage');
+            errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+            setTimeout(() => { errorDiv.innerHTML = ''; }, 5000);
+        }
+
+        function showTrackModalError(message) {
+            const errorDiv = document.getElementById('trackModalErrorMessage');
+            errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+
+        function clearTrackModalError() {
+            document.getElementById('trackModalErrorMessage').innerHTML = '';
+        }
+
+        function showAccessibilityModalError(message) {
+            const errorDiv = document.getElementById('accessibilityModalErrorMessage');
+            errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+
+        function clearAccessibilityModalError() {
+            document.getElementById('accessibilityModalErrorMessage').innerHTML = '';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            await checkAuth();
+            await loadStations();
+            handleURLParameters();
+            loadTracks(); // Load initial data for tracks tab
+        });
+
+        function handleURLParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const stationId = urlParams.get('station');
+            
+            if (stationId) {
+                // Wait for stations to load first
+                setTimeout(() => {
+                    const stationFilter = document.getElementById('stationFilter');
+                    if (stationFilter && stationFilter.querySelector(`option[value="${stationId}"]`)) {
+                        stationFilter.value = stationId;
+                        handleTracksSearch();
+                        
+                        // Update page title to show selected station
+                        const stationOption = stationFilter.querySelector(`option[value="${stationId}"]`);
+                        if (stationOption) {
+                            const pageTitle = document.querySelector('.page-title h1');
+                            pageTitle.textContent = `Station Tracks - ${stationOption.textContent}`;
+                        }
+                    }
+                }, 500);
+            }
+        }
+
+        // Handle modal close on outside click
+        window.onclick = function(event) {
+            const trackModal = document.getElementById('trackModal');
+            const accessibilityModal = document.getElementById('accessibilityModal');
+            if (event.target === trackModal) {
+                closeTrackModal();
+            }
+            if (event.target === accessibilityModal) {
+                closeAccessibilityModal();
+            }
+        }
+    </script>
+</body>
+</html>

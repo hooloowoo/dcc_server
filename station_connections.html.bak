@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Station Connections - DCC Layout Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: rgb(32, 32, 40);
+            margin: 0;
+            padding: 0;
+            color: #e0e0e0;
+        }
+
+        .user-header {
+            background: rgb(26, 26, 32);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .role-admin { background: #e74c3c; }
+        .role-operator { background: #f39c12; }
+        .role-viewer { background: #95a5a6; }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            color: #e0e0e0;
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: #b0b0b0;
+            font-size: 1.1em;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: rgb(40, 40, 48);
+            color: #e0e0e0;
+            font-size: 14px;
+            width: 300px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .connections-table {
+            background: rgb(40, 40, 48);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .connections-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .connections-table th,
+        .connections-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .connections-table th {
+            background: rgb(32, 32, 40);
+            color: #e0e0e0;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .connections-table td {
+            color: #e0e0e0;
+        }
+
+        .connections-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .connection-type {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .type-direct { background: rgba(52, 152, 219, 0.2); color: #5dade2; }
+        .type-junction { background: rgba(241, 196, 15, 0.2); color: #f4d03f; }
+        .type-siding { background: rgba(155, 89, 182, 0.2); color: #bb8fce; }
+        .type-branch { background: rgba(230, 126, 34, 0.2); color: #f0b27a; }
+
+        .track-condition {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .condition-good { background: rgba(39, 174, 96, 0.2); color: #58d68d; }
+        .condition-fair { background: rgba(241, 196, 15, 0.2); color: #f4d03f; }
+        .condition-poor { background: rgba(231, 76, 60, 0.2); color: #ec7063; }
+        .condition-maintenance { background: rgba(155, 89, 182, 0.2); color: #bb8fce; }
+
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .distance {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .station-name {
+            font-weight: 500;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background: rgb(40, 40, 48);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #e0e0e0;
+        }
+
+        .close {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background: rgb(32, 32, 40);
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid rgba(231, 76, 60, 0.5);
+            color: #ec7063;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .success-message {
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid rgba(39, 174, 96, 0.5);
+            color: #58d68d;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .network-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgb(40, 40, 48);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #b0b0b0;
+            font-size: 14px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #b0b0b0;
+            padding: 40px;
+            font-style: italic;
+        }
+
+        .loading {
+            text-align: center;
+            color: #b0b0b0;
+            padding: 40px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-header">
+        <div class="user-info">
+            <span class="user-name" id="userName">Loading...</span>
+            <span class="user-role" id="userRole"></span>
+        </div>
+        <button class="logout-btn">Logout</button>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <div class="page-title">
+                    <h1>Station Connections</h1>
+                    <div class="page-subtitle">Manage railway network connections and distances</div>
+                </div>
+                <div class="nav-controls">
+                    <a href="stations.html" class="btn btn-secondary">← Back to Stations</a>
+                    <a href="station_tracks.html" class="btn btn-secondary">🛤️ Station Tracks</a>
+                    <a href="dashboard.html" class="btn btn-primary">Dashboard</a>
+                </div>
+            </div>
+
+            <div class="network-stats" id="networkStats">
+                <div class="loading">Loading network statistics...</div>
+            </div>
+
+            <div class="controls-bar">
+                <div class="search-controls">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search connections..." 
+                           onkeyup="handleSearchInput()">
+                    <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                    <button class="btn btn-secondary" onclick="refreshConnections()">🔄 Refresh</button>
+                </div>
+                <button id="addConnectionBtn" class="btn btn-success" onclick="openAddConnectionModal()" style="display: none;">
+                    + Add Connection
+                </button>
+            </div>
+
+            <div id="errorMessage"></div>
+            <div id="successMessage"></div>
+
+            <div class="connections-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>From Station</th>
+                            <th>To Station</th>
+                            <th>Distance</th>
+                            <th>Type</th>
+                            <th>Speed Limit</th>
+                            <th>Condition</th>
+                            <th>Direction</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="connectionsTableBody">
+                        <tr>
+                            <td colspan="8" class="loading">Loading connections...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Modal -->
+    <div id="connectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Connection</h2>
+                <span class="close" onclick="closeConnectionModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="modalErrorMessage"></div>
+                
+                <form id="connectionForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fromStationId">From Station</label>
+                            <select id="fromStationId" required>
+                                <option value="">Select station...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="toStationId">To Station</label>
+                            <select id="toStationId" required>
+                                <option value="">Select station...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="distanceKm">Distance (kilometers)</label>
+                            <input type="number" id="distanceKm" step="0.001" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="connectionType">Connection Type</label>
+                            <select id="connectionType" required>
+                                <option value="direct">Direct</option>
+                                <option value="junction">Junction</option>
+                                <option value="siding">Siding</option>
+                                <option value="branch">Branch</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="trackSpeedLimit">Speed Limit (km/h)</label>
+                            <input type="number" id="trackSpeedLimit" min="1" max="300" value="50" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="trackCondition">Track Condition</label>
+                            <select id="trackCondition" required>
+                                <option value="good">Good</option>
+                                <option value="fair">Fair</option>
+                                <option value="poor">Poor</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="bidirectional" checked>
+                                <label for="bidirectional">Bidirectional (trains can travel both ways)</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="isActive" checked>
+                                <label for="isActive">Active (connection is operational)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" placeholder="Additional notes about this connection..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConnectionModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveConnection()" id="saveConnectionBtn">Save Connection</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let connections = [];
+        let stations = [];
+        let editingConnectionId = null;
+        let refreshInterval = null;
+
+        // Check authentication on page load - allow viewing without auth, require auth for editing
+        async function checkAuth() {
+            try {
+                const response = await fetch('auth_api.php?action=validate');
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.valid) {
+                    // Get user profile
+                    const profileResponse = await fetch('auth_api.php?action=profile');
+                    const profileResult = await profileResponse.json();
+                    
+                    if (profileResult.status === 'success') {
+                        currentUser = profileResult.data;
+                        updateUserHeader();
+                        return true;
+                    }
+                }
+                
+                // Not authenticated - set as guest user for viewing
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // Allow viewing even if auth check fails
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            }
+        }
+
+        function updateUserHeader() {
+            const userNameElement = document.getElementById('userName');
+            const userRoleElement = document.getElementById('userRole');
+            const logoutBtn = document.querySelector('.logout-btn');
+            const addConnectionBtn = document.getElementById('addConnectionBtn');
+            
+            if (currentUser) {
+                const userName = currentUser.first_name && currentUser.last_name 
+                    ? `${currentUser.first_name} ${currentUser.last_name}` 
+                    : currentUser.username;
+                userNameElement.textContent = userName;
+                
+                userRoleElement.textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                userRoleElement.className = `user-role role-${currentUser.role}`;
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Logout';
+                logoutBtn.onclick = logout;
+                
+                // Show add button for admin/operator
+                if (currentUser.role === 'admin' || currentUser.role === 'operator') {
+                    addConnectionBtn.style.display = 'block';
+                } else {
+                    addConnectionBtn.style.display = 'none';
+                }
+            } else {
+                userNameElement.textContent = 'Guest User';
+                userRoleElement.textContent = 'View Only';
+                userRoleElement.className = 'user-role role-viewer';
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Login';
+                logoutBtn.onclick = () => window.location.href = 'login.html';
+                
+                // Hide add button for guests
+                addConnectionBtn.style.display = 'none';
+            }
+            
+            // Refresh the connections table to update button visibility
+            renderConnectionsTable();
+        }
+
+        async function logout() {
+            try {
+                await fetch('auth_api.php?action=logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function requireAuth(action = 'perform this action') {
+            if (!currentUser) {
+                alert(`Please login to ${action}. Click "Login" in the top right corner.`);
+                return false;
+            }
+            if (currentUser.role !== 'admin' && currentUser.role !== 'operator') {
+                alert('You do not have permission to edit. Only administrators and operators can make changes.');
+                return false;
+            }
+            return true;
+        }
+
+        async function loadNetworkStats() {
+            try {
+                const response = await fetch('station_network_api.php?action=stats');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    renderNetworkStats(result.data);
+                } else {
+                    document.getElementById('networkStats').innerHTML = '<div class="no-data">Unable to load network statistics</div>';
+                }
+            } catch (error) {
+                console.error('Error loading network stats:', error);
+                document.getElementById('networkStats').innerHTML = '<div class="no-data">Error loading network statistics</div>';
+            }
+        }
+
+        function renderNetworkStats(stats) {
+            const container = document.getElementById('networkStats');
+            
+            container.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${stats.total_connections}</div>
+                    <div class="stat-label">Total Connections</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.total_distance_km.toFixed(1)}km</div>
+                    <div class="stat-label">Total Distance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.average_distance_km.toFixed(2)}km</div>
+                    <div class="stat-label">Average Distance</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${stats.connection_types.length}</div>
+                    <div class="stat-label">Connection Types</div>
+                </div>
+            `;
+        }
+
+        async function loadConnections() {
+            try {
+                const response = await fetch('station_connections_api.php');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    connections = result.data || [];
+                    renderConnectionsTable();
+                } else {
+                    showError('Failed to load connections: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error loading connections:', error);
+                showError('Error loading connections: ' + error.message);
+            }
+        }
+
+        async function loadStations() {
+            try {
+                const response = await fetch('stations_api.php');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    stations = result.data || [];
+                    populateStationSelects();
+                } else {
+                    console.error('Failed to load stations:', result.error);
+                }
+            } catch (error) {
+                console.error('Error loading stations:', error);
+            }
+        }
+
+        function populateStationSelects() {
+            const fromSelect = document.getElementById('fromStationId');
+            const toSelect = document.getElementById('toStationId');
+            
+            // Clear existing options except the first
+            fromSelect.innerHTML = '<option value="">Select station...</option>';
+            toSelect.innerHTML = '<option value="">Select station...</option>';
+            
+            stations.forEach(station => {
+                const option1 = new Option(`${station.name} (${station.id})`, station.id);
+                const option2 = new Option(`${station.name} (${station.id})`, station.id);
+                fromSelect.appendChild(option1);
+                toSelect.appendChild(option2);
+            });
+        }
+
+        function renderConnectionsTable() {
+            const tbody = document.getElementById('connectionsTableBody');
+            
+            if (connections.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No connections found</td></tr>';
+                return;
+            }
+            
+            const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.role === 'operator');
+            
+            tbody.innerHTML = connections.map(connection => `
+                <tr>
+                    <td><span class="station-name">${escapeHtml(connection.from_station_name)}</span><br><small>${connection.from_station_id}</small></td>
+                    <td><span class="station-name">${escapeHtml(connection.to_station_name)}</span><br><small>${connection.to_station_id}</small></td>
+                    <td><span class="distance">${connection.distance_km}m</span></td>
+                    <td><span class="connection-type type-${connection.connection_type}">${connection.connection_type}</span></td>
+                    <td>${connection.track_speed_limit} km/h</td>
+                    <td><span class="track-condition condition-${connection.track_condition}">${connection.track_condition}</span></td>
+                    <td>${connection.bidirectional ? '↔️ Both ways' : '→ One way'}</td>
+                    <td>
+                        <div class="actions">
+                            ${canEdit ? `<button class="btn btn-secondary btn-small" onclick="editConnection(${connection.id})">Edit</button>` : ''}
+                            ${canEdit ? `<button class="btn btn-danger btn-small" onclick="deleteConnection(${connection.id}, '${escapeHtml(connection.from_station_name)}', '${escapeHtml(connection.to_station_name)}')">Delete</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddConnectionModal() {
+            if (!requireAuth('add connections')) return;
+            
+            editingConnectionId = null;
+            document.getElementById('modalTitle').textContent = 'Add Connection';
+            document.getElementById('connectionForm').reset();
+            document.getElementById('bidirectional').checked = true;
+            document.getElementById('isActive').checked = true;
+            document.getElementById('trackSpeedLimit').value = 50;
+            document.getElementById('connectionType').value = 'direct';
+            document.getElementById('trackCondition').value = 'good';
+            document.getElementById('saveConnectionBtn').textContent = 'Save Connection';
+            clearModalError();
+            document.getElementById('connectionModal').style.display = 'block';
+        }
+
+        async function editConnection(connectionId) {
+            if (!requireAuth('edit connections')) return;
+            
+            try {
+                const response = await fetch(`station_connections_api.php?id=${connectionId}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    editingConnectionId = connectionId;
+                    const connection = result.data;
+                    
+                    document.getElementById('modalTitle').textContent = 'Edit Connection';
+                    document.getElementById('fromStationId').value = connection.from_station_id;
+                    document.getElementById('toStationId').value = connection.to_station_id;
+                    document.getElementById('distanceKm').value = connection.distance_km;
+                    document.getElementById('connectionType').value = connection.connection_type;
+                    document.getElementById('trackSpeedLimit').value = connection.track_speed_limit;
+                    document.getElementById('trackCondition').value = connection.track_condition;
+                    document.getElementById('bidirectional').checked = connection.bidirectional == 1;
+                    document.getElementById('isActive').checked = connection.is_active == 1;
+                    document.getElementById('notes').value = connection.notes || '';
+                    document.getElementById('saveConnectionBtn').textContent = 'Update Connection';
+                    clearModalError();
+                    document.getElementById('connectionModal').style.display = 'block';
+                } else {
+                    showError('Failed to load connection: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error loading connection:', error);
+                showError('Error loading connection: ' + error.message);
+            }
+        }
+
+        async function saveConnection() {
+            if (!requireAuth('save connections')) return;
+            
+            try {
+                const data = {
+                    from_station_id: document.getElementById('fromStationId').value,
+                    to_station_id: document.getElementById('toStationId').value,
+                    distance_km: parseFloat(document.getElementById('distanceKm').value),
+                    connection_type: document.getElementById('connectionType').value,
+                    track_speed_limit: parseInt(document.getElementById('trackSpeedLimit').value),
+                    track_condition: document.getElementById('trackCondition').value,
+                    bidirectional: document.getElementById('bidirectional').checked,
+                    is_active: document.getElementById('isActive').checked,
+                    notes: document.getElementById('notes').value.trim() || null
+                };
+                
+                if (!data.from_station_id || !data.to_station_id) {
+                    showModalError('Please select both from and to stations');
+                    return;
+                }
+                
+                if (data.from_station_id === data.to_station_id) {
+                    showModalError('From and to stations cannot be the same');
+                    return;
+                }
+                
+                if (!data.distance_km || data.distance_km <= 0) {
+                    showModalError('Distance must be greater than 0');
+                    return;
+                }
+                
+                const url = editingConnectionId 
+                    ? `station_connections_api.php?id=${editingConnectionId}`
+                    : 'station_connections_api.php';
+                const method = editingConnectionId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    closeConnectionModal();
+                    await loadConnections();
+                    await loadNetworkStats();
+                    showSuccess(result.message || 'Connection saved successfully');
+                } else {
+                    showModalError(result.error || 'Failed to save connection');
+                }
+            } catch (error) {
+                console.error('Error saving connection:', error);
+                showModalError('Error saving connection: ' + error.message);
+            }
+        }
+
+        async function deleteConnection(connectionId, fromStationName, toStationName) {
+            if (!requireAuth('delete connections')) return;
+            
+            if (!confirm(`Are you sure you want to delete the connection from "${fromStationName}" to "${toStationName}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`station_connections_api.php?id=${connectionId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    await loadConnections();
+                    await loadNetworkStats();
+                    showSuccess('Connection deleted successfully');
+                } else {
+                    showError('Failed to delete connection: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error deleting connection:', error);
+                showError('Error deleting connection: ' + error.message);
+            }
+        }
+
+        function closeConnectionModal() {
+            document.getElementById('connectionModal').style.display = 'none';
+        }
+
+        function handleSearchInput() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (search === '') {
+                renderConnectionsTable();
+                return;
+            }
+            
+            const filtered = connections.filter(connection => 
+                connection.from_station_name.toLowerCase().includes(search) ||
+                connection.to_station_name.toLowerCase().includes(search) ||
+                connection.connection_type.toLowerCase().includes(search) ||
+                connection.track_condition.toLowerCase().includes(search) ||
+                (connection.notes && connection.notes.toLowerCase().includes(search))
+            );
+            
+            const tbody = document.getElementById('connectionsTableBody');
+            const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.role === 'operator');
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No connections match your search</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filtered.map(connection => `
+                <tr>
+                    <td><span class="station-name">${escapeHtml(connection.from_station_name)}</span><br><small>${connection.from_station_id}</small></td>
+                    <td><span class="station-name">${escapeHtml(connection.to_station_name)}</span><br><small>${connection.to_station_id}</small></td>
+                    <td><span class="distance">${connection.distance_km}m</span></td>
+                    <td><span class="connection-type type-${connection.connection_type}">${connection.connection_type}</span></td>
+                    <td>${connection.track_speed_limit} km/h</td>
+                    <td><span class="track-condition condition-${connection.track_condition}">${connection.track_condition}</span></td>
+                    <td>${connection.bidirectional ? '↔️ Both ways' : '→ One way'}</td>
+                    <td>
+                        <div class="actions">
+                            ${canEdit ? `<button class="btn btn-secondary btn-small" onclick="editConnection(${connection.id})">Edit</button>` : ''}
+                            ${canEdit ? `<button class="btn btn-danger btn-small" onclick="deleteConnection(${connection.id}, '${escapeHtml(connection.from_station_name)}', '${escapeHtml(connection.to_station_name)}')">Delete</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            renderConnectionsTable();
+        }
+
+        function refreshConnections() {
+            loadConnections();
+            loadNetworkStats();
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+            setTimeout(() => { errorDiv.innerHTML = ''; }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.innerHTML = `<div class="success-message">${message}</div>`;
+            setTimeout(() => { successDiv.innerHTML = ''; }, 5000);
+        }
+
+        function showModalError(message) {
+            const errorDiv = document.getElementById('modalErrorMessage');
+            errorDiv.innerHTML = `<div class="error-message">${message}</div>`;
+        }
+
+        function clearModalError() {
+            document.getElementById('modalErrorMessage').innerHTML = '';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check auth but don't require it for viewing
+            await checkAuth();
+            
+            // Load data regardless of authentication status
+            await loadStations();
+            await loadConnections();
+            await loadNetworkStats();
+        });
+
+        // Handle modal close on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('connectionModal');
+            if (event.target === modal) {
+                closeConnectionModal();
+            }
+        }
+    </script>
+</body>
+</html>

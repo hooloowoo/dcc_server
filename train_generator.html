@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Train Generator - DCC Layout Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .user-header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-role {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .role-admin { background: #e74c3c; }
+        .role-operator { background: #f39c12; }
+        .role-viewer { background: #95a5a6; }
+        
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #bdc3c7;
+            font-size: 16px;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav-link {
+            color: #3498db;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: #34495e;
+        }
+        
+        .generator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .generator-section {
+            background: #2c3e50;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .section-title {
+            color: #3498db;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bdc3c7;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #34495e;
+            border-radius: 4px;
+            background-color: #34495e;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background: #229954;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .preview-section {
+            background: #34495e;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .train-preview {
+            background: #2c3e50;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .train-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .train-number {
+            color: #3498db;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .train-type {
+            background: #3498db;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .train-route {
+            color: #bdc3c7;
+            margin-bottom: 8px;
+        }
+        
+        .train-schedule {
+            display: flex;
+            gap: 20px;
+            color: #95a5a6;
+            font-size: 14px;
+        }
+        
+        .train-consist {
+            color: #e67e22;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .status-success {
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid #27ae60;
+            color: #2ecc71;
+        }
+        
+        .status-error {
+            background: rgba(231, 76, 60, 0.2);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+        }
+        
+        .status-warning {
+            background: rgba(243, 156, 18, 0.2);
+            border: 1px solid #f39c12;
+            color: #f39c12;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #95a5a6;
+        }
+        
+        .spinner {
+            border: 3px solid #34495e;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .advanced-options {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(52, 73, 94, 0.5);
+            border-radius: 6px;
+            border: 1px solid #34495e;
+        }
+        
+        .toggle-advanced {
+            background: transparent;
+            border: 1px solid #3498db;
+            color: #3498db;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .toggle-advanced:hover {
+            background: #3498db;
+            color: white;
+        }
+        
+        .time-range {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .generator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .time-range {
+                grid-template-columns: 1fr;
+            }
+            
+            .train-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="user-header">
+        <div class="user-info">
+            <span class="user-name" id="userName">Loading...</span>
+            <span class="user-role" id="userRole">-</span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🚂 Automated Train Generator</h1>
+            <p>Generate realistic train schedules and timetables automatically</p>
+        </div>
+
+        <div class="navigation">
+            <a href="dashboard.html" class="nav-link">🏠 Dashboard</a>
+            <a href="trains.html" class="nav-link">🚆 Trains</a>
+            <a href="timetable.html" class="nav-link">🕐 Timetable</a>
+            <a href="locomotives.html" class="nav-link">🚂 Locomotives</a>
+            <a href="stations.html" class="nav-link">🚉 Stations</a>
+        </div>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <div class="generator-grid">
+            <!-- Train Generation Settings -->
+            <div class="generator-section">
+                <div class="section-title">🎛️ Generation Settings</div>
+                
+                <form id="generationForm">
+                    <div class="form-group">
+                        <label for="trainCount">Number of Trains to Generate</label>
+                        <input type="number" id="trainCount" min="1" max="50" value="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Train Types to Generate</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="type_passenger" value="passenger" checked>
+                                <label for="type_passenger">Passenger</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="type_freight" value="freight" checked>
+                                <label for="type_freight">Freight</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="type_mixed" value="mixed">
+                                <label for="type_mixed">Mixed</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="type_maintenance" value="maintenance">
+                                <label for="type_maintenance">Maintenance</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="operatingPeriod">Operating Period</label>
+                        <select id="operatingPeriod">
+                            <option value="morning">Morning Rush (06:00-10:00)</option>
+                            <option value="daytime">Daytime Service (10:00-16:00)</option>
+                            <option value="evening">Evening Rush (16:00-20:00)</option>
+                            <option value="night">Night Service (20:00-06:00)</option>
+                            <option value="full_day" selected>Full Day Service (06:00-22:00)</option>
+                            <option value="24h">24 Hour Service</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="servicePattern">Service Pattern</label>
+                        <select id="servicePattern">
+                            <option value="regional" selected>Regional Service</option>
+                            <option value="intercity">Intercity Express</option>
+                            <option value="commuter">Commuter Service</option>
+                            <option value="freight">Freight Operations</option>
+                            <option value="mixed">Mixed Operations</option>
+                        </select>
+                    </div>
+
+                    <button type="button" class="toggle-advanced" onclick="toggleAdvanced()">
+                        ⚙️ Advanced Options
+                    </button>
+
+                    <div id="advancedOptions" class="advanced-options" style="display: none;">
+                        <div class="form-group">
+                            <label>Custom Time Range</label>
+                            <div class="time-range">
+                                <input type="time" id="startTime" value="06:00">
+                                <input type="time" id="endTime" value="22:00">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="minInterval">Minimum Interval (minutes)</label>
+                            <input type="number" id="minInterval" min="5" max="120" value="15">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maxInterval">Maximum Interval (minutes)</label>
+                            <input type="number" id="maxInterval" min="15" max="240" value="60">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="routeComplexity">Route Complexity</label>
+                            <select id="routeComplexity">
+                                <option value="simple">Simple (Point-to-Point)</option>
+                                <option value="moderate" selected>Moderate (Some Intermediate Stops)</option>
+                                <option value="complex">Complex (Multiple Stops)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="locomotiveStrategy">Locomotive Assignment</label>
+                            <select id="locomotiveStrategy">
+                                <option value="optimal" selected>Optimal Matching</option>
+                                <option value="random">Random Assignment</option>
+                                <option value="power_based">Power-Based Selection</option>
+                                <option value="type_matching">Type Matching</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prefixPattern">Train Number Prefix</label>
+                            <input type="text" id="prefixPattern" placeholder="AUTO, ICE, RE, S, etc." value="AUTO">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="button" class="btn" onclick="generatePreview()">
+                            🔍 Preview Generated Trains
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="button" class="btn btn-warning" onclick="validateTimetable()">
+                            ⚠️ Validate Timetable
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Station Selection -->
+            <div class="generator-section">
+                <div class="section-title">🚉 Station Selection</div>
+                
+                <div class="form-group">
+                    <label>Stations to Include</label>
+                    <div id="stationList" class="checkbox-group">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading stations...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-warning" onclick="selectAllStations()">
+                        ✅ Select All Stations
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" class="btn btn-warning" onclick="deselectAllStations()">
+                        ❌ Deselect All Stations
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label>Available Locomotives</label>
+                    <div id="locomotiveCount" class="loading">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div id="previewSection" class="preview-section" style="display: none;">
+            <div class="section-title">👁️ Generated Trains Preview</div>
+            <div id="previewContent"></div>
+            
+            <div style="display: flex; gap: 15px; margin-top: 25px;">
+                <button type="button" class="btn btn-success" onclick="createGeneratedTrains()" style="flex: 1;">
+                    ✨ Create All Trains
+                </button>
+                <button type="button" class="btn btn-warning" onclick="openTimetableView()" style="flex: 1;">
+                    🕐 View Timetable
+                </button>
+                <button type="button" class="btn btn-danger" onclick="clearPreview()" style="flex: 1;">
+                    🗑️ Clear Preview
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let availableStations = [];
+        let availableLocomotives = [];
+        let stationConnections = [];
+        let generatedTrains = [];
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadStations();
+            loadAvailableLocomotives();
+            loadStationConnections();
+        });
+
+        async function checkAuth() {
+            try {
+                const response = await fetch('auth_api.php?action=validate');
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.valid && result.data.user) {
+                    currentUser = result.data.user;
+                    document.getElementById('userName').textContent = result.data.user.username;
+                    document.getElementById('userRole').textContent = result.data.user.role;
+                    document.getElementById('userRole').className = `user-role role-${result.data.user.role}`;
+                    
+                    // Check if user has permission to create trains
+                    if (!['admin', 'operator'].includes(result.data.user.role)) {
+                        showMessage('You need admin or operator permissions to generate trains.', 'warning');
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('auth_api.php?action=logout', { method: 'POST' });
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadStations() {
+            try {
+                const response = await fetch('trains_api.php?action=stations');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    // Filter stations to only include those with valid IDs (maximum 8 characters)
+                    availableStations = result.data.filter(station => station.id.length <= 8);
+                    
+                    if (availableStations.length !== result.data.length) {
+                        const filteredCount = result.data.length - availableStations.length;
+                        showMessage(`⚠️ ${filteredCount} stations filtered out (ID must be maximum 8 characters)`, 'warning');
+                    }
+                    
+                    renderStationList();
+                } else {
+                    showMessage('Failed to load stations: ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading stations:', error);
+                showMessage('Error loading stations', 'error');
+            }
+        }
+
+        async function loadAvailableLocomotives() {
+            try {
+                const response = await fetch('trains_api.php?action=available_locomotives');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    availableLocomotives = result.data;
+                    document.getElementById('locomotiveCount').innerHTML = 
+                        `<strong>${availableLocomotives.length}</strong> locomotives available for assignment`;
+                } else {
+                    showMessage('Failed to load locomotives: ' + result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error loading locomotives:', error);
+                showMessage('Error loading locomotives', 'error');
+            }
+        }
+
+        async function loadStationConnections() {
+            try {
+                const response = await fetch('station_connections_api.php?action=list');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    stationConnections = result.data;
+                    console.log(`Loaded ${stationConnections.length} station connections`);
+                } else {
+                    showMessage('Failed to load station connections: ' + result.error, 'warning');
+                    stationConnections = [];
+                }
+            } catch (error) {
+                console.error('Error loading station connections:', error);
+                showMessage('Warning: Could not load station connections - trains may be generated without valid routes', 'warning');
+                stationConnections = [];
+            }
+        }
+
+        function renderStationList() {
+            const container = document.getElementById('stationList');
+            
+            if (availableStations.length === 0) {
+                container.innerHTML = '<div class="loading">No stations available</div>';
+                return;
+            }
+
+            container.innerHTML = availableStations.map(station => `
+                <div class="checkbox-item">
+                    <input type="checkbox" id="station_${station.id}" value="${station.id}" checked>
+                    <label for="station_${station.id}">${station.name}</label>
+                </div>
+            `).join('');
+        }
+
+        function selectAllStations() {
+            document.querySelectorAll('#stationList input[type="checkbox"]').forEach(cb => cb.checked = true);
+        }
+
+        function deselectAllStations() {
+            document.querySelectorAll('#stationList input[type="checkbox"]').forEach(cb => cb.checked = false);
+        }
+
+        function toggleAdvanced() {
+            const options = document.getElementById('advancedOptions');
+            const button = event.target;
+            
+            if (options.style.display === 'none') {
+                options.style.display = 'block';
+                button.textContent = '🔼 Hide Advanced Options';
+            } else {
+                options.style.display = 'none';
+                button.textContent = '⚙️ Advanced Options';
+            }
+        }
+
+        function getSelectedStations() {
+            return Array.from(document.querySelectorAll('#stationList input[type="checkbox"]:checked'))
+                .map(cb => availableStations.find(s => s.id === cb.value))
+                .filter(Boolean);
+        }
+
+        function getSelectedTrainTypes() {
+            return Array.from(document.querySelectorAll('input[id^="type_"]:checked'))
+                .map(cb => cb.value);
+        }
+
+        function generateTrainNumber(type, index, prefix) {
+            const typePrefix = prefix || {
+                'passenger': 'ICE',
+                'freight': 'FZ',
+                'mixed': 'MX',
+                'maintenance': 'MN',
+                'special': 'SP'
+            }[type] || 'AUTO';
+            
+            return `${typePrefix} ${String(index + 1).padStart(3, '0')}`;
+        }
+
+        function selectRandomLocomotive(trainType) {
+            if (availableLocomotives.length === 0) return null;
+            
+            // Filter locomotives based on train type for better matching
+            let suitableLocos = availableLocomotives;
+            
+            if (trainType === 'freight') {
+                // Prefer diesel and electric for freight
+                suitableLocos = availableLocomotives.filter(loco => 
+                    ['diesel', 'electric'].includes(loco.locomotive_type)
+                );
+            } else if (trainType === 'passenger') {
+                // Prefer electric and multiple units for passenger
+                suitableLocos = availableLocomotives.filter(loco => 
+                    ['electric', 'multiple_unit'].includes(loco.locomotive_type)
+                );
+            }
+            
+            // Fall back to all locomotives if no suitable ones found
+            if (suitableLocos.length === 0) {
+                suitableLocos = availableLocomotives;
+            }
+            
+            return suitableLocos[Math.floor(Math.random() * suitableLocos.length)];
+        }
+
+        function generateRandomTime(start, end, intervalMin, intervalMax) {
+            const startHour = parseInt(start.split(':')[0]);
+            const startMin = parseInt(start.split(':')[1]);
+            const endHour = parseInt(end.split(':')[0]);
+            const endMin = parseInt(end.split(':')[1]);
+            
+            const startTotalMin = startHour * 60 + startMin;
+            const endTotalMin = endHour * 60 + endMin;
+            
+            const randomMin = startTotalMin + Math.random() * (endTotalMin - startTotalMin);
+            const hour = Math.floor(randomMin / 60) % 24;
+            const min = Math.floor(randomMin % 60);
+            
+            return `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}:00`;
+        }
+
+        function calculateTravelTime(departureTime, minDuration = 30, maxDuration = 180) {
+            const [hours, minutes] = departureTime.split(':').map(Number);
+            const departureMin = hours * 60 + minutes;
+            const travelDuration = minDuration + Math.random() * (maxDuration - minDuration);
+            const arrivalMin = departureMin + travelDuration;
+            
+            const arrivalHours = Math.floor(arrivalMin / 60) % 24;
+            const arrivalMinutes = Math.floor(arrivalMin % 60);
+            
+            return `${String(arrivalHours).padStart(2, '0')}:${String(arrivalMinutes).padStart(2, '0')}:00`;
+        }
+
+        function generateTrainName(type, route) {
+            const names = {
+                passenger: ['Express', 'Regional', 'Intercity', 'Local', 'Fast'],
+                freight: ['Cargo', 'Container', 'Freight', 'Goods', 'Heavy'],
+                mixed: ['Mixed Service', 'Combined', 'Multi-Purpose'],
+                maintenance: ['Service', 'Maintenance', 'Work Train'],
+                special: ['Special', 'Charter', 'Event']
+            };
+            
+            const typeNames = names[type] || names.passenger;
+            const baseName = typeNames[Math.floor(Math.random() * typeNames.length)];
+            
+            // Add route-based suffix occasionally
+            if (Math.random() < 0.3 && route) {
+                const routeParts = route.split(' - ');
+                if (routeParts.length >= 2) {
+                    return `${baseName} ${routeParts[0]}-${routeParts[1]}`;
+                }
+            }
+            
+            return baseName;
+        }
+
+        // Helper function to get connected stations for a given station
+        function getConnectedStations(stationId) {
+            const connectedStations = [];
+            
+            stationConnections.forEach(connection => {
+                if (connection.from_station_id === stationId && connection.is_active) {
+                    connectedStations.push(connection.to_station_id);
+                }
+                if (connection.to_station_id === stationId && connection.is_active && connection.bidirectional) {
+                    connectedStations.push(connection.from_station_id);
+                }
+            });
+            
+            return [...new Set(connectedStations)]; // Remove duplicates
+        }
+
+        // Helper function to check if two stations are connected
+        function areStationsConnected(stationA, stationB) {
+            return stationConnections.some(connection => 
+                connection.is_active && (
+                    (connection.from_station_id === stationA && connection.to_station_id === stationB) ||
+                    (connection.to_station_id === stationA && connection.from_station_id === stationB && connection.bidirectional)
+                )
+            );
+        }
+
+        // Helper function to find a valid arrival station for a departure station
+        function findValidArrivalStation(departureStation, selectedStations) {
+            const connectedStationIds = getConnectedStations(departureStation.id);
+            const validArrivals = selectedStations.filter(station => 
+                station.id !== departureStation.id && connectedStationIds.includes(station.id)
+            );
+            
+            if (validArrivals.length === 0) {
+                return null;
+            }
+            
+            return validArrivals[Math.floor(Math.random() * validArrivals.length)];
+        }
+
+        async function generatePreview() {
+            if (!currentUser || !['admin', 'operator'].includes(currentUser.role)) {
+                showMessage('You need admin or operator permissions to generate trains.', 'error');
+                return;
+            }
+
+            const selectedStations = getSelectedStations();
+            const selectedTypes = getSelectedTrainTypes();
+            const trainCount = parseInt(document.getElementById('trainCount').value);
+            
+            if (selectedStations.length < 2) {
+                showMessage('Please select at least 2 stations to generate routes.', 'error');
+                return;
+            }
+            
+            if (selectedTypes.length === 0) {
+                showMessage('Please select at least one train type.', 'error');
+                return;
+            }
+            
+            if (availableLocomotives.length === 0) {
+                showMessage('No locomotives available for assignment.', 'error');
+                return;
+            }
+
+            // Get generation parameters
+            const operatingPeriod = document.getElementById('operatingPeriod').value;
+            const prefixPattern = document.getElementById('prefixPattern').value || 'AUTO';
+            const minInterval = parseInt(document.getElementById('minInterval').value) || 15;
+            const maxInterval = parseInt(document.getElementById('maxInterval').value) || 60;
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+
+            // Generate trains
+            generatedTrains = [];
+            let failedGenerations = 0;
+            const maxAttempts = trainCount * 10; // Allow multiple attempts to find valid routes
+            
+            for (let i = 0; i < trainCount && failedGenerations < maxAttempts; i++) {
+                const trainType = selectedTypes[Math.floor(Math.random() * selectedTypes.length)];
+                
+                // Select random departure station
+                const departureStation = selectedStations[Math.floor(Math.random() * selectedStations.length)];
+                
+                // Find a valid arrival station that's connected to the departure station
+                const arrivalStation = findValidArrivalStation(departureStation, selectedStations);
+                
+                if (!arrivalStation) {
+                    // If no valid arrival station found, try again with a different departure station
+                    failedGenerations++;
+                    i--; // Don't count this as a successful generation
+                    continue;
+                }
+                
+                // Generate times based on operating period
+                let timeStart, timeEnd;
+                switch (operatingPeriod) {
+                    case 'morning':
+                        timeStart = '06:00'; timeEnd = '10:00'; break;
+                    case 'daytime':
+                        timeStart = '10:00'; timeEnd = '16:00'; break;
+                    case 'evening':
+                        timeStart = '16:00'; timeEnd = '20:00'; break;
+                    case 'night':
+                        timeStart = '20:00'; timeEnd = '06:00'; break;
+                    case '24h':
+                        timeStart = '00:00'; timeEnd = '23:59'; break;
+                    default:
+                        timeStart = startTime || '06:00';
+                        timeEnd = endTime || '22:00';
+                }
+                
+                const departureTime = generateRandomTime(timeStart, timeEnd, minInterval, maxInterval);
+                const arrivalTime = calculateTravelTime(departureTime);
+                const route = `${departureStation.name} - ${arrivalStation.name}`;
+                const locomotive = selectRandomLocomotive(trainType);
+                
+                const train = {
+                    train_number: generateTrainNumber(trainType, i, prefixPattern),
+                    train_name: generateTrainName(trainType, route),
+                    train_type: trainType,
+                    route: route,
+                    departure_station_id: departureStation.id,
+                    arrival_station_id: arrivalStation.id,
+                    departure_time: departureTime,
+                    arrival_time: arrivalTime,
+                    locomotive: locomotive,
+                    max_speed_kmh: trainType === 'freight' ? 120 : (trainType === 'passenger' ? 200 : 160)
+                };
+                
+                generatedTrains.push(train);
+            }
+            
+            // Sort by departure time
+            generatedTrains.sort((a, b) => a.departure_time.localeCompare(b.departure_time));
+            
+            // Show warning if not all trains could be generated
+            if (generatedTrains.length < trainCount) {
+                showMessage(`Generated ${generatedTrains.length} of ${trainCount} requested trains. ${trainCount - generatedTrains.length} trains could not be generated due to lack of station connections.`, 'warning');
+            } else {
+                showMessage(`Generated ${generatedTrains.length} trains successfully!`, 'success');
+            }
+            
+            // Display preview
+            renderPreview();
+            document.getElementById('previewSection').style.display = 'block';
+            document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderPreview() {
+            const container = document.getElementById('previewContent');
+            
+            if (generatedTrains.length === 0) {
+                container.innerHTML = '<div class="loading">No trains generated</div>';
+                return;
+            }
+
+            container.innerHTML = generatedTrains.map(train => `
+                <div class="train-preview">
+                    <div class="train-header">
+                        <span class="train-number">${train.train_number}</span>
+                        <span class="train-type">${train.train_type}</span>
+                    </div>
+                    <div class="train-route">📍 ${train.route}</div>
+                    <div class="train-schedule">
+                        <span>🕐 Departure: ${train.departure_time.substring(0, 5)}</span>
+                        <span>🕐 Arrival: ${train.arrival_time.substring(0, 5)}</span>
+                        <span>⚡ Max Speed: ${train.max_speed_kmh} km/h</span>
+                    </div>
+                    ${train.locomotive ? `
+                        <div class="train-consist">
+                            🚂 ${train.locomotive.display_name}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function createGeneratedTrains() {
+            if (!currentUser || !['admin', 'operator'].includes(currentUser.role)) {
+                showMessage('You need admin or operator permissions to create trains.', 'error');
+                return;
+            }
+
+            if (generatedTrains.length === 0) {
+                showMessage('No trains to create. Generate preview first.', 'error');
+                return;
+            }
+
+            let successCount = 0;
+            let errorCount = 0;
+            
+            showMessage('Creating trains with timetables... This may take a moment.', 'warning');
+            
+            for (const train of generatedTrains) {
+                try {
+                    // First, create the train in dcc_trains table
+                    const trainResponse = await fetch('trains_api.php?action=create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(train)
+                    });
+                    
+                    const trainResult = await trainResponse.json();
+                    
+                    if (trainResult.status !== 'success') {
+                        console.error('Failed to create train:', trainResult.error);
+                        errorCount++;
+                        continue;
+                    }
+                    
+                    // Add locomotive to the train if specified
+                    if (train.locomotive) {
+                        const trainId = trainResult.data.id;
+                        const consistData = {
+                            locomotives: [{
+                                locomotive_id: train.locomotive.id,
+                                position_in_train: 1,
+                                is_lead_locomotive: true,
+                                facing_direction: 'forward'
+                            }]
+                        };
+                        
+                        await fetch(`trains_api.php?action=update_consist&id=${trainId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(consistData)
+                        });
+                    }
+                    
+                    // Now create the complete timetable entry
+                    const timetableData = {
+                        train_number: train.train_number,
+                        train_name: train.train_name || train.train_number,
+                        train_type: train.train_type,
+                        schedule_name: `${train.train_name || train.train_number} - Generated Service`,
+                        route_description: train.route,
+                        departure_station_id: train.departure_station_id,
+                        arrival_station_id: train.arrival_station_id,
+                        departure_time: train.departure_time,
+                        arrival_time: train.arrival_time
+                    };
+                    
+                    const timetableResponse = await fetch('timetable_management_api.php?action=create_complete_schedule', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(timetableData)
+                    });
+                    
+                    const timetableResult = await timetableResponse.json();
+                    
+                    if (timetableResult.status === 'success') {
+                        successCount++;
+                    } else {
+                        console.error('Failed to create timetable for train:', timetableResult.error);
+                        // Train was created but timetable failed - this is still a partial success
+                        errorCount++;
+                    }
+                    
+                } catch (error) {
+                    console.error('Error creating train:', error);
+                    errorCount++;
+                }
+            }
+            
+            if (errorCount === 0) {
+                showMessage(`✅ Successfully created all ${successCount} trains with complete timetables!`, 'success');
+                clearPreview();
+                // Refresh locomotive availability
+                loadAvailableLocomotives();
+            } else {
+                showMessage(`⚠️ Created ${successCount} trains successfully, ${errorCount} had issues. Check console for details.`, 'warning');
+            }
+        }
+
+        function clearPreview() {
+            generatedTrains = [];
+            document.getElementById('previewSection').style.display = 'none';
+            document.getElementById('previewContent').innerHTML = '';
+        }
+
+        async function validateTimetable() {
+            if (generatedTrains.length === 0) {
+                showMessage('No trains to validate. Generate preview first.', 'error');
+                return;
+            }
+
+            showMessage('Validating timetable for conflicts...', 'warning');
+            
+            try {
+                const selectedStations = getSelectedStations();
+                let conflicts = [];
+                let warnings = [];
+                
+                // Check for station track conflicts
+                for (const station of selectedStations) {
+                    const stationConflicts = await checkStationConflicts(station, generatedTrains);
+                    conflicts = conflicts.concat(stationConflicts);
+                }
+                
+                // Check for path conflicts
+                const pathConflicts = await checkPathConflicts(generatedTrains);
+                conflicts = conflicts.concat(pathConflicts);
+                
+                // Check time spacing
+                const timeWarnings = checkTimeSpacing(generatedTrains);
+                warnings = warnings.concat(timeWarnings);
+                
+                if (conflicts.length === 0 && warnings.length === 0) {
+                    showMessage('✅ Timetable validation passed! No conflicts detected.', 'success');
+                } else {
+                    let message = '';
+                    if (conflicts.length > 0) {
+                        message += `⚠️ ${conflicts.length} conflicts detected. `;
+                    }
+                    if (warnings.length > 0) {
+                        message += `${warnings.length} warnings found. `;
+                    }
+                    message += 'Check console for details.';
+                    
+                    console.log('Timetable Validation Results:');
+                    console.log('Conflicts:', conflicts);
+                    console.log('Warnings:', warnings);
+                    
+                    showMessage(message, conflicts.length > 0 ? 'error' : 'warning');
+                }
+                
+            } catch (error) {
+                console.error('Error validating timetable:', error);
+                showMessage('Error during timetable validation', 'error');
+            }
+        }
+
+        async function checkStationConflicts(station, trains) {
+            try {
+                // Get station tracks
+                const response = await fetch(`station_tracks_api.php?action=list&station_id=${station.id}`);
+                const result = await response.json();
+                
+                const stationTracks = result.status === 'success' ? result.data : [];
+                const availableTracks = stationTracks.length;
+                
+                if (availableTracks === 0) {
+                    return [{
+                        type: 'no_tracks',
+                        station: station.name,
+                        message: `Station ${station.name} has no configured tracks`
+                    }];
+                }
+                
+                // Validate station ID length (maximum 8 characters)
+                if (station.id.length > 8) {
+                    return [{
+                        type: 'invalid_station_id',
+                        station: station.name,
+                        message: `Station ID "${station.id}" is ${station.id.length} characters long (max 8 allowed)`
+                    }];
+                }
+                
+                // Group trains by time at this station
+                const timeSlots = {};
+                
+                trains.forEach(train => {
+                    if (train.departure_station_id === station.id) {
+                        const timeSlot = train.departure_time.substring(0, 5); // HH:MM
+                        if (!timeSlots[timeSlot]) timeSlots[timeSlot] = [];
+                        timeSlots[timeSlot].push({train, type: 'departure'});
+                    }
+                    if (train.arrival_station_id === station.id) {
+                        const timeSlot = train.arrival_time.substring(0, 5); // HH:MM
+                        if (!timeSlots[timeSlot]) timeSlots[timeSlot] = [];
+                        timeSlots[timeSlot].push({train, type: 'arrival'});
+                    }
+                });
+                
+                const conflicts = [];
+                Object.entries(timeSlots).forEach(([time, events]) => {
+                    if (events.length > availableTracks) {
+                        conflicts.push({
+                            type: 'track_capacity',
+                            station: station.name,
+                            time: time,
+                            required: events.length,
+                            available: availableTracks,
+                            trains: events.map(e => e.train.train_number)
+                        });
+                    }
+                });
+                
+                return conflicts;
+                
+            } catch (error) {
+                console.error('Error checking station conflicts:', error);
+                return [];
+            }
+        }
+
+        async function checkPathConflicts(trains) {
+            try {
+                // Get station connections
+                const response = await fetch('station_connections_api.php?action=list');
+                const result = await response.json();
+                
+                if (result.status !== 'success') {
+                    return [];
+                }
+                
+                const connections = result.data;
+                const pathUsage = {};
+                
+                // Map train paths to connections
+                trains.forEach(train => {
+                    const connection = connections.find(conn => 
+                        (conn.from_station_id === train.departure_station_id && conn.to_station_id === train.arrival_station_id) ||
+                        (conn.to_station_id === train.departure_station_id && conn.from_station_id === train.arrival_station_id && conn.bidirectional)
+                    );
+                    
+                    if (connection) {
+                        const pathKey = `${train.departure_station_id}-${train.arrival_station_id}`;
+                        const timeSlot = train.departure_time.substring(0, 5);
+                        
+                        if (!pathUsage[pathKey]) pathUsage[pathKey] = {};
+                        if (!pathUsage[pathKey][timeSlot]) pathUsage[pathKey][timeSlot] = [];
+                        
+                        pathUsage[pathKey][timeSlot].push(train);
+                    }
+                });
+                
+                const conflicts = [];
+                Object.entries(pathUsage).forEach(([path, timeSlots]) => {
+                    Object.entries(timeSlots).forEach(([time, pathTrains]) => {
+                        if (pathTrains.length > 1) {
+                            conflicts.push({
+                                type: 'path_conflict',
+                                path: path,
+                                time: time,
+                                trains: pathTrains.map(t => t.train_number)
+                            });
+                        }
+                    });
+                });
+                
+                return conflicts;
+                
+            } catch (error) {
+                console.error('Error checking path conflicts:', error);
+                return [];
+            }
+        }
+
+        function checkTimeSpacing(trains) {
+            const warnings = [];
+            
+            // Sort trains by departure time
+            const sortedTrains = [...trains].sort((a, b) => a.departure_time.localeCompare(b.departure_time));
+            
+            for (let i = 1; i < sortedTrains.length; i++) {
+                const prevTrain = sortedTrains[i - 1];
+                const currentTrain = sortedTrains[i];
+                
+                // Check if trains are too close together
+                const prevTime = new Date(`2000-01-01T${prevTrain.departure_time}`);
+                const currentTime = new Date(`2000-01-01T${currentTrain.departure_time}`);
+                const timeDiff = (currentTime - prevTime) / (1000 * 60); // minutes
+                
+                if (timeDiff < 5) { // Less than 5 minutes apart
+                    warnings.push({
+                        type: 'tight_spacing',
+                        trains: [prevTrain.train_number, currentTrain.train_number],
+                        spacing: `${Math.round(timeDiff)} minutes`,
+                        message: 'Trains scheduled very close together'
+                    });
+                }
+            }
+            
+            return warnings;
+        }
+
+        function openTimetableView() {
+            window.open('timetable.html', '_blank');
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('statusMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `status-message status-${type}`;
+            messageDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

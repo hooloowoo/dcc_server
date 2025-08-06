@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCC Timetable Stops</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .header {
+            background: rgba(255,255,255,0.95);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            color: #1e3c72;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .filters {
+            background: rgba(255,255,255,0.95);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        
+        .form-group select,
+        .form-group input {
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2a5298;
+        }
+        
+        .content-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .schedule-card {
+            border-left: 4px solid #1e3c72;
+            margin-bottom: 1rem;
+        }
+        
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .schedule-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        
+        .schedule-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .stops-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .stops-table th,
+        .stops-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stops-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+        
+        .stops-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .stop-type {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .stop-type.origin {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .stop-type.destination {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .stop-type.intermediate {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .stop-type.technical {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: rgba(255,255,255,0.7);
+            color: #1e3c72;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            background: #1e3c72;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚉 DCC Timetable Stops</h1>
+    </div>
+    
+    <div class="container">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('schedules')">View by Schedule</button>
+            <button class="tab-btn" onclick="switchTab('station')">View by Station</button>
+        </div>
+        
+        <!-- Schedules Tab -->
+        <div id="schedules-tab" class="tab-content active">
+            <div class="filters">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="scheduleFilter">Filter Schedules:</label>
+                        <input type="text" id="scheduleFilter" placeholder="Search schedules..." onchange="loadSchedules()">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="loadSchedules()">Load Schedules</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="schedulesContent">
+                <div class="loading">Loading schedules...</div>
+            </div>
+        </div>
+        
+        <!-- Station Tab -->
+        <div id="station-tab" class="tab-content">
+            <div class="filters">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="stationSelect">Select Station:</label>
+                        <select id="stationSelect">
+                            <option value="">Choose a station...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateInput">Date:</label>
+                        <input type="date" id="dateInput">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" onclick="loadStationTimetable()">Load Timetable</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="stationContent">
+                <div class="no-data">Select a station to view its timetable</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'schedules';
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date
+            document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
+            
+            loadStations();
+            loadSchedules();
+        });
+        
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            
+            currentTab = tab;
+        }
+        
+        async function loadStations() {
+            try {
+                const response = await fetch('stations_api.php');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    const select = document.getElementById('stationSelect');
+                    select.innerHTML = '<option value="">Choose a station...</option>';
+                    
+                    result.data.forEach(station => {
+                        const option = document.createElement('option');
+                        option.value = station.id;
+                        option.textContent = `${station.id} - ${station.name}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading stations:', error);
+            }
+        }
+        
+        async function loadSchedules() {
+            const container = document.getElementById('schedulesContent');
+            container.innerHTML = '<div class="loading">Loading schedules...</div>';
+            
+            try {
+                const search = document.getElementById('scheduleFilter').value;
+                let url = 'timetable_management_api.php?action=schedules';
+                if (search) {
+                    url += `&search=${encodeURIComponent(search)}`;
+                }
+                
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    if (result.data.length === 0) {
+                        container.innerHTML = '<div class="no-data">No schedules found</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = '';
+                    
+                    for (const schedule of result.data) {
+                        const scheduleCard = await createScheduleCard(schedule);
+                        container.appendChild(scheduleCard);
+                    }
+                } else {
+                    container.innerHTML = `<div class="error">Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                console.error('Error loading schedules:', error);
+                container.innerHTML = '<div class="error">Failed to load schedules</div>';
+            }
+        }
+        
+        async function createScheduleCard(schedule) {
+            const card = document.createElement('div');
+            card.className = 'content-card schedule-card';
+            
+            // Load detailed schedule with stops
+            try {
+                const response = await fetch(`timetable_management_api.php?action=schedule&id=${schedule.schedule_id}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    const detailedSchedule = result.data;
+                    
+                    card.innerHTML = `
+                        <div class="schedule-header">
+                            <div>
+                                <div class="schedule-title">${detailedSchedule.schedule_name}</div>
+                                <div class="schedule-info">
+                                    Train: ${detailedSchedule.train_number} - ${detailedSchedule.train_name || 'Unnamed'} | 
+                                    Type: ${detailedSchedule.schedule_type} | 
+                                    Frequency: ${detailedSchedule.frequency} |
+                                    Stops: ${detailedSchedule.stops ? detailedSchedule.stops.length : 0}
+                                </div>
+                            </div>
+                            <div class="schedule-info">
+                                Effective: ${detailedSchedule.effective_date}
+                                ${detailedSchedule.expiry_date ? ` - ${detailedSchedule.expiry_date}` : ''}
+                            </div>
+                        </div>
+                        
+                        ${detailedSchedule.stops && detailedSchedule.stops.length > 0 ? `
+                            <table class="stops-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sequence</th>
+                                        <th>Station</th>
+                                        <th>Arrival</th>
+                                        <th>Departure</th>
+                                        <th>Type</th>
+                                        <th>Platform</th>
+                                        <th>Dwell Time</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${detailedSchedule.stops.map(stop => `
+                                        <tr>
+                                            <td>${stop.stop_sequence}</td>
+                                            <td><strong>${stop.station_id}</strong><br><small>${stop.station_name}</small></td>
+                                            <td>${stop.arrival_time}</td>
+                                            <td>${stop.departure_time}</td>
+                                            <td><span class="stop-type ${stop.stop_type}">${stop.stop_type}</span></td>
+                                            <td>${stop.platform_assignment || '-'}</td>
+                                            <td>${stop.dwell_time_minutes} min</td>
+                                            <td>${stop.notes || '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        ` : '<div class="no-data">No stops defined for this schedule</div>'}
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="schedule-header">
+                            <div class="schedule-title">${schedule.schedule_name}</div>
+                        </div>
+                        <div class="error">Error loading schedule details: ${result.error}</div>
+                    `;
+                }
+            } catch (error) {
+                card.innerHTML = `
+                    <div class="schedule-header">
+                        <div class="schedule-title">${schedule.schedule_name}</div>
+                    </div>
+                    <div class="error">Failed to load schedule details</div>
+                `;
+            }
+            
+            return card;
+        }
+        
+        async function loadStationTimetable() {
+            const stationId = document.getElementById('stationSelect').value;
+            const date = document.getElementById('dateInput').value;
+            const container = document.getElementById('stationContent');
+            
+            if (!stationId) {
+                container.innerHTML = '<div class="no-data">Please select a station</div>';
+                return;
+            }
+            
+            container.innerHTML = '<div class="loading">Loading station timetable...</div>';
+            
+            try {
+                const response = await fetch(`timetable_management_api.php?action=station_timetable&station_id=${stationId}&date=${date}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    if (result.data.length === 0) {
+                        container.innerHTML = '<div class="no-data">No trains scheduled for this station on this date</div>';
+                        return;
+                    }
+                    
+                    const stationName = result.data[0].station_name;
+                    
+                    container.innerHTML = `
+                        <div class="content-card">
+                            <h2>🚉 ${stationName} (${stationId}) - ${date}</h2>
+                            <table class="stops-table">
+                                <thead>
+                                    <tr>
+                                        <th>Train</th>
+                                        <th>Schedule</th>
+                                        <th>Arrival</th>
+                                        <th>Departure</th>
+                                        <th>Type</th>
+                                        <th>Platform</th>
+                                        <th>Track</th>
+                                        <th>Status</th>
+                                        <th>Delay</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${result.data.map(stop => `
+                                        <tr>
+                                            <td><strong>${stop.train_number}</strong><br><small>${stop.train_name || 'Unnamed'}</small></td>
+                                            <td>${stop.schedule_name}</td>
+                                            <td>${stop.arrival_time}</td>
+                                            <td>${stop.departure_time}</td>
+                                            <td><span class="stop-type ${stop.stop_type}">${stop.stop_type}</span></td>
+                                            <td>${stop.platform_assignment || '-'}</td>
+                                            <td>${stop.track_name || stop.track_id || '-'}</td>
+                                            <td>${stop.instance_status || 'scheduled'}</td>
+                                            <td>${stop.delay_minutes ? stop.delay_minutes + ' min' : '-'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `<div class="error">Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                console.error('Error loading station timetable:', error);
+                container.innerHTML = '<div class="error">Failed to load station timetable</div>';
+            }
+        }
+    </script>
+</body>
+</html>

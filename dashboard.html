@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCC Layout Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        .user-header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .user-role {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .role-admin { background: #e74c3c; }
+        .role-operator { background: #f39c12; }
+        .role-viewer { background: #95a5a6; }
+        
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+        
+        .main-content {
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #3498db;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #95a5a6;
+            margin-bottom: 30px;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav-link {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 0 10px;
+            display: inline-block;
+        }
+        
+        .nav-link:hover {
+            background-color: #2980b9;
+        }
+        
+        .status-bar {
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid #444;
+        }
+        
+        .status-item {
+            margin: 5px 15px;
+        }
+        
+        .status-label {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0 20px 0;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .filter-controls select, .filter-controls input {
+            padding: 5px 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #333;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+        
+        .tiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .tile {
+            background-color: #2c2c2c;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid #3498db;
+            border: 1px solid #444;
+        }
+        
+        .tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        
+        .tile.locomotive {
+            border-left-color: #27ae60;
+        }
+        
+        .tile.accessory {
+            border-left-color: #e67e22;
+        }
+        
+        .tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .tile-type {
+            background-color: #34495e;
+            color: #27ae60;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .tile.accessory .tile-type {
+            background-color: #34495e;
+            color: #e67e22;
+        }
+        
+        .tile-address {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .tile-content {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .info-label {
+            color: #95a5a6;
+            font-size: 13px;
+        }
+        
+        .info-value {
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+        
+        .speed-indicator {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+        
+        .speed-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60 0%, #f39c12 50%, #e74c3c 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .direction-indicator {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .direction-forward {
+            background-color: #34495e;
+            color: #27ae60;
+        }
+        
+        .direction-reverse {
+            background-color: #34495e;
+            color: #e74c3c;
+        }
+        
+        .functions-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-top: 5px;
+        }
+        
+        .function-badge {
+            background-color: #3498db;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .accessory-position {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .position-left {
+            background-color: #34495e;
+            color: #3498db;
+        }
+        
+        .position-right {
+            background-color: #34495e;
+            color: #e67e22;
+        }
+        
+        .last-seen {
+            color: #95a5a6;
+            font-size: 11px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #95a5a6;
+            padding: 40px;
+            background-color: #2c2c2c;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .error {
+            background-color: #722f37;
+            color: #f8d7da;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+        
+        @media (max-width: 768px) {
+            .tiles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="user-header">
+        <div class="user-info">
+            <span class="user-name" id="userName">Loading...</span>
+            <span class="user-role" id="userRole"></span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="main-content">
+        <div class="container">
+            <h1>DCC Layout Control</h1>
+            <p class="subtitle">Real-time locomotive and accessory status</p>
+            
+            <div class="navigation">
+                <a href="monitor.html" class="nav-link">📊 Detailed Monitor</a>
+                <a href="locomotives.html" class="nav-link">🚂 Locomotives</a>
+                <a href="trains.html" class="nav-link">🚆 Trains</a>
+                <a href="railway_timetable.html" class="nav-link">📋 Railway Timetable</a>
+                <a href="stations.html" class="nav-link">🚉 Stations</a>
+                <a href="model_time_clock.html" class="nav-link">🕒 Model Time</a>
+                <a href="model_time_control.html" class="nav-link">⚙️ Time Control</a>
+                <a href="#" class="nav-link" onclick="refreshData()">🔄 Refresh</a>
+            </div>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">Active Locomotives</div>
+                <div class="status-value" id="activeLocos">-</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Active Accessories</div>
+                <div class="status-value" id="activeAccessories">-</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Total Packets (10min)</div>
+                <div class="status-value" id="totalPackets">-</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Last Activity</div>
+                <div class="status-value" id="lastActivity">-</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Connection</div>
+                <div class="status-value" id="connectionStatus">-</div>
+            </div>
+        </div>
+        
+        <div class="section-header">
+            <div class="section-title">🚂 Locomotives</div>
+            <div class="filter-controls">
+                <select id="locoFilter" onchange="applyFilters()">
+                    <option value="">All Locomotives</option>
+                    <option value="active">Active Only</option>
+                    <option value="moving">Moving Only</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="locomotivesGrid" class="tiles-grid">
+            <div class="loading">Loading locomotive data...</div>
+        </div>
+        
+        <div class="section-header">
+            <div class="section-title">🔧 Accessories</div>
+            <div class="filter-controls">
+                <select id="accessoryFilter" onchange="applyFilters()">
+                    <option value="">All Accessories</option>
+                    <option value="active">Recently Active</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="accessoriesGrid" class="tiles-grid">
+            <div class="loading">Loading accessory data...</div>
+        </div>
+        
+        <div id="errorMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        let locomotives = new Map();
+        let accessories = new Map();
+        let refreshInterval = null;
+        let currentUser = null;
+        
+        // Check authentication on page load - allow viewing without auth, require auth for editing
+        async function checkAuth() {
+            try {
+                const response = await fetch('auth_api.php?action=validate');
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.valid) {
+                    // Get user profile
+                    const profileResponse = await fetch('auth_api.php?action=profile');
+                    const profileResult = await profileResponse.json();
+                    
+                    if (profileResult.status === 'success') {
+                        currentUser = profileResult.data;
+                        updateUserHeader();
+                        return true;
+                    }
+                }
+                
+                // Not authenticated - set as guest user for viewing
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // Allow viewing even if auth check fails
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            }
+        }
+        
+        function updateUserHeader() {
+            const userNameElement = document.getElementById('userName');
+            const userRoleElement = document.getElementById('userRole');
+            const logoutBtn = document.querySelector('.logout-btn');
+            
+            if (currentUser) {
+                const userName = currentUser.first_name && currentUser.last_name 
+                    ? `${currentUser.first_name} ${currentUser.last_name}` 
+                    : currentUser.username;
+                userNameElement.textContent = userName;
+                
+                userRoleElement.textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                userRoleElement.className = `user-role role-${currentUser.role}`;
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Logout';
+                logoutBtn.onclick = logout;
+            } else {
+                userNameElement.textContent = 'Guest User';
+                userRoleElement.textContent = 'View Only';
+                userRoleElement.className = 'user-role role-viewer';
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Login';
+                logoutBtn.onclick = () => window.location.href = 'login.html';
+            }
+        }
+        
+        async function logout() {
+            try {
+                await fetch('auth_api.php?action=logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Start auto-refresh
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check auth but don't require it for viewing
+            await checkAuth();
+            
+            // Load data regardless of authentication status
+            refreshData();
+            refreshInterval = setInterval(refreshData, 5000); // Refresh every 5 seconds
+        });
+        
+        async function refreshData() {
+            const errorElement = document.getElementById('errorMessage');
+            
+            try {
+                errorElement.innerHTML = '';
+                
+                const response = await fetch('api.php?limit=500');
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    processPacketData(result.data);
+                    updateStatusBar(result.stats);
+                    renderTiles();
+                    document.getElementById('connectionStatus').textContent = 'Connected';
+                } else {
+                    throw new Error(result.error || 'Unknown error');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                errorElement.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                document.getElementById('connectionStatus').textContent = 'Error';
+            }
+        }
+        
+        function processPacketData(packets) {
+            const now = new Date();
+            const cutoffTime = new Date(now.getTime() - 10 * 60 * 1000); // 10 minutes ago
+            
+            // Filter packets within time window
+            const recentPackets = packets.filter(packet => {
+                const packetTime = new Date(packet.timestamp);
+                return packetTime >= cutoffTime;
+            });
+            
+            // Clear old data
+            locomotives.clear();
+            accessories.clear();
+            
+            // Debug: Log the first few packets to see their structure
+            if (recentPackets.length > 0) {
+                console.log('Sample packets:', recentPackets.slice(0, 5));
+                
+                // Show structure of locomotive packets specifically
+                const locoPackets = recentPackets.filter(p => p.packet_type === 'LOCOMOTIVE').slice(0, 3);
+                if (locoPackets.length > 0) {
+                    console.log('Sample locomotive packets:');
+                    locoPackets.forEach((packet, index) => {
+                        console.log(`Loco packet ${index + 1}:`, {
+                            address: packet.address,
+                            speed: packet.speed,
+                            direction: packet.direction,
+                            functions: packet.functions,
+                            instruction: packet.instruction,
+                            fullPacket: packet
+                        });
+                    });
+                }
+            }
+            
+            // Group packets by locomotive address to build complete state
+            const locomotivePackets = {};
+            const accessoryPackets = {};
+            
+            recentPackets.forEach(packet => {
+                if (packet.packet_type === 'LOCOMOTIVE' && packet.address) {
+                    if (!locomotivePackets[packet.address]) {
+                        locomotivePackets[packet.address] = [];
+                    }
+                    locomotivePackets[packet.address].push(packet);
+                } else if (packet.packet_type === 'ACCESSORY' && packet.address) {
+                    if (!accessoryPackets[packet.address]) {
+                        accessoryPackets[packet.address] = [];
+                    }
+                    accessoryPackets[packet.address].push(packet);
+                }
+            });
+            
+            // Build locomotive states by combining all packets for each locomotive
+            Object.keys(locomotivePackets).forEach(address => {
+                const packets = locomotivePackets[address];
+                // Sort packets by timestamp (oldest first) to build state chronologically
+                packets.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                
+                // Process all packets for this locomotive to build complete state
+                packets.forEach(packet => {
+                    updateLocomotiveState(packet);
+                });
+            });
+            
+            // Process accessory packets
+            Object.keys(accessoryPackets).forEach(address => {
+                const packets = accessoryPackets[address];
+                // Use the most recent packet for accessories
+                const latestPacket = packets.reduce((latest, current) => 
+                    new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest
+                );
+                updateAccessoryState(latestPacket);
+            });
+            
+            // Debug: Log final locomotive states
+            console.log('Final locomotive states:', Array.from(locomotives.values()));
+        }
+        
+        function updateLocomotiveState(packet) {
+            const address = packet.address;
+            
+            if (!locomotives.has(address)) {
+                locomotives.set(address, {
+                    address: address,
+                    speed: 0,
+                    direction: 'STOP',
+                    functions: [],
+                    lastSeen: packet.timestamp,
+                    lastInstruction: packet.instruction,
+                    locomotiveInfo: null // Will be loaded from database
+                });
+            }
+            
+            const loco = locomotives.get(address);
+            const packetTime = new Date(packet.timestamp);
+            const currentLastSeen = new Date(loco.lastSeen);
+            
+            // Always update the timestamp if this packet is newer
+            if (packetTime >= currentLastSeen) {
+                loco.lastSeen = packet.timestamp;
+                loco.lastInstruction = packet.instruction;
+            }
+            
+            // Update speed if present (including 0 speed) - regardless of timestamp for accumulation
+            if (packet.speed !== null && packet.speed !== undefined && packet.speed !== '') {
+                const newSpeed = parseInt(packet.speed);
+                if (!isNaN(newSpeed)) {
+                    loco.speed = newSpeed;
+                    console.log(`Updated speed for loco ${address}: ${loco.speed}`);
+                }
+            }
+            
+            // Update direction if present - regardless of timestamp for accumulation
+            if (packet.direction !== null && packet.direction !== undefined && packet.direction !== '') {
+                loco.direction = packet.direction.toString().toUpperCase();
+                console.log(`Updated direction for loco ${address}: ${loco.direction}`);
+            }
+            
+            // Update functions if present - regardless of timestamp for accumulation
+            if (packet.functions !== null && packet.functions !== undefined && packet.functions !== '') {
+                if (typeof packet.functions === 'string') {
+                    loco.functions = packet.functions.split(',').filter(f => f.trim());
+                } else if (Array.isArray(packet.functions)) {
+                    loco.functions = packet.functions.filter(f => f && f.toString().trim());
+                } else {
+                    loco.functions = [];
+                }
+                console.log(`Updated functions for loco ${address}:`, loco.functions);
+            }
+            
+            // Load locomotive info from database if not already loaded
+            if (!loco.locomotiveInfo) {
+                loadLocomotiveInfo(address);
+            }
+            
+            // Debug logging - show what fields were in the packet
+            console.log(`Processing packet for loco ${address}:`, {
+                packetType: packet.instruction || 'unknown',
+                packetFields: {
+                    speed: packet.speed,
+                    direction: packet.direction, 
+                    functions: packet.functions
+                },
+                currentState: {
+                    speed: loco.speed,
+                    direction: loco.direction,
+                    functions: loco.functions
+                },
+                timestamp: packet.timestamp
+            });
+        }
+        
+        function updateAccessoryState(packet) {
+            const address = packet.address;
+            
+            if (!accessories.has(address)) {
+                accessories.set(address, {
+                    address: address,
+                    side: packet.side,
+                    state: packet.state,
+                    lastSeen: packet.timestamp,
+                    lastInstruction: packet.instruction
+                });
+            }
+            
+            const accessory = accessories.get(address);
+            
+            // Update with most recent data
+            if (new Date(packet.timestamp) > new Date(accessory.lastSeen)) {
+                accessory.lastSeen = packet.timestamp;
+                accessory.lastInstruction = packet.instruction;
+                accessory.side = packet.side;
+                accessory.state = packet.state;
+            }
+        }
+        
+        function renderTiles() {
+            renderLocomotives();
+            renderAccessories();
+        }
+        
+        function renderLocomotives() {
+            const container = document.getElementById('locomotivesGrid');
+            const filter = document.getElementById('locoFilter').value;
+            
+            let filteredLocos = Array.from(locomotives.values());
+            
+            if (filter === 'active') {
+                const cutoff = new Date(Date.now() - 2 * 60 * 1000); // 2 minutes
+                filteredLocos = filteredLocos.filter(loco => new Date(loco.lastSeen) > cutoff);
+            } else if (filter === 'moving') {
+                filteredLocos = filteredLocos.filter(loco => loco.speed > 0);
+            }
+            
+            if (filteredLocos.length === 0) {
+                container.innerHTML = '<div class="no-data">No locomotives found matching the current filter</div>';
+                return;
+            }
+            
+            // Sort by address
+            filteredLocos.sort((a, b) => a.address - b.address);
+            
+            container.innerHTML = filteredLocos.map(loco => `
+                <div class="tile locomotive">
+                    <div class="tile-header">
+                        <div class="tile-address">#${loco.address}</div>
+                        <div class="tile-type">LOCOMOTIVE</div>
+                    </div>
+                    <div class="tile-content">
+                        ${loco.locomotiveInfo ? `
+                            <div class="info-row">
+                                <span class="info-label">Model:</span>
+                                <span class="info-value">${loco.locomotiveInfo.display_name}</span>
+                            </div>
+                            ${loco.locomotiveInfo.picture_url ? `
+                                <div style="text-align: center; margin: 10px 0;">
+                                    <img src="${loco.locomotiveInfo.picture_url}" alt="${loco.locomotiveInfo.display_name}" 
+                                         style="max-width: 100%; max-height: 80px; border-radius: 4px;">
+                                </div>
+                            ` : ''}
+                        ` : ''}
+                        <div class="info-row">
+                            <span class="info-label">Speed:</span>
+                            <span class="info-value">${loco.speed}/128</span>
+                        </div>
+                        <div class="speed-indicator">
+                            <div class="speed-bar" style="width: ${(loco.speed / 128) * 100}%"></div>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Direction:</span>
+                            <span class="direction-indicator ${loco.speed === 0 ? 'direction-reverse' : (loco.direction.toLowerCase() === 'forward' ? 'direction-forward' : 'direction-reverse')}">
+                                ${loco.speed === 0 ? '⏸ Stop' : (loco.direction.toLowerCase() === 'forward' ? '▶ Forward' : '◀ Reverse')}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Last Command:</span>
+                            <span class="info-value">${loco.lastInstruction || 'Unknown'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Functions:</span>
+                        </div>
+                        <div class="functions-display">
+                            ${loco.functions.length > 0 ? 
+                                loco.functions.map(func => {
+                                    const funcDesc = loco.locomotiveInfo?.function_mapping?.[func] || func;
+                                    return `<span class="function-badge" title="${funcDesc}">${func}</span>`;
+                                }).join('') :
+                                '<span class="info-value" style="color: #95a5a6;">None active</span>'
+                            }
+                        </div>
+                    </div>
+                    <div class="last-seen">Last seen: ${formatTime(loco.lastSeen)}</div>
+                </div>
+            `).join('');
+        }
+        
+        // Load locomotive information from database
+        async function loadLocomotiveInfo(address) {
+            try {
+                const response = await fetch(`locomotives_api.php?action=by_address&address=${address}`);
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data) {
+                    const loco = locomotives.get(address);
+                    if (loco) {
+                        loco.locomotiveInfo = result.data;
+                        // Re-render locomotives to show the new info
+                        renderLocomotives();
+                    }
+                }
+            } catch (error) {
+                console.error(`Error loading locomotive info for address ${address}:`, error);
+            }
+        }
+        
+        function renderAccessories() {
+            const container = document.getElementById('accessoriesGrid');
+            const filter = document.getElementById('accessoryFilter').value;
+            
+            let filteredAccessories = Array.from(accessories.values());
+            
+            if (filter === 'active') {
+                const cutoff = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes
+                filteredAccessories = filteredAccessories.filter(acc => new Date(acc.lastSeen) > cutoff);
+            }
+            
+            if (filteredAccessories.length === 0) {
+                container.innerHTML = '<div class="no-data">No accessories found matching the current filter</div>';
+                return;
+            }
+            
+            // Sort by address
+            filteredAccessories.sort((a, b) => a.address - b.address);
+            
+            container.innerHTML = filteredAccessories.map(accessory => `
+                <div class="tile accessory">
+                    <div class="tile-header">
+                        <div class="tile-address">#${accessory.address}</div>
+                        <div class="tile-type">ACCESSORY</div>
+                    </div>
+                    <div class="tile-content">
+                        <div class="info-row">
+                            <span class="info-label">Position:</span>
+                            <span class="accessory-position ${accessory.side == 1 ? 'position-left' : 'position-right'}">
+                                ${accessory.side == 1 ? '← Left' : 'Right →'}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Last Command:</span>
+                            <span class="info-value">${accessory.lastInstruction || 'Unknown'}</span>
+                        </div>
+                    </div>
+                    <div class="last-seen">Last seen: ${formatTime(accessory.lastSeen)}</div>
+                </div>
+            `).join('');
+        }
+        
+        function updateStatusBar(stats) {
+            document.getElementById('activeLocos').textContent = locomotives.size;
+            document.getElementById('activeAccessories').textContent = accessories.size;
+            document.getElementById('totalPackets').textContent = stats?.total_packets || '0';
+            
+            if (stats?.last_packet_time) {
+                document.getElementById('lastActivity').textContent = formatTime(stats.last_packet_time);
+            } else {
+                document.getElementById('lastActivity').textContent = 'No data';
+            }
+        }
+        
+        function applyFilters() {
+            renderTiles();
+        }
+        
+        function formatTime(timestamp) {
+            if (!timestamp) return '-';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString();
+        }
+        
+        // Cleanup interval on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

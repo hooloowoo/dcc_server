@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Train - DCC Layout Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: rgb(32, 32, 40);
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgb(26, 26, 32);
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .back-link {
+            color: #4fc3f7;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #4fc3f7;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #4fc3f7;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .form-section {
+            background: rgb(45, 45, 55);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .section-title {
+            color: #4fc3f7;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #4fc3f7;
+            padding-bottom: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #e0e0e0;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            background: rgb(65, 65, 75);
+            border: 1px solid rgb(85, 85, 95);
+            color: #e0e0e0;
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+        }
+
+        .form-group.required label::after {
+            content: ' *';
+            color: #f44336;
+        }
+
+        .validation-section {
+            background: rgb(35, 35, 45);
+            border: 1px solid rgb(65, 65, 75);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .validation-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .validation-status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .validation-status.pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .validation-status.valid {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+        }
+
+        .validation-status.invalid {
+            background: rgba(244, 67, 54, 0.2);
+            color: #e57373;
+        }
+
+        .route-display {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(79, 195, 247, 0.1);
+            border-radius: 4px;
+            border-left: 4px solid #4fc3f7;
+        }
+
+        .route-path {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-weight: 600;
+            color: #4fc3f7;
+            margin-bottom: 8px;
+        }
+
+        .route-details {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .conflict-list {
+            margin-top: 10px;
+        }
+
+        .conflict-item {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .conflict-type {
+            font-weight: 600;
+            color: #f44336;
+            margin-bottom: 4px;
+        }
+
+        .conflict-details {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .conflict-summary {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .conflict-summary h4 {
+            color: #ffc107;
+            margin-bottom: 8px;
+        }
+
+        .summary-message {
+            color: #e0e0e0;
+            line-height: 1.5;
+        }
+
+        .schedule-info, .route-summary {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .schedule-info h4, .route-summary h4 {
+            color: #4caf50;
+            margin-bottom: 12px;
+        }
+
+        .schedule-item, .route-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.1);
+        }
+
+        .schedule-item:last-child, .route-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-label, .route-label {
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .schedule-value, .route-value {
+            color: #4caf50;
+            font-weight: 500;
+        }
+
+        .btn {
+            background: #4fc3f7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #29b6f6;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: rgb(85, 85, 95);
+            color: #e0e0e0;
+        }
+
+        .btn.secondary:hover {
+            background: rgb(105, 105, 115);
+        }
+
+        .btn.success {
+            background: #66bb6a;
+        }
+
+        .btn.success:hover {
+            background: #4caf50;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+        }
+
+        .message.error {
+            background: rgba(244, 67, 54, 0.2);
+            color: #e57373;
+            border: 1px solid rgba(244, 67, 54, 0.5);
+        }
+
+        .message.warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.5);
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .time-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .station-times {
+            margin-top: 15px;
+            background: rgba(79, 195, 247, 0.05);
+            border-radius: 4px;
+            padding: 15px;
+        }
+
+        .station-times h4 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+        }
+
+        .station-times-header {
+            margin-bottom: 15px;
+        }
+
+        .station-times-header small {
+            color: #95a5a6;
+            font-style: italic;
+        }
+
+        .station-time-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(79, 195, 247, 0.1);
+        }
+
+        .station-time-item:last-child {
+            border-bottom: none;
+        }
+
+        .station-name {
+            font-weight: 500;
+            min-width: 150px;
+        }
+
+        .station-times-detail {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+
+        .arrival-time {
+            color: #81c784;
+            min-width: 80px;
+        }
+
+        .departure-time {
+            color: #ffb74d;
+            min-width: 80px;
+        }
+
+        .waiting-time-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 120px;
+        }
+
+        .waiting-label {
+            color: #95a5a6;
+            font-size: 0.8rem;
+            min-width: 30px;
+        }
+
+        .waiting-time-input {
+            background: rgba(65, 65, 75, 0.8);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            color: #e0e0e0;
+            padding: 4px 8px;
+            border-radius: 3px;
+            width: 50px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .waiting-time-input:focus {
+            outline: none;
+            border-color: #4fc3f7;
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.2);
+        }
+
+        .waiting-unit {
+            color: #95a5a6;
+            font-size: 0.8rem;
+        }
+
+        .final-station {
+            color: #95a5a6;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        .recalculate-section {
+            margin-top: 15px;
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(79, 195, 247, 0.1);
+        }
+
+        .btn-recalculate {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .btn-recalculate:hover {
+            background: #229954;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .time-section {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .action-buttons {
+                justify-content: stretch;
+            }
+            
+            .action-buttons .btn {
+                flex: 1;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚂 Add Train</h1>
+        <a href="trains.html" class="back-link">← Back to Trains</a>
+    </div>
+
+    <div class="container">
+        <div id="messageArea"></div>
+
+        <form id="trainForm">
+            <div class="form-section">
+                <h2 class="section-title">🚂 Train Information</h2>
+                <div class="form-grid">
+                    <div class="form-group required">
+                        <label for="trainNumber">Train Number</label>
+                        <input type="text" id="trainNumber" name="train_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trainName">Train Name</label>
+                        <input type="text" id="trainName" name="train_name">
+                    </div>
+                    <div class="form-group">
+                        <label for="trainType">Train Type</label>
+                        <select id="trainType" name="train_type">
+                            <option value="passenger">Passenger</option>
+                            <option value="freight">Freight</option>
+                            <option value="express">Express</option>
+                            <option value="local">Local</option>
+                            <option value="commuter">Commuter</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="maxSpeed">Max Speed (km/h)</label>
+                        <input type="number" id="maxSpeed" name="max_speed_kmh" min="1" max="300">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">🗺️ Route Information</h2>
+                <div class="form-grid">
+                    <div class="form-group required">
+                        <label for="departureStation">Departure Station</label>
+                        <select id="departureStation" name="departure_station_id" required>
+                            <option value="">-- Select departure station --</option>
+                        </select>
+                    </div>
+                    <div class="form-group required">
+                        <label for="arrivalStation">Arrival Station</label>
+                        <select id="arrivalStation" name="arrival_station_id" required>
+                            <option value="">-- Select arrival station --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="time-section">
+                    <div class="form-group required">
+                        <label for="departureTime">Departure Time</label>
+                        <input type="time" id="departureTime" name="departure_time" required>
+                    </div>
+                </div>
+
+                <div class="validation-section" id="routeValidation" style="display: none;">
+                    <div class="validation-header">
+                        <h4>Route Validation</h4>
+                        <div class="validation-status pending" id="validationStatus">Pending</div>
+                    </div>
+                    <div id="validationResults"></div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2 class="section-title">🚂 Locomotive Assignment</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="locomotive">Assign Locomotive (Required)</label>
+                        <select id="locomotive" name="locomotive_id" required>
+                            <option value="">-- Select a locomotive --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="consistNotes">Consist Notes</label>
+                        <textarea id="consistNotes" name="consist_notes" rows="3" placeholder="Additional notes about the train consist..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn secondary" onclick="validateRoute()">
+                    🔍 Validate Route
+                </button>
+                <button type="button" class="btn secondary" onclick="clearForm()">
+                    🗑️ Clear Form
+                </button>
+                <button type="submit" class="btn success" id="createBtn" disabled>
+                    ✅ Create Train
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let stations = [];
+        let locomotives = [];
+        let currentValidation = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStations();
+            loadLocomotives();
+            
+            // Add event listeners for route validation
+            document.getElementById('departureStation').addEventListener('change', onRouteChange);
+            document.getElementById('arrivalStation').addEventListener('change', onRouteChange);
+            document.getElementById('departureTime').addEventListener('change', onRouteChange);
+            
+            // Add event listeners for locomotive availability
+            document.getElementById('departureStation').addEventListener('change', loadLocomotives);
+            document.getElementById('departureTime').addEventListener('change', loadLocomotives);
+            
+            // Form submission
+            document.getElementById('trainForm').addEventListener('submit', createTrain);
+        });
+
+        async function loadStations() {
+            try {
+                const response = await fetch('trains_api.php?action=stations');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    stations = data.data;
+                    populateStationSelects();
+                } else {
+                    showMessage('Failed to load stations: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error loading stations: ' + error.message, 'error');
+            }
+        }
+
+        async function loadLocomotives() {
+            try {
+                const departureStation = document.getElementById('departureStation').value;
+                const departureTime = document.getElementById('departureTime').value;
+                
+                let url = 'trains_api.php?action=available_locomotives';
+                if (departureStation && departureTime) {
+                    url += `&departure_station=${encodeURIComponent(departureStation)}&departure_time=${encodeURIComponent(departureTime)}`;
+                }
+                
+                console.log('Loading locomotives from:', url);
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Locomotive API response:', data);
+                
+                if (data.status === 'success') {
+                    locomotives = data.data || [];
+                    console.log('Loaded locomotives:', locomotives.length);
+                    populateLocomotiveSelect();
+                } else {
+                    console.warn('Failed to load locomotives:', data.error);
+                    showMessage('Failed to load locomotives: ' + (data.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Error loading locomotives:', error);
+                showMessage('Error loading locomotives: ' + error.message, 'error');
+            }
+        }
+
+        function populateStationSelects() {
+            const departureSelect = document.getElementById('departureStation');
+            const arrivalSelect = document.getElementById('arrivalStation');
+            
+            const departureOptions = '<option value="">-- Select departure station --</option>' +
+                stations.map(station => `<option value="${station.id}">${station.name} (${station.id})</option>`).join('');
+            const arrivalOptions = '<option value="">-- Select arrival station --</option>' +
+                stations.map(station => `<option value="${station.id}">${station.name} (${station.id})</option>`).join('');
+            
+            departureSelect.innerHTML = departureOptions;
+            arrivalSelect.innerHTML = arrivalOptions;
+        }
+
+        function populateLocomotiveSelect() {
+            const locomotiveSelect = document.getElementById('locomotive');
+            
+            if (!locomotives || locomotives.length === 0) {
+                locomotiveSelect.innerHTML = '<option value="">-- No locomotives available --</option>';
+                return;
+            }
+            
+            const options = '<option value="">-- Select a locomotive --</option>' +
+                locomotives.map(loco => {
+                    const statusIcon = loco.availability_status === 'available' ? '✅' : 
+                                     loco.availability_status === 'assigned' ? '🔄' : '❌';
+                    const utilizationBadge = loco.utilization_score > 0 ? ` [${loco.utilization_score} active]` : '';
+                    const statusText = loco.notes ? ` (${loco.notes})` : '';
+                    return `<option value="${loco.id}">${statusIcon} ${loco.display_name}${utilizationBadge}${statusText}</option>`;
+                }).join('');
+            
+            locomotiveSelect.innerHTML = options;
+            console.log('Populated locomotive select with', locomotives.length, 'locomotives');
+        }
+
+        function onRouteChange() {
+            // Reset validation when route parameters change
+            currentValidation = null;
+            document.getElementById('createBtn').disabled = true;
+            
+            const validationSection = document.getElementById('routeValidation');
+            const status = document.getElementById('validationStatus');
+            
+            status.textContent = 'Pending';
+            status.className = 'validation-status pending';
+            validationSection.style.display = 'none';
+        }
+
+        async function validateRoute() {
+            const departureStation = document.getElementById('departureStation').value;
+            const arrivalStation = document.getElementById('arrivalStation').value;
+            const departureTime = document.getElementById('departureTime').value;
+            
+            if (!departureStation || !arrivalStation || !departureTime) {
+                showMessage('Please fill in all required route fields before validating', 'warning');
+                return;
+            }
+            
+            const validationSection = document.getElementById('routeValidation');
+            const status = document.getElementById('validationStatus');
+            const results = document.getElementById('validationResults');
+            
+            validationSection.style.display = 'block';
+            status.innerHTML = '<div class="loading"><div class="spinner"></div>Validating...</div>';
+            status.className = 'validation-status pending';
+            results.innerHTML = '';
+            
+            try {
+                // For validation, we'll use a temporary arrival time calculated from the route
+                // The API will calculate the actual arrival time based on the route
+                const response = await fetch(`enhanced_train_creator_api.php?action=validate_only&departure_station=${departureStation}&arrival_station=${arrivalStation}&departure_time=${departureTime}`);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    currentValidation = data.data;
+                    displayValidationResults(currentValidation);
+                    
+                    if (currentValidation.availability.available) {
+                        status.textContent = 'Valid Route';
+                        status.className = 'validation-status valid';
+                        document.getElementById('createBtn').disabled = false;
+                    } else {
+                        status.textContent = 'Route Conflicts';
+                        status.className = 'validation-status invalid';
+                        document.getElementById('createBtn').disabled = true;
+                    }
+                } else {
+                    status.textContent = 'Validation Failed';
+                    status.className = 'validation-status invalid';
+                    results.innerHTML = `<div class="conflict-item"><div class="conflict-type">Error</div><div class="conflict-details">${data.error}</div></div>`;
+                    document.getElementById('createBtn').disabled = true;
+                }
+            } catch (error) {
+                status.textContent = 'Validation Error';
+                status.className = 'validation-status invalid';
+                results.innerHTML = `<div class="conflict-item"><div class="conflict-type">Network Error</div><div class="conflict-details">${error.message}</div></div>`;
+                document.getElementById('createBtn').disabled = true;
+            }
+        }
+
+        function displayValidationResults(validation) {
+            const results = document.getElementById('validationResults');
+            
+            let html = '';
+            
+            // Display route information
+            if (validation.route && validation.route.path) {
+                const distance = validation.route.total_distance || validation.route.distance || 0;
+                const displayDistance = isNaN(distance) ? 0 : Math.round(distance * 10) / 10;
+                
+                html += `
+                    <div class="route-display">
+                        <div class="route-path">${validation.route.route_description || validation.route.path.join(' → ')}</div>
+                        <div class="route-details">
+                            <span>Distance: ${displayDistance}km</span>
+                            <span>Stations: ${validation.route.stations_count || validation.route.path.length}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Display station times if available
+            if (validation.availability && validation.availability.station_times) {
+                html += `
+                    <div class="station-times">
+                        <h4>📅 Calculated Station Times</h4>
+                        <div class="station-times-header">
+                            <small>💡 Adjust waiting times below to recalculate schedule</small>
+                        </div>
+                `;
+                
+                validation.availability.station_times.forEach((stationTime, index) => {
+                    const stationName = getStationName(stationTime.station_id);
+                    const isFirstStation = index === 0;
+                    const isLastStation = index === validation.availability.station_times.length - 1;
+                    
+                    // Use custom waiting time if available, otherwise use API response, otherwise default to 0
+                    let dwellTime = stationTime.dwell_time || 0;
+                    if (currentWaitingTimes && currentWaitingTimes[stationTime.station_id] !== undefined) {
+                        dwellTime = currentWaitingTimes[stationTime.station_id];
+                    }
+                    
+                    html += `
+                        <div class="station-time-item" data-station-id="${stationTime.station_id}">
+                            <div class="station-name">${stationName}</div>
+                            <div class="station-times-detail">
+                                <span class="arrival-time">${isFirstStation ? '' : `Arr: ${formatTime(stationTime.arrival)}`}</span>
+                                <span class="departure-time">${isLastStation ? '' : `Dep: ${formatTime(stationTime.departure)}`}</span>
+                                ${!isLastStation && !isFirstStation ? `
+                                    <div class="waiting-time-control">
+                                        <label class="waiting-label">Wait:</label>
+                                        <input type="number" 
+                                               class="waiting-time-input" 
+                                               data-station-id="${stationTime.station_id}"
+                                               value="${dwellTime}" 
+                                               min="0" 
+                                               max="60" 
+                                               step="1"
+                                               onchange="updateWaitingTime('${stationTime.station_id}', this.value)">
+                                        <span class="waiting-unit">min</span>
+                                    </div>
+                                ` : `
+                                    <div class="waiting-time-control">
+                                        <span class="final-station">${isFirstStation ? 'Departure station' : 'Final destination'}</span>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        <div class="recalculate-section">
+                            <button class="btn btn-recalculate" onclick="recalculateWithWaitingTimes()">
+                                🔄 Recalculate Schedule
+                            </button>
+                        </div>
+                    </div>`;
+            }
+            
+            // Display conflicts or success information
+            if (validation.availability && validation.availability.conflicts && validation.availability.conflicts.length > 0) {
+                // Show conflict summary if available
+                if (validation.availability.summary && validation.availability.summary.summary_message) {
+                    html += `<div class="conflict-summary"><h4>⚠️ Route Validation Failed</h4>`;
+                    html += `<p class="summary-message">${validation.availability.summary.summary_message}</p></div>`;
+                }
+                
+                html += '<div class="conflict-list"><h4>📋 Detailed Conflicts</h4>';
+                
+                validation.availability.conflicts.forEach(conflict => {
+                    html += `
+                        <div class="conflict-item">
+                            <div class="conflict-type">${formatConflictType(conflict.type || 'track_segment_conflict')}</div>
+                            <div class="conflict-details">${formatConflictDetails(conflict)}</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            } else if (validation.availability && validation.availability.available) {
+                // Show success message and schedule details
+                html += '<div class="message success">✅ Route is clear for scheduling!</div>';
+                
+                // Show schedule information if available
+                if (validation.schedule) {
+                    html += '<div class="schedule-info"><h4>📅 Schedule Details</h4>';
+                    html += `<div class="schedule-item">`;
+                    html += `<span class="schedule-label">Departure:</span> <span class="schedule-value">${validation.schedule.departure_time}</span>`;
+                    html += `</div>`;
+                    html += `<div class="schedule-item">`;
+                    html += `<span class="schedule-label">Arrival:</span> <span class="schedule-value">${validation.schedule.arrival_time}</span>`;
+                    html += `</div>`;
+                    html += `<div class="schedule-item">`;
+                    html += `<span class="schedule-label">Travel Duration:</span> <span class="schedule-value">${validation.schedule.travel_duration_minutes} minutes</span>`;
+                    html += `</div>`;
+                    html += '</div>';
+                }
+                
+                // Show route information
+                if (validation.route) {
+                    html += '<div class="route-summary"><h4>🛤️ Route Summary</h4>';
+                    if (validation.route.route_description) {
+                        html += `<div class="route-item">`;
+                        html += `<span class="route-label">Path:</span> <span class="route-value">${validation.route.route_description}</span>`;
+                        html += `</div>`;
+                    }
+                    html += `<div class="route-item">`;
+                    const summaryDistance = validation.route.total_distance || 0;
+                    const displaySummaryDistance = isNaN(summaryDistance) ? 0 : Math.round(summaryDistance * 10) / 10;
+                    html += `<span class="route-label">Distance:</span> <span class="route-value">${displaySummaryDistance} ${validation.route.distance_unit || 'km'}</span>`;
+                    html += `</div>`;
+                    html += `<div class="route-item">`;
+                    html += `<span class="route-label">Stations:</span> <span class="route-value">${validation.route.stations_count} stations</span>`;
+                    html += `</div>`;
+                    html += '</div>';
+                }
+            }
+            
+            results.innerHTML = html;
+            
+            // Initialize waiting times if station times are available
+            if (validation.availability && validation.availability.station_times) {
+                initializeWaitingTimes(validation.availability.station_times);
+            }
+        }
+
+        async function createTrain(event) {
+            event.preventDefault();
+            
+            // Get button reference early
+            const createBtn = document.getElementById('createBtn');
+            const originalText = createBtn.innerHTML;
+            
+            if (!currentValidation || !currentValidation.availability.available) {
+                showMessage('Please validate the route before creating the train', 'warning');
+                return;
+            }
+            
+            const formData = new FormData(event.target);
+            const trainData = Object.fromEntries(formData.entries());
+            
+            // Validate locomotive selection
+            if (!trainData.locomotive_id) {
+                showMessage('Please select a locomotive for this train', 'error');
+                return;
+            }
+            
+            // Calculate arrival time from the validated schedule
+            if (currentValidation.availability && currentValidation.availability.station_times && currentValidation.availability.station_times.length > 0) {
+                const stationTimes = currentValidation.availability.station_times;
+                const lastStation = stationTimes[stationTimes.length - 1];
+                if (lastStation && lastStation.arrival) {
+                    trainData.arrival_time = lastStation.arrival;
+                } else {
+                    showMessage('Could not determine arrival time from schedule', 'error');
+                    return;
+                }
+            } else {
+                // Fallback: try to use calculated arrival time from route validation
+                if (currentValidation.calculated_arrival_time) {
+                    trainData.arrival_time = currentValidation.calculated_arrival_time;
+                } else if (currentValidation.route && currentValidation.route.calculated_arrival_time) {
+                    trainData.arrival_time = currentValidation.route.calculated_arrival_time;
+                } else {
+                    showMessage('No schedule data available for arrival time calculation. Please validate the route again.', 'error');
+                    return;
+                }
+            }
+            
+            // Remove empty values
+            Object.keys(trainData).forEach(key => {
+                if (trainData[key] === '') {
+                    delete trainData[key];
+                }
+            });
+            
+            // Add custom waiting times if any have been set
+            if (currentWaitingTimes && Object.keys(currentWaitingTimes).length > 0) {
+                trainData.waiting_times = currentWaitingTimes;
+            }
+            
+            createBtn.innerHTML = '<div class="loading"><div class="spinner"></div>Creating...</div>';
+            createBtn.disabled = true;
+            
+            try {
+                const response = await fetch('enhanced_train_creator_api.php?action=create_validated', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(trainData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showMessage(`✅ Train ${trainData.train_number} created successfully with validated route and calculated arrival time (${trainData.arrival_time})!`, 'success');
+                    
+                    // Show option to view schedule
+                    const messageDiv = document.querySelector('.message.success');
+                    messageDiv.innerHTML += `<br><a href="train_schedule.html?train_id=${data.train_id}" style="color: #4fc3f7;">📅 View Train Schedule</a>`;
+                    
+                    // Reset form
+                    clearForm();
+                } else {
+                    showMessage('Failed to create train: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showMessage('Error creating train: ' + error.message, 'error');
+            } finally {
+                createBtn.innerHTML = originalText;
+                createBtn.disabled = false;
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('trainForm').reset();
+            document.getElementById('routeValidation').style.display = 'none';
+            document.getElementById('createBtn').disabled = true;
+            currentValidation = null;
+            clearMessages();
+        }
+
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = `<div class="message ${type}">${message}</div>`;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(clearMessages, 5000);
+            }
+        }
+
+        function clearMessages() {
+            document.getElementById('messageArea').innerHTML = '';
+        }
+
+        // Helper functions
+        function getStationName(stationId) {
+            const station = stations.find(s => s.id === stationId);
+            return station ? `${station.name} (${stationId})` : stationId;
+        }
+
+        function formatTime(timeStr) {
+            return timeStr.substr(0, 5); // HH:MM
+        }
+
+        function formatConflictType(type) {
+            const types = {
+                'connection_conflict': '🚧 Connection Conflict',
+                'track_segment_conflict': '🚧 Track Segment Conflict',
+                'track_capacity': '🚂 Track Capacity Exceeded',
+                'no_tracks': '❌ No Tracks Available',
+                'time_overlap': '⏰ Time Overlap'
+            };
+            return types[type] || type;
+        }
+
+        function formatConflictDetails(conflict) {
+            switch (conflict.type) {
+                case 'connection_conflict':
+                    return `Conflicts with train ${conflict.conflicting_train} on ${conflict.from_station} → ${conflict.to_station}`;
+                case 'track_segment_conflict':
+                    // Use the elegant message from the API if available
+                    if (conflict.message) {
+                        return conflict.message;
+                    }
+                    // Fallback format
+                    return `Conflicts with train ${conflict.conflicting_train_number || conflict.conflicting_train} (${conflict.conflicting_train_name || 'Unknown'}) on ${conflict.track_segment || (conflict.from_station_name + ' ↔ ' + conflict.to_station_name)}. Overlap: ${conflict.overlap_start_time} - ${conflict.overlap_end_time} (${conflict.conflict_duration_minutes || 0} min)`;
+                case 'track_capacity':
+                    return `Station ${getStationName(conflict.station_id)} needs ${conflict.required} tracks but only has ${conflict.available}`;
+                case 'no_tracks':
+                    return `No tracks configured at station ${getStationName(conflict.station_id)}`;
+                default:
+                    // Handle legacy format or unknown conflicts
+                    if (conflict.conflicting_train && conflict.from_station && conflict.to_station) {
+                        return `Conflicts with train ${conflict.conflicting_train} (${conflict.train_name || 'Unknown'}) on ${conflict.from_station} ↔ ${conflict.to_station}. Times: ${conflict.our_times || 'Unknown'} vs ${conflict.their_times || 'Unknown'}`;
+                    }
+                    return JSON.stringify(conflict);
+            }
+        }
+
+        async function calculateScheduleWithSpeed() {
+            const departureStation = document.getElementById('departureStation').value;
+            const arrivalStation = document.getElementById('arrivalStation').value;
+            const departureTime = document.getElementById('departureTime').value;
+            const maxSpeed = document.getElementById('maxSpeed').value || 80;
+
+            if (!departureStation || !arrivalStation) {
+                showMessage('Please select departure and arrival stations', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch('trains_api.php?action=calculate_schedule', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        departure_station_id: departureStation,
+                        arrival_station_id: arrivalStation,
+                        departure_time: departureTime,
+                        max_speed_kmh: parseFloat(maxSpeed)
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    const data = result.data;
+                    
+                    // Note: This form doesn't have an arrival time field - arrival time is calculated automatically
+                    // The calculated arrival time is shown in the results below
+
+                    // Show calculation results
+                    const calculationResults = document.getElementById('calculationResults') || createCalculationResultsDiv();
+                    calculationResults.innerHTML = `
+                        <div class="calculation-summary">
+                            <h4>📊 Schedule Calculation</h4>
+                            <div class="calc-grid">
+                                <div class="calc-item">
+                                    <span class="calc-label">Total Distance:</span>
+                                    <span class="calc-value">${isNaN(data.total_distance_km) ? 0 : Math.round(data.total_distance_km * 10) / 10}km</span>
+                                </div>
+                                <div class="calc-item">
+                                    <span class="calc-label">Travel Time:</span>
+                                    <span class="calc-value">${data.total_travel_time_minutes} min</span>
+                                </div>
+                                <div class="calc-item">
+                                    <span class="calc-label">Average Speed:</span>
+                                    <span class="calc-value">${data.average_speed_kmh} km/h</span>
+                                </div>
+                                <div class="calc-item">
+                                    <span class="calc-label">Arrival Time:</span>
+                                    <span class="calc-value">${data.calculated_arrival_time || 'Set departure time'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    showMessage('Schedule calculated successfully!', 'success');
+                } else {
+                    showMessage('Schedule calculation failed: ' + result.error, 'error');
+                }
+
+            } catch (error) {
+                console.error('Schedule calculation error:', error);
+                showMessage('Error calculating schedule: ' + error.message, 'error');
+            }
+        }
+
+        function createCalculationResultsDiv() {
+            const div = document.createElement('div');
+            div.id = 'calculationResults';
+            div.className = 'calculation-results';
+            
+            // Insert after validation results
+            const validationResults = document.getElementById('validationResults');
+            validationResults.parentNode.insertBefore(div, validationResults.nextSibling);
+            
+            return div;
+        }
+
+        // Auto-calculate schedule when departure time or max speed changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const departureTimeField = document.getElementById('departureTime');
+            const maxSpeedField = document.getElementById('maxSpeed');
+            
+            if (departureTimeField) {
+                departureTimeField.addEventListener('change', calculateScheduleWithSpeed);
+            }
+            
+            if (maxSpeedField) {
+                maxSpeedField.addEventListener('input', debounce(calculateScheduleWithSpeed, 500));
+            }
+        });
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Store current waiting times
+        let currentWaitingTimes = {};
+
+        let recalculationTimeout;
+        let isRecalculating = false;
+
+        function updateWaitingTime(stationId, waitingTime) {
+            currentWaitingTimes[stationId] = parseInt(waitingTime) || 0;
+            console.log('Updated waiting time for station', stationId, ':', currentWaitingTimes[stationId], 'minutes');
+            
+            // Debounce automatic recalculation to prevent multiple simultaneous calls
+            clearTimeout(recalculationTimeout);
+            recalculationTimeout = setTimeout(() => {
+                if (!isRecalculating) {
+                    recalculateWithWaitingTimes();
+                }
+            }, 500); // Wait 500ms after last change before recalculating
+        }
+
+        async function recalculateWithWaitingTimes() {
+            // Prevent multiple simultaneous calls
+            if (isRecalculating) {
+                console.log('Recalculation already in progress, skipping...');
+                return;
+            }
+            
+            isRecalculating = true;
+            
+            const departureStation = document.getElementById('departureStation').value;
+            const arrivalStation = document.getElementById('arrivalStation').value;
+            const departureTime = document.getElementById('departureTime').value;
+
+            if (!departureStation || !arrivalStation || !departureTime) {
+                showMessage('Please ensure departure station, arrival station, and departure time are set', 'warning');
+                isRecalculating = false;
+                return;
+            }
+
+            // Show loading indicator without clearing the entire display
+            const resultsContainer = document.getElementById('validationResults');
+            if (resultsContainer) {
+                // Only remove existing success/conflict messages, keep station times
+                const existingMessages = resultsContainer.querySelectorAll('.message, .conflict-summary, .conflict-list');
+                existingMessages.forEach(el => el.remove());
+                
+                // Add loading message after station times
+                const stationTimes = resultsContainer.querySelector('.station-times');
+                if (stationTimes) {
+                    stationTimes.insertAdjacentHTML('afterend', '<div class="message info">🔄 Recalculating schedule...</div>');
+                }
+            }
+
+            // Collect current waiting times from all input fields
+            const waitingTimeInputs = document.querySelectorAll('.waiting-time-input');
+            const updatedWaitingTimes = {};
+            
+            waitingTimeInputs.forEach(input => {
+                const stationId = input.dataset.stationId;
+                const waitingTime = parseInt(input.value) || 0;
+                if (stationId) {
+                    updatedWaitingTimes[stationId] = waitingTime;
+                }
+            });
+            
+            // Update the global currentWaitingTimes object
+            currentWaitingTimes = updatedWaitingTimes;
+            
+            console.log('Collected waiting times for recalculation:', currentWaitingTimes);
+
+            // Get button reference once
+            const recalcBtn = document.querySelector('.btn-recalculate');
+            let originalText = '🔄 Recalculate Schedule';
+
+            try {
+                // Add loading state to button if it exists
+                if (recalcBtn) {
+                    originalText = recalcBtn.innerHTML;
+                    recalcBtn.innerHTML = '🔄 Recalculating...';
+                    recalcBtn.disabled = true;
+                }
+
+                // Call the enhanced API with custom waiting times
+                const response = await fetch('enhanced_train_creator_api.php?action=validate_with_waiting_times', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        departure_station: departureStation,
+                        arrival_station: arrivalStation,
+                        departure_time: departureTime,
+                        waiting_times: currentWaitingTimes,
+                        max_speed_kmh: parseFloat(document.getElementById('maxSpeed').value || 80)
+                    })
+                });
+
+                const result = await response.json();
+                
+                console.log('Recalculation API response:', result);
+                console.log('Current waiting times:', currentWaitingTimes);
+
+                if (result.status === 'success') {
+                    // Remove the recalculating message
+                    const loadingMessage = resultsContainer.querySelector('.message.info');
+                    if (loadingMessage) {
+                        loadingMessage.remove();
+                    }
+                    
+                    // Update station times in place to preserve input values, then update conflicts separately
+                    updateStationTimesInPlace(result);
+                    
+                    // Also update the conflict display
+                    updateConflictDisplay(result.data.availability);
+                    
+                    showMessage('Schedule recalculated with custom waiting times!', 'success');
+                } else {
+                    // Remove the recalculating message
+                    const loadingMessage = resultsContainer.querySelector('.message.info');
+                    if (loadingMessage) {
+                        loadingMessage.remove();
+                    }
+                    
+                    showMessage('Recalculation failed: ' + result.error, 'error');
+                }
+
+                // Restore button if it exists
+                if (recalcBtn) {
+                    recalcBtn.innerHTML = originalText;
+                    recalcBtn.disabled = false;
+                }
+
+            } catch (error) {
+                console.error('Recalculation error:', error);
+                
+                // Remove the recalculating message
+                const loadingMessage = resultsContainer.querySelector('.message.info');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+                
+                showMessage('Error recalculating schedule: ' + error.message, 'error');
+                
+                // Restore button on error
+                if (recalcBtn) {
+                    recalcBtn.innerHTML = '🔄 Recalculate Schedule';
+                    recalcBtn.disabled = false;
+                }
+            } finally {
+                // Always unlock recalculation
+                isRecalculating = false;
+            }
+        }
+
+        // Initialize waiting times when station times are displayed
+        function initializeWaitingTimes(stationTimes) {
+            currentWaitingTimes = {};
+            if (stationTimes && Array.isArray(stationTimes)) {
+                stationTimes.forEach(stationTime => {
+                    if (stationTime.dwell_time !== undefined) {
+                        currentWaitingTimes[stationTime.station_id] = stationTime.dwell_time || 0;
+                    }
+                });
+            }
+        }
+
+        // Update station times in place without rebuilding the entire list
+        function updateStationTimesInPlace(validationResult) {
+            if (!validationResult.data || !validationResult.data.availability || !validationResult.data.availability.station_times) {
+                console.error('No station times in validation result');
+                return;
+            }
+
+            const newStationTimes = validationResult.data.availability.station_times;
+            
+            // Update each station time display
+            newStationTimes.forEach((stationTime, index) => {
+                const stationItem = document.querySelector(`[data-station-id="${stationTime.station_id}"]`);
+                if (stationItem) {
+                    const isFirstStation = index === 0;
+                    const isLastStation = index === newStationTimes.length - 1;
+                    
+                    // Update arrival time
+                    const arrivalTimeSpan = stationItem.querySelector('.arrival-time');
+                    if (arrivalTimeSpan) {
+                        arrivalTimeSpan.textContent = isFirstStation ? '' : `Arr: ${formatTime(stationTime.arrival)}`;
+                    }
+                    
+                    // Update departure time
+                    const departureTimeSpan = stationItem.querySelector('.departure-time');
+                    if (departureTimeSpan) {
+                        departureTimeSpan.textContent = isLastStation ? '' : `Dep: ${formatTime(stationTime.departure)}`;
+                    }
+                    
+                    // Update waiting time input value to reflect any changes
+                    const waitingInput = stationItem.querySelector('.waiting-time-input');
+                    if (waitingInput && stationTime.dwell_time !== undefined) {
+                        waitingInput.value = stationTime.dwell_time;
+                    }
+                }
+            });
+
+            // Update global currentValidation to keep everything in sync
+            if (window.currentValidation) {
+                window.currentValidation.availability = validationResult.data.availability;
+                window.currentValidation.route = validationResult.data.route;
+                window.currentValidation.schedule = validationResult.data.schedule;
+            }
+
+            // Update conflict information if there's a conflicts section
+            const conflictSection = document.querySelector('.conflict-list, .conflict-summary');
+            if (conflictSection) {
+                updateConflictDisplay(validationResult.data.availability);
+            }
+
+            // Update any success/failure indicators
+            const validationStatus = document.getElementById('validationStatus');
+            if (validationStatus) {
+                if (validationResult.data.availability.available) {
+                    validationStatus.textContent = 'Route Valid ✅';
+                    validationStatus.className = 'validation-status valid';
+                } else {
+                    validationStatus.textContent = 'Route Conflicts ⚠️';
+                    validationStatus.className = 'validation-status invalid';
+                }
+            }
+        }
+
+        // Update conflict display without rebuilding
+        function updateConflictDisplay(availability) {
+            const results = document.getElementById('validationResults');
+            if (!results) return;
+
+            // Remove existing conflict sections
+            const existingConflicts = results.querySelectorAll('.conflict-summary, .conflict-list');
+            existingConflicts.forEach(el => el.remove());
+
+            // Add updated conflict information
+            if (availability.conflicts && availability.conflicts.length > 0) {
+                let conflictHtml = '';
+                
+                if (availability.summary && availability.summary.summary_message) {
+                    conflictHtml += `<div class="conflict-summary"><h4>⚠️ Route Validation Failed</h4>`;
+                    conflictHtml += `<p class="summary-message">${availability.summary.summary_message}</p></div>`;
+                }
+                
+                conflictHtml += '<div class="conflict-list"><h4>📋 Detailed Conflicts</h4>';
+                availability.conflicts.forEach(conflict => {
+                    conflictHtml += `
+                        <div class="conflict-item">
+                            <div class="conflict-type">${formatConflictType(conflict.type || 'track_segment_conflict')}</div>
+                            <div class="conflict-details">${formatConflictDetails(conflict)}</div>
+                        </div>
+                    `;
+                });
+                conflictHtml += '</div>';
+
+                // Insert conflict HTML after station times
+                const stationTimes = results.querySelector('.station-times');
+                if (stationTimes) {
+                    stationTimes.insertAdjacentHTML('afterend', conflictHtml);
+                }
+            } else {
+                // Add success message if no conflicts
+                const successHtml = '<div class="message success">✅ Route is clear for scheduling!</div>';
+                const stationTimes = results.querySelector('.station-times');
+                if (stationTimes) {
+                    stationTimes.insertAdjacentHTML('afterend', successHtml);
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .calculation-results {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+            border-radius: 6px;
+        }
+        
+        .calculation-summary h4 {
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .calc-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .calc-label {
+            font-weight: 500;
+            color: #bdc3c7;
+        }
+        
+        .calc-value {
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+    </style>
+</body>
+</html>

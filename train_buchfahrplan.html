@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Schedule - DCC Control</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fafafa;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #fff;
+            color: #333;
+            border: 2px solid #333;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .train-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+
+        .route-info {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .controls input, .controls button {
+            padding: 8px 15px;
+            margin: 0 5px;
+            border: 1px solid #333;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .controls button {
+            background: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .controls button:hover {
+            background: #f0f0f0;
+        }
+
+        .train-schedule-container {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: auto;
+            margin-bottom: 20px;
+        }        .timetable {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+                .timetable th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #dee2e6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .timetable td {
+            padding: 8px;
+            border: 1px solid #333;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .station-name {
+            text-align: left !important;
+            font-weight: bold;
+            background: #f8f8f8;
+            min-width: 150px;
+        }
+
+        .time-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            min-width: 60px;
+        }
+
+        .departure-time {
+            background: #e8f5e8;
+        }
+
+        .arrival-time {
+            background: #fff8e8;
+        }
+
+        .distance-cell {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .notes-cell {
+            font-size: 11px;
+            color: #666;
+            text-align: left !important;
+        }
+
+        .train-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .detail-box {
+            background: #fff;
+            border: 1px solid #333;
+            padding: 15px;
+        }
+
+        .detail-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+        .detail-label {
+            font-weight: bold;
+        }
+
+        .legend {
+            background: #fff;
+            border: 1px solid #333;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        .legend h4 {
+            margin: 0 0 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 5px;
+        }
+
+        .legend-color {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border: 1px solid #333;
+        }
+
+        .error-message {
+            background: #ffebee;
+            border: 1px solid #e57373;
+            color: #c62828;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .controls {
+                display: none;
+            }
+            
+            .train-schedule-container {
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .train-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .train-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .timetable {
+                font-size: 11px;
+            }
+            
+            .station-name {
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Train Schedule</h1>
+        <div class="train-info">
+            <div id="trainNumber">Train: -</div>
+            <div id="trainType">Type: -</div>
+            <div id="trainDistance">Distance: -</div>
+        </div>
+        <div class="locomotive-info" id="locomotiveInfo" style="margin-top: 10px; font-size: 1.0em; font-weight: 500; color: #2c3e50;">Locomotive: -</div>
+        <div class="route-info" id="routeInfo">Route: - → -</div>
+    </div>
+
+    <div class="controls">
+        <input type="text" id="trainIdInput" placeholder="Enter Train ID" style="width: 150px;">
+        <button onclick="loadTrainTimetable()">Load Timetable</button>
+        <button onclick="window.print()">Print</button>
+        <button onclick="window.history.back()">Back</button>
+    </div>
+
+    <div id="loadingIndicator" class="loading" style="display: none;">
+        Loading train timetable...
+    </div>
+
+    <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+    <div id="trainDetails" class="train-details" style="display: none;">
+        <div class="detail-box">
+            <h3>Train Information</h3>
+            <div class="detail-item">
+                <span class="detail-label">Train Number:</span>
+                <span id="detailTrainNumber">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Train Name:</span>
+                <span id="detailTrainName">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Train Type:</span>
+                <span id="detailTrainType">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Max Speed:</span>
+                <span id="detailMaxSpeed">-</span>
+            </div>
+        </div>
+        
+        <div class="detail-box">
+            <h3>Journey Details</h3>
+            <div class="detail-item">
+                <span class="detail-label">Departure:</span>
+                <span id="detailDeparture">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Arrival:</span>
+                <span id="detailArrival">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Total Distance:</span>
+                <span id="detailTotalDistance">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Journey Time:</span>
+                <span id="detailJourneyTime">-</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="timetableContainer" class="train-schedule-container" style="display: none;">
+        <table class="timetable">
+            <thead>
+                <tr>
+                    <th>Station</th>
+                    <th>Arrival</th>
+                    <th>Departure</th>
+                    <th>Distance</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody id="timetableBody">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="legend">
+        <h4>Legend</h4>
+        <div class="legend-item">
+            <span class="legend-color departure-time"></span>
+            Departure Time
+        </div>
+        <div class="legend-item">
+            <span class="legend-color arrival-time"></span>
+            Arrival Time
+        </div>
+        <div class="legend-item">
+            Times shown in 24-hour format
+        </div>
+    </div>
+
+    <script>
+        let currentTrainId = null;
+
+        // Load train ID from URL parameter if provided
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const trainId = urlParams.get('train_id');
+            if (trainId) {
+                document.getElementById('trainIdInput').value = trainId;
+                loadTrainTimetable();
+            }
+        });
+
+        async function loadTrainTimetable() {
+            const trainId = document.getElementById('trainIdInput').value.trim();
+            
+            if (!trainId) {
+                showError('Please enter a train ID');
+                return;
+            }
+
+            currentTrainId = trainId;
+            showLoading(true);
+            hideError();
+            hideContent();
+
+            try {
+                // Get train details
+                const trainResponse = await fetch(`trains_api.php?action=get&id=${trainId}`);
+                if (!trainResponse.ok) {
+                    throw new Error(`HTTP error! status: ${trainResponse.status}`);
+                }
+                
+                const trainResult = await trainResponse.json();
+                if (trainResult.status !== 'success') {
+                    throw new Error(trainResult.error || 'Failed to load train data');
+                }
+
+                const train = trainResult.data;
+                
+                // Check if train has route information
+                if (!train.departure_station_id || !train.arrival_station_id) {
+                    throw new Error('Train does not have complete route information');
+                }
+
+                // Calculate schedule
+                const scheduleResponse = await fetch('trains_api.php?action=calculate_schedule', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        departure_station_id: train.departure_station_id,
+                        arrival_station_id: train.arrival_station_id,
+                        departure_time: train.departure_time,
+                        max_speed_kmh: train.max_speed_kmh || 80
+                    })
+                });
+
+                if (!scheduleResponse.ok) {
+                    throw new Error(`HTTP error! status: ${scheduleResponse.status}`);
+                }
+
+                const scheduleResult = await scheduleResponse.json();
+                if (scheduleResult.status !== 'success') {
+                    throw new Error(scheduleResult.error || 'Failed to calculate schedule');
+                }
+
+                // Get stations data
+                const stationsResponse = await fetch('trains_api.php?action=stations');
+                if (!stationsResponse.ok) {
+                    throw new Error(`HTTP error! status: ${stationsResponse.status}`);
+                }
+                
+                const stationsResult = await stationsResponse.json();
+                if (stationsResult.status !== 'success') {
+                    throw new Error('Failed to load stations data');
+                }
+
+                const stations = {};
+                stationsResult.data.forEach(station => {
+                    stations[station.id] = station;
+                });
+
+                displayTrainSchedule(train, scheduleResult.data, stations);
+
+            } catch (error) {
+                console.error('Error loading train timetable:', error);
+                showError(error.message);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayTrainSchedule(train, schedule, stations) {
+            // Update header information
+            document.getElementById('trainNumber').textContent = `Train: ${train.train_number}`;
+            document.getElementById('trainType').textContent = `Type: ${train.train_type || 'Unknown'}`;
+            document.getElementById('trainDistance').textContent = `Distance: ${schedule.total_distance_km.toFixed(1)} km`;
+            
+            // Update locomotive information
+            let locomotiveText = 'Locomotive: ';
+            if (train.consist && train.consist.length > 0) {
+                const leadLoco = train.consist.find(loco => loco.is_lead_locomotive) || train.consist[0];
+                if (leadLoco) {
+                    locomotiveText += `${leadLoco.class} ${leadLoco.number}`;
+                    if (leadLoco.name) {
+                        locomotiveText += ` "${leadLoco.name}"`;
+                    }
+                    if (train.consist.length > 1) {
+                        locomotiveText += ` (+${train.consist.length - 1} more)`;
+                    }
+                } else {
+                    locomotiveText += 'Not assigned';
+                }
+            } else {
+                locomotiveText += 'Not assigned';
+            }
+            document.getElementById('locomotiveInfo').textContent = locomotiveText;
+            
+            const depStationName = stations[train.departure_station_id]?.name || train.departure_station_id;
+            const arrStationName = stations[train.arrival_station_id]?.name || train.arrival_station_id;
+            document.getElementById('routeInfo').textContent = `Route: ${depStationName} → ${arrStationName}`;
+
+            // Update train details
+            document.getElementById('detailTrainNumber').textContent = train.train_number;
+            document.getElementById('detailTrainName').textContent = train.train_name || 'N/A';
+            document.getElementById('detailTrainType').textContent = train.train_type || 'Unknown';
+            document.getElementById('detailMaxSpeed').textContent = train.max_speed_kmh ? `${train.max_speed_kmh} km/h` : 'N/A';
+            
+            document.getElementById('detailDeparture').textContent = `${train.departure_time || 'N/A'} from ${depStationName}`;
+            document.getElementById('detailArrival').textContent = `${schedule.calculated_arrival_time || train.arrival_time || 'N/A'} at ${arrStationName}`;
+            document.getElementById('detailTotalDistance').textContent = `${schedule.total_distance_km.toFixed(1)} km`;
+            
+            const journeyTimeMinutes = schedule.total_travel_time_minutes;
+            const hours = Math.floor(journeyTimeMinutes / 60);
+            const minutes = Math.round(journeyTimeMinutes % 60);
+            document.getElementById('detailJourneyTime').textContent = `${hours}h ${minutes}m`;
+
+            // Build timetable
+            const tbody = document.getElementById('timetableBody');
+            tbody.innerHTML = '';
+
+            let cumulativeDistance = 0;
+
+            schedule.station_times.forEach((stop, index) => {
+                const stationName = stations[stop.station_id]?.name || stop.station_id;
+                
+                // Calculate distance for this segment
+                if (index > 0) {
+                    const segment = schedule.route_segments[index - 1];
+                    if (segment) {
+                        cumulativeDistance += segment.distance_km;
+                    }
+                }
+
+                const row = document.createElement('tr');
+                
+                // Station name
+                const stationCell = document.createElement('td');
+                stationCell.className = 'station-name';
+                stationCell.textContent = stationName;
+                row.appendChild(stationCell);
+
+                // Arrival time
+                const arrivalCell = document.createElement('td');
+                arrivalCell.className = 'time-cell arrival-time';
+                if (stop.is_departure) {
+                    arrivalCell.textContent = '-';
+                } else {
+                    arrivalCell.textContent = stop.arrival_time || '-';
+                }
+                row.appendChild(arrivalCell);
+
+                // Departure time
+                const departureCell = document.createElement('td');
+                departureCell.className = 'time-cell departure-time';
+                if (stop.is_arrival) {
+                    departureCell.textContent = '-';
+                } else {
+                    departureCell.textContent = stop.departure_time || '-';
+                }
+                row.appendChild(departureCell);
+
+                // Distance
+                const distanceCell = document.createElement('td');
+                distanceCell.className = 'distance-cell';
+                distanceCell.textContent = index === 0 ? '0.0 km' : `${cumulativeDistance.toFixed(1)} km`;
+                row.appendChild(distanceCell);
+
+                // Notes
+                const notesCell = document.createElement('td');
+                notesCell.className = 'notes-cell';
+                let notes = '';
+                if (stop.is_departure) {
+                    notes = 'Origin';
+                } else if (stop.is_arrival) {
+                    notes = 'Destination';
+                } else {
+                    notes = `Stop: ${stop.dwell_time || 2} min`;
+                }
+                notesCell.textContent = notes;
+                row.appendChild(notesCell);
+
+                tbody.appendChild(row);
+            });
+
+            showContent();
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('errorMessage');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function showContent() {
+            document.getElementById('trainDetails').style.display = 'grid';
+            document.getElementById('timetableContainer').style.display = 'block';
+        }
+
+        function hideContent() {
+            document.getElementById('trainDetails').style.display = 'none';
+            document.getElementById('timetableContainer').style.display = 'none';
+        }
+
+        // Allow Enter key to load timetable
+        document.getElementById('trainIdInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadTrainTimetable();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!-- Railway Turnout/Switch SVG -->
+<svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Green background -->
+
+  <line x1="0" y1="100" x2="40" y2="100" stroke="#489595ff" stroke-width="6"/>
+  <line x1="40" y1="100" x2="600" y2="100" stroke="#489595ff" stroke-width="6"/>
+  <line x1="600" y1="100" x2="640" y2="60" stroke="#489595ff" stroke-width="6"/>
+  
+  <line x1="140" y1="100" x2="180" y2="60" stroke="#489595ff" stroke-width="6"/>
+  <line x1="20" y1="60" x2="800" y2="60" stroke="#489595ff" stroke-width="6"/>
+
+  <line x1="40" y1="100" x2="120" y2="180" stroke="#489595ff" stroke-width="6"/>
+  <line x1="80" y1="140" x2="800" y2="140" stroke="#489595ff" stroke-width="6"/>
+  <line x1="120" y1="180" x2="600" y2="180" stroke="#489595ff" stroke-width="6"/>
+  <line x1="600" y1="180" x2="640" y2="140" stroke="#489595ff" stroke-width="6"/>
+
+
+
+  <!-- Diagonal switch track -->
+</svg>

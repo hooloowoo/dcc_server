@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locomotive Schedule Viewer - DCC Layout Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: #2c2c2c;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .back-link {
+            color: #3498db;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .locomotive-container {
+            background: #2c2c2c;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .locomotive-header {
+            background: #333;
+            padding: 20px;
+            border-bottom: 1px solid #444;
+        }
+
+        .locomotive-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        .schedule-section {
+            background: #2c2c2c;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            background: #333;
+            padding: 15px 20px;
+            border-bottom: 1px solid #444;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .schedule-content {
+            padding: 0;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schedule-table th {
+            background: #3a3a3a;
+            color: #e0e0e0;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #444;
+        }
+
+        .schedule-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #444;
+            vertical-align: middle;
+        }
+
+        .schedule-table tr:hover {
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .train-number {
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        .departure-time {
+            font-weight: 600;
+            color: #e74c3c;
+        }
+
+        .arrival-time {
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .route-path {
+            color: #f39c12;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-scheduled {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+        }
+
+        .status-active {
+            background: rgba(39, 174, 96, 0.2);
+            color: #27ae60;
+        }
+
+        .status-completed {
+            background: rgba(149, 165, 166, 0.2);
+            color: #95a5a6;
+        }
+
+        .no-schedule {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+
+        .refresh-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Locomotive Schedule</h1>
+        <div>
+            <button class="refresh-btn" onclick="loadLocomotiveSchedule()">🔄 Refresh</button>
+            <a href="locomotives.html" class="back-link">← Back to Locomotives</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="locomotiveInfo" class="locomotive-container">
+            <div class="locomotive-header">
+                <div class="locomotive-info">
+                    <div class="info-group">
+                        <span class="info-label">Locomotive</span>
+                        <span class="info-value" id="locomotiveName">Loading...</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">DCC Address</span>
+                        <span class="info-value" id="dccAddress">-</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Current Status</span>
+                        <span class="info-value" id="currentStatus">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="schedule-section">
+            <div class="section-header">
+                <h2 class="section-title">Current & Upcoming Schedules</h2>
+            </div>
+            <div class="schedule-content">
+                <div id="currentSchedule" class="loading">Loading schedule...</div>
+            </div>
+        </div>
+
+        <div class="schedule-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Completed Schedules</h2>
+            </div>
+            <div class="schedule-content">
+                <div id="completedSchedule" class="loading">Loading completed schedules...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let locomotiveId = null;
+        let locomotiveName = null;
+
+        // Get locomotive ID and name from URL parameters
+        function getUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            locomotiveId = urlParams.get('id');
+            locomotiveName = urlParams.get('name');
+            
+            if (!locomotiveId) {
+                showError('No locomotive ID provided');
+                return;
+            }
+            
+            document.getElementById('locomotiveName').textContent = locomotiveName || 'Unknown Locomotive';
+            loadLocomotiveSchedule();
+        }
+
+        // API fetch wrapper with error handling
+        async function apiFetch(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    credentials: 'include',
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                return response;
+            } catch (error) {
+                console.error('API fetch error:', error);
+                throw error;
+            }
+        }
+
+        // Load locomotive details and schedule
+        async function loadLocomotiveSchedule() {
+            try {
+                // Load locomotive details
+                await loadLocomotiveDetails();
+                
+                // Load current and upcoming schedules
+                await loadCurrentSchedules();
+                
+                // Load completed schedules
+                await loadCompletedSchedules();
+                
+            } catch (error) {
+                console.error('Error loading locomotive schedule:', error);
+                showError('Error loading locomotive schedule: ' + error.message);
+            }
+        }
+
+        // Load locomotive details
+        async function loadLocomotiveDetails() {
+            try {
+                const response = await apiFetch(`locomotives_api.php?action=get&id=${locomotiveId}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    const loco = result.data;
+                    document.getElementById('locomotiveName').textContent = `${loco.class} ${loco.number}${loco.name ? ` "${loco.name}"` : ''}`;
+                    document.getElementById('dccAddress').textContent = `#${loco.dcc_address}`;
+                    
+                    // Update page title
+                    document.title = `${loco.class} ${loco.number} Schedule - DCC Layout Control`;
+                } else {
+                    throw new Error(result.error || 'Failed to load locomotive details');
+                }
+            } catch (error) {
+                console.error('Error loading locomotive details:', error);
+                showError('Error loading locomotive details: ' + error.message);
+            }
+        }
+
+        // Load current and upcoming schedules
+        async function loadCurrentSchedules() {
+            try {
+                const response = await apiFetch(`locomotives_api.php?action=schedule&id=${locomotiveId}&type=current`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    renderScheduleTable(result.data, 'currentSchedule', 'current');
+                } else {
+                    document.getElementById('currentSchedule').innerHTML = '<div class="no-schedule">No current or upcoming schedules found</div>';
+                }
+            } catch (error) {
+                console.error('Error loading current schedules:', error);
+                document.getElementById('currentSchedule').innerHTML = '<div class="error">Error loading current schedules: ' + error.message + '</div>';
+            }
+        }
+
+        // Load completed schedules
+        async function loadCompletedSchedules() {
+            try {
+                const response = await apiFetch(`locomotives_api.php?action=schedule&id=${locomotiveId}&type=completed&limit=10`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    renderScheduleTable(result.data, 'completedSchedule', 'completed');
+                } else {
+                    document.getElementById('completedSchedule').innerHTML = '<div class="no-schedule">No completed schedules found</div>';
+                }
+            } catch (error) {
+                console.error('Error loading completed schedules:', error);
+                document.getElementById('completedSchedule').innerHTML = '<div class="error">Error loading completed schedules: ' + error.message + '</div>';
+            }
+        }
+
+        // Render schedule table
+        function renderScheduleTable(schedules, containerId, type) {
+            const container = document.getElementById(containerId);
+            
+            if (!schedules || schedules.length === 0) {
+                container.innerHTML = `<div class="no-schedule">No ${type} schedules found</div>`;
+                return;
+            }
+
+            const tableHtml = `
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Train</th>
+                            <th>Route</th>
+                            <th>Departure</th>
+                            <th>Arrival</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${schedules.map(schedule => `
+                            <tr>
+                                <td>
+                                    <div class="train-number">${schedule.train_number || schedule.train_name || 'Unknown'}</div>
+                                    ${schedule.train_description ? `<div style="font-size: 0.8rem; color: #999;">${schedule.train_description}</div>` : ''}
+                                </td>
+                                <td>
+                                    <div class="route-path">${schedule.departure_station} → ${schedule.arrival_station}</div>
+                                    ${schedule.route_description ? `<div style="font-size: 0.8rem; color: #999;">${schedule.route_description}</div>` : ''}
+                                </td>
+                                <td>
+                                    <div class="departure-time">${formatTime(schedule.departure_time)}</div>
+                                    ${schedule.departure_date ? `<div style="font-size: 0.8rem; color: #999;">${formatDate(schedule.departure_date)}</div>` : ''}
+                                </td>
+                                <td>
+                                    <div class="arrival-time">${formatTime(schedule.arrival_time)}</div>
+                                    ${schedule.arrival_date ? `<div style="font-size: 0.8rem; color: #999;">${formatDate(schedule.arrival_date)}</div>` : ''}
+                                </td>
+                                <td>
+                                    <span class="status-badge status-${schedule.status || 'scheduled'}">${schedule.status || 'Scheduled'}</span>
+                                </td>
+                                <td>
+                                    ${schedule.train_id ? `<button class="refresh-btn" onclick="viewTrainSchedule(${schedule.train_id})">View Details</button>` : '-'}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHtml;
+        }
+
+        // Format time display
+        function formatTime(timeString) {
+            if (!timeString) return '-';
+            
+            try {
+                // Handle different time formats
+                if (timeString.includes(':')) {
+                    return timeString;
+                }
+                return timeString;
+            } catch (error) {
+                return timeString;
+            }
+        }
+
+        // Format date display
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString();
+            } catch (error) {
+                return dateString;
+            }
+        }
+
+        // View train schedule details
+        function viewTrainSchedule(trainId) {
+            window.open(`train_schedule.html?id=${trainId}`, '_blank');
+        }
+
+        // Show error message
+        function showError(message) {
+            const container = document.getElementById('currentSchedule');
+            container.innerHTML = `<div class="error">${message}</div>`;
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            getUrlParams();
+        });
+    </script>
+</body>
+</html>

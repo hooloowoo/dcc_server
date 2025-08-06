@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Station View - DCC Layout Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: rgb(32, 32, 40);
+            margin: 0;
+            padding: 0;
+            color: #e0e0e0;
+        }
+
+        .user-header {
+            background: rgb(26, 26, 32);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .role-admin { background: #e74c3c; }
+        .role-operator { background: #f39c12; }
+        .role-viewer { background: #95a5a6; }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .station-title {
+            color: #e0e0e0;
+        }
+
+        .station-title h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .station-code {
+            font-size: 1.2em;
+            color: #b0b0b0;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .station-layout {
+            background: rgb(40, 40, 48);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .station-svg-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgb(32, 32, 40);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        .station-svg-container:active {
+            cursor: grabbing;
+        }
+
+        .station-svg-wrapper {
+            position: relative;
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+        }
+
+        .station-svg {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+
+        .accessory-container {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+            border-radius: 4px;
+            padding: 2px;
+            transform-origin: center center;
+        }
+
+        .accessory-container:hover {
+            transform: scale(1.1);
+            z-index: 20;
+        }
+
+        .accessory-svg {
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .accessory-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20, 20, 25, 0.95);
+            color: #e0e0e0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            margin-bottom: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .accessory-container:hover .accessory-tooltip {
+            opacity: 1;
+        }
+
+        .accessories-legend {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgb(40, 40, 48);
+            border-radius: 8px;
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px;
+            border-radius: 4px;
+            background: rgb(48, 48, 56);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-svg {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .legend-info {
+            flex: 1;
+        }
+
+        .legend-name {
+            font-weight: 500;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        .legend-address {
+            font-size: 12px;
+            color: #b0b0b0;
+        }
+
+        .legend-state {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: 500;
+        }
+
+        .state-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .state-inactive {
+            background: rgba(244, 67, 54, 0.2);
+            color: #e57373;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #b0b0b0;
+            font-style: italic;
+        }
+
+        .error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.4);
+            color: #e57373;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .no-station {
+            text-align: center;
+            padding: 40px;
+            color: #b0b0b0;
+        }
+
+        .no-station h2 {
+            margin-bottom: 10px;
+        }
+
+        .refresh-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #e0e0e0;
+        }
+
+        .auto-refresh input {
+            margin-right: 5px;
+        }
+
+        .last-updated {
+            color: #b0b0b0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-header">
+        <div class="user-info">
+            <span class="user-name" id="userName">Loading...</span>
+            <span class="user-role" id="userRole"></span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="main-content">
+        <div class="container">
+            <div class="header">
+                <div class="station-title">
+                    <h1 id="stationName">Loading...</h1>
+                    <div class="station-code" id="stationCode">------</div>
+                </div>
+                <div class="nav-controls">
+                    <a href="stations.html" class="btn btn-secondary">← Back to Stations</a>
+                    <a href="dashboard.html" class="btn btn-primary">Dashboard</a>
+                </div>
+            </div>
+
+            <div class="refresh-controls">
+                <button class="btn btn-primary" onclick="refreshStation()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="zoomIn()">🔍+ Zoom In</button>
+                <button class="btn btn-secondary" onclick="zoomOut()">🔍- Zoom Out</button>
+                <button class="btn btn-secondary" onclick="resetZoom()">↺ Reset Zoom</button>
+                <div class="auto-refresh">
+                    <input type="checkbox" id="autoRefresh" checked>
+                    <label for="autoRefresh">Auto-refresh (3s)</label>
+                </div>
+                <div class="last-updated" id="lastUpdated"></div>
+            </div>
+
+            <div id="stationContent">
+                <div class="loading">Loading station data...</div>
+            </div>
+
+            <div id="errorMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let stationId = null;
+        let stationData = null;
+        let accessories = [];
+        let refreshInterval = null;
+        let dccPackets = new Map(); // Store current DCC state
+        
+        // Zoom and pan variables
+        let zoomLevel = 1;
+        let panX = 0;
+        let panY = 0;
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        // Get station ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        stationId = urlParams.get('id');
+
+        // Check authentication on page load - allow viewing without auth, require auth for editing
+        async function checkAuth() {
+            try {
+                const response = await fetch('auth_api.php?action=validate');
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.valid) {
+                    // Get user profile
+                    const profileResponse = await fetch('auth_api.php?action=profile');
+                    const profileResult = await profileResponse.json();
+                    
+                    if (profileResult.status === 'success') {
+                        currentUser = profileResult.data;
+                        updateUserHeader();
+                        return true;
+                    }
+                }
+                
+                // Not authenticated - set as guest user for viewing
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // Allow viewing even if auth check fails
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            }
+        }
+
+        function updateUserHeader() {
+            const userNameElement = document.getElementById('userName');
+            const userRoleElement = document.getElementById('userRole');
+            const logoutBtn = document.querySelector('.logout-btn');
+            
+            if (currentUser) {
+                const userName = currentUser.first_name && currentUser.last_name 
+                    ? `${currentUser.first_name} ${currentUser.last_name}` 
+                    : currentUser.username;
+                userNameElement.textContent = userName;
+                
+                userRoleElement.textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                userRoleElement.className = `user-role role-${currentUser.role}`;
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Logout';
+            } else {
+                userNameElement.textContent = 'Guest User';
+                userRoleElement.textContent = 'View Only';
+                userRoleElement.className = 'user-role role-viewer';
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Login';
+                logoutBtn.onclick = () => window.location.href = 'login.html';
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('auth_api.php?action=logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                window.location.href = 'login.html';
+            }
+        }
+
+        async function loadStation() {
+            if (!stationId) {
+                showError('No station ID provided');
+                return;
+            }
+
+            try {
+                // Load station data
+                const stationResponse = await fetch(`stations_api.php?id=${stationId}`);
+                const stationResult = await stationResponse.json();
+
+                if (stationResult.status !== 'success') {
+                    throw new Error(stationResult.error || 'Failed to load station');
+                }
+
+                stationData = stationResult.data;
+                
+                // Load accessories
+                const accessoriesResponse = await fetch(`station_accessories_api.php?station_id=${stationId}`);
+                const accessoriesResult = await accessoriesResponse.json();
+
+                console.log('Accessories API Response:', accessoriesResult);
+
+                if (accessoriesResult.status === 'success') {
+                    accessories = accessoriesResult.data || [];
+                    console.log('Loaded accessories:', accessories);
+                }
+
+                // Load current DCC state
+                await loadDccState();
+
+                // Update display
+                updateStationDisplay();
+                updateLastUpdated();
+                
+            } catch (error) {
+                console.error('Error loading station:', error);
+                showError('Error loading station: ' + error.message);
+            }
+        }
+
+        async function loadDccState() {
+            try {
+                const response = await fetch('accessory_states_api.php?limit=500');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                dccPackets.clear();
+                
+                if (result.status === 'success' && result.data && Array.isArray(result.data)) {
+                    const accessoryStates = result.data;
+                    
+                    accessoryStates.forEach((state) => {
+                        if (state.address) {
+                            const statePacket = {
+                                address: state.address,
+                                state: state.state || '0',
+                                side: state.side || state.state || '0',
+                                timestamp: state.timestamp,
+                                instruction: state.instruction,
+                                packet_id: state.packet_id,
+                                source: 'latest_api'
+                            };
+                            dccPackets.set(`accessory_${state.address}`, statePacket);
+                        }
+                    });
+                }
+                
+                // If no DCC data is available, create some test data for demonstration
+                if (dccPackets.size === 0) {
+                    accessories.forEach((accessory, index) => {
+                        const testState = (index % 2).toString();
+                        dccPackets.set(`accessory_${accessory.accessory_address}`, {
+                            address: accessory.accessory_address,
+                            state: testState,
+                            side: testState,
+                            timestamp: new Date().toISOString(),
+                            source: 'fallback'
+                        });
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Error loading DCC state:', error);
+                
+                // Create fallback test data if API fails
+                accessories.forEach((accessory, index) => {
+                    const testState = (index % 2).toString();
+                    dccPackets.set(`accessory_${accessory.accessory_address}`, {
+                        address: accessory.accessory_address,
+                        state: testState,
+                        side: testState,
+                        timestamp: new Date().toISOString(),
+                        source: 'error_fallback'
+                    });
+                });
+            }
+        }
+
+        function updateStationDisplay() {
+            if (!stationData) return;
+
+            // Update header
+            document.getElementById('stationName').textContent = stationData.name;
+            document.getElementById('stationCode').textContent = stationData.id;
+
+            // Create station layout
+            const content = document.getElementById('stationContent');
+            content.innerHTML = `
+                <div class="station-layout">
+                    <div class="station-svg-container" id="stationSvgContainer">
+                        <div class="station-svg-wrapper" id="stationSvgWrapper">
+                            ${stationData.svg_icon || '<div class="no-station"><h2>No Station Icon</h2><p>This station does not have an SVG icon defined.</p></div>'}
+                        </div>
+                    </div>
+                </div>
+                <div class="accessories-legend">
+                    <div class="legend-title">Station Accessories</div>
+                    <div class="legend-items" id="legendItems">
+                        ${accessories.length === 0 ? '<p style="color: #b0b0b0; grid-column: 1 / -1;">No accessories configured for this station.</p>' : ''}
+                    </div>
+                </div>
+            `;
+
+            // Setup zoom and pan functionality
+            setupZoomAndPan();
+
+            // Add accessories to the layout
+            if (accessories.length > 0) {
+                addAccessoriesToLayout();
+                updateAccessoriesLegend();
+            }
+        }
+
+        function addAccessoriesToLayout() {
+            const wrapper = document.getElementById('stationSvgWrapper');
+            if (!wrapper) return;
+
+            accessories.forEach(accessory => {
+                const dccState = dccPackets.get(`accessory_${accessory.accessory_address}`);
+                const isActive = dccState ? (dccState.state === '1' || dccState.state === 1 || dccState.side === '1' || dccState.side === 1) : false;
+                
+                // Choose SVG based on state (Left SVG for active state, Right SVG for inactive state)
+                const svgContent = isActive ? accessory.svg_left : accessory.svg_right;
+                
+                if (svgContent && accessory.x_coordinate !== null && accessory.y_coordinate !== null) {
+                    const accessoryDiv = document.createElement('div');
+                    accessoryDiv.className = `accessory-container`;
+                    accessoryDiv.style.left = `${accessory.x_coordinate}px`;
+                    accessoryDiv.style.top = `${accessory.y_coordinate}px`;
+                    accessoryDiv.dataset.address = accessory.accessory_address;
+                    
+                    accessoryDiv.innerHTML = `
+                        <div class="accessory-svg">${svgContent}</div>
+                        <div class="accessory-tooltip">
+                            ${accessory.accessory_name}<br>
+                            Address: ${accessory.accessory_address}<br>
+                            State: ${isActive ? 'Active' : 'Inactive'}
+                        </div>
+                    `;
+                    
+                    // Add click handler for control (if user has permission)
+                    if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'operator')) {
+                        accessoryDiv.style.cursor = 'pointer';
+                        accessoryDiv.addEventListener('click', () => toggleAccessory(accessory.accessory_address));
+                    } else {
+                        // Show different cursor for non-authenticated users
+                        accessoryDiv.style.cursor = currentUser ? 'not-allowed' : 'help';
+                        if (!currentUser) {
+                            // Add tooltip hint for guests
+                            const tooltip = accessoryDiv.querySelector('.accessory-tooltip');
+                            tooltip.innerHTML += '<br><em>Login to control</em>';
+                        }
+                    }
+                    
+                    wrapper.appendChild(accessoryDiv);
+                }
+            });
+        }
+
+        function updateAccessoriesLegend() {
+            const legendContainer = document.getElementById('legendItems');
+            
+            const legendHTML = accessories.map(accessory => {
+                const dccState = dccPackets.get(`accessory_${accessory.accessory_address}`);
+                const isActive = dccState ? (dccState.state === '1' || dccState.state === 1 || dccState.side === '1' || dccState.side === 1) : false;
+                const svgContent = isActive ? accessory.svg_left : accessory.svg_right;
+                const stateText = isActive ? 'Left' : 'Right';                return `
+                    <div class="legend-item">
+                        <div class="legend-svg">
+                            ${svgContent || '<div style="background: #ddd; width: 30px; height: 30px; border-radius: 4px;"></div>'}
+                        </div>
+                        <div class="legend-info">
+                            <div class="legend-name">${accessory.accessory_name}</div>
+                            <div class="legend-address">Address: ${accessory.accessory_address} | ${accessory.accessory_type || 'Unknown'}</div>
+                        </div>
+                        <div class="legend-state ${isActive ? 'state-active' : 'state-inactive'}">
+                            ${stateText}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            legendContainer.innerHTML = legendHTML;
+        }
+
+        async function toggleAccessory(address) {
+            if (!currentUser) {
+                showError('Please login to control accessories. Click "Login" in the top right corner.');
+                return;
+            }
+            
+            if (currentUser.role !== 'admin' && currentUser.role !== 'operator') {
+                showError('You do not have permission to control accessories');
+                return;
+            }
+
+            try {
+                // Toggle the accessory state
+                const currentState = dccPackets.get(`accessory_${address}`);
+                const currentStateValue = currentState ? (currentState.state === '1' || currentState.state === 1 ? 1 : 0) : 0;
+                const newState = currentStateValue === 1 ? 0 : 1;
+                
+                // For testing purposes, we'll simulate the state change locally
+                // In a real implementation, you would send the command to your DCC system
+                dccPackets.set(`accessory_${address}`, {
+                    address: address,
+                    state: newState.toString(),
+                    side: newState.toString(),
+                    timestamp: new Date().toISOString()
+                });
+                
+                // Update the display immediately
+                updateStationDisplay();
+                
+            } catch (error) {
+                console.error('Error toggling accessory:', error);
+                showError('Failed to toggle accessory: ' + error.message);
+            }
+        }
+
+        function refreshStation() {
+            loadStation();
+        }
+
+        function updateLastUpdated() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = `Last updated: ${now.toLocaleTimeString()}`;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `<div class="error">${message}</div>`;
+            setTimeout(() => { errorDiv.innerHTML = ''; }, 5000);
+        }
+
+        // Zoom and Pan Functions
+        function setupZoomAndPan() {
+            const container = document.getElementById('stationSvgContainer');
+            const wrapper = document.getElementById('stationSvgWrapper');
+            
+            if (!container || !wrapper) return;
+
+            // Mouse wheel zoom
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const zoomIn = e.deltaY < 0;
+                const zoomFactor = zoomIn ? 1.1 : 0.9;
+                
+                // Calculate new zoom level
+                const newZoom = Math.max(0.5, Math.min(3, zoomLevel * zoomFactor));
+                
+                if (newZoom !== zoomLevel) {
+                    zoomLevel = newZoom;
+                    updateTransform();
+                }
+            });
+
+            // Mouse drag pan
+            container.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                container.style.cursor = 'grabbing';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                
+                panX += deltaX;
+                panY += deltaY;
+                
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+                
+                updateTransform();
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                container.style.cursor = 'grab';
+            });
+
+            // Touch support for mobile
+            let lastTouchDistance = 0;
+            
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    lastTouchDistance = Math.hypot(
+                        touch2.clientX - touch1.clientX,
+                        touch2.clientY - touch1.clientY
+                    );
+                } else if (e.touches.length === 1) {
+                    isDragging = true;
+                    lastMouseX = e.touches[0].clientX;
+                    lastMouseY = e.touches[0].clientY;
+                }
+                e.preventDefault();
+            });
+
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2) {
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const currentDistance = Math.hypot(
+                        touch2.clientX - touch1.clientX,
+                        touch2.clientY - touch1.clientY
+                    );
+                    
+                    if (lastTouchDistance > 0) {
+                        const zoomFactor = currentDistance / lastTouchDistance;
+                        const newZoom = Math.max(0.5, Math.min(3, zoomLevel * zoomFactor));
+                        
+                        if (newZoom !== zoomLevel) {
+                            zoomLevel = newZoom;
+                            updateTransform();
+                        }
+                    }
+                    lastTouchDistance = currentDistance;
+                } else if (e.touches.length === 1 && isDragging) {
+                    const deltaX = e.touches[0].clientX - lastMouseX;
+                    const deltaY = e.touches[0].clientY - lastMouseY;
+                    
+                    panX += deltaX;
+                    panY += deltaY;
+                    
+                    lastMouseX = e.touches[0].clientX;
+                    lastMouseY = e.touches[0].clientY;
+                    
+                    updateTransform();
+                }
+                e.preventDefault();
+            });
+
+            container.addEventListener('touchend', () => {
+                isDragging = false;
+                lastTouchDistance = 0;
+            });
+        }
+
+        function updateTransform() {
+            const wrapper = document.getElementById('stationSvgWrapper');
+            if (!wrapper) return;
+            
+            wrapper.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+        }
+
+        function zoomIn() {
+            zoomLevel = Math.min(3, zoomLevel * 1.2);
+            updateTransform();
+        }
+
+        function zoomOut() {
+            zoomLevel = Math.max(0.5, zoomLevel / 1.2);
+            updateTransform();
+        }
+
+        function resetZoom() {
+            zoomLevel = 1;
+            panX = 0;
+            panY = 0;
+            updateTransform();
+        }
+
+        function setupAutoRefresh() {
+            const checkbox = document.getElementById('autoRefresh');
+            
+            function toggleAutoRefresh() {
+                if (checkbox.checked) {
+                    refreshInterval = setInterval(loadStation, 3000); // 3 seconds
+                } else {
+                    if (refreshInterval) {
+                        clearInterval(refreshInterval);
+                        refreshInterval = null;
+                    }
+                }
+            }
+            
+            checkbox.addEventListener('change', toggleAutoRefresh);
+            toggleAutoRefresh(); // Initialize
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check auth but don't require it for viewing
+            await checkAuth();
+            
+            // Load station data regardless of authentication status
+            await loadStation();
+            setupAutoRefresh();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

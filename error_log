@@ -1,0 +1,1113 @@
+[05-Aug-2025 15:45:52 Europe/Budapest] PHP Parse error:  syntax error, unexpected '' (T_ENCAPSED_AND_WHITESPACE), expecting '-' or identifier (T_STRING) or variable (T_VARIABLE) or number (T_NUM_STRING) in /home/highball/public_html/dcc/station_connections_api.php on line 135
+[05-Aug-2025 15:47:19 Europe/Budapest] PHP Parse error:  syntax error, unexpected '' (T_ENCAPSED_AND_WHITESPACE), expecting '-' or identifier (T_STRING) or variable (T_VARIABLE) or number (T_NUM_STRING) in /home/highball/public_html/dcc/station_connections_api.php on line 135
+[05-Aug-2025 15:47:48 Europe/Budapest] PHP Parse error:  syntax error, unexpected '' (T_ENCAPSED_AND_WHITESPACE), expecting '-' or identifier (T_STRING) or variable (T_VARIABLE) or number (T_NUM_STRING) in /home/highball/public_html/dcc/station_connections_api.php on line 131
+[05-Aug-2025 16:32:04 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"1000"}
+[05-Aug-2025 16:32:04 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"2"}
+[05-Aug-2025 16:32:04 Europe/Budapest] trains_api.php handleGet called with id parameter: '2'
+[05-Aug-2025 16:32:06 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 16:32:06 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 16:32:06 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 16:32:08 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 16:32:08 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 16:32:21 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 16:32:21 Europe/Budapest] PHP Notice:  Undefined index: max_speed_kmh in /home/highball/public_html/dcc/trains_api.php on line 265
+[05-Aug-2025 16:32:21 Europe/Budapest] PHP Notice:  Undefined index: max_speed_kmh in /home/highball/public_html/dcc/trains_api.php on line 265
+[05-Aug-2025 16:32:22 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 16:32:22 Europe/Budapest] PHP Notice:  Undefined index: max_speed_kmh in /home/highball/public_html/dcc/trains_api.php on line 265
+[05-Aug-2025 16:32:22 Europe/Budapest] PHP Notice:  Undefined index: max_speed_kmh in /home/highball/public_html/dcc/trains_api.php on line 265
+[05-Aug-2025 16:32:26 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 607
+[05-Aug-2025 17:51:34 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 17:51:34 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 17:51:34 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 17:52:14 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 17:52:14 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 17:52:14 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 17:52:17 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 17:52:17 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 17:52:30 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 17:52:30 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 17:52:32 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 17:52:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 17:52:34 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 17:52:37 Europe/Budapest] PHP Fatal error:  Uncaught Error: Call to undefined function calculateRoute() in /home/highball/public_html/dcc/enhanced_train_creator_api.php:169
+Stack trace:
+#0 /home/highball/public_html/dcc/enhanced_train_creator_api.php(859): validateRoute(Object(PDO), 'NADAHAZA', 'BLAUMITH')
+#1 {main}
+  thrown in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 169
+[05-Aug-2025 17:52:45 Europe/Budapest] PHP Fatal error:  Uncaught Error: Call to undefined function calculateRoute() in /home/highball/public_html/dcc/enhanced_train_creator_api.php:169
+Stack trace:
+#0 /home/highball/public_html/dcc/enhanced_train_creator_api.php(859): validateRoute(Object(PDO), 'NADAHAZA', 'BLAUMITH')
+#1 {main}
+  thrown in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 169
+[05-Aug-2025 17:52:53 Europe/Budapest] PHP Fatal error:  Uncaught Error: Call to undefined function calculateRoute() in /home/highball/public_html/dcc/enhanced_train_creator_api.php:169
+Stack trace:
+#0 /home/highball/public_html/dcc/enhanced_train_creator_api.php(859): validateRoute(Object(PDO), 'NADAHAZA', 'BLAUMITH')
+#1 {main}
+  thrown in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 169
+[05-Aug-2025 18:24:05 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/trains_api.php on line 696
+[05-Aug-2025 18:24:05 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/trains_api.php on line 696
+[05-Aug-2025 18:24:05 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/trains_api.php on line 696
+[05-Aug-2025 18:24:05 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/trains_api.php on line 696
+[05-Aug-2025 18:33:02 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/trains_api.php on line 672
+[05-Aug-2025 18:33:02 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/trains_api.php on line 672
+[05-Aug-2025 18:33:02 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/trains_api.php on line 672
+[05-Aug-2025 18:33:02 Europe/Budapest] PHP Parse error:  syntax error, unexpected '}', expecting end of file in /home/highball/public_html/dcc/trains_api.php on line 672
+[05-Aug-2025 19:32:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:32:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:32:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:32:08 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:32:32 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:32:32 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:32:32 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:32:32 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:32:32 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:32:32 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:32:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:32:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:32:34 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:32:34 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:34:08 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:34:08 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:34:08 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:34:08 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:34:08 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:34:08 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:34:10 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:34:10 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:34:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:34:10 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:34:20 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:34:20 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:34:20 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:34:20 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:35:15 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:35:15 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:35:15 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:35:15 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:35:53 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:35:53 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:35:53 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:35:53 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:36:38 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:36:38 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:36:38 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:38 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:36:43 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:36:43 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:36:43 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:43 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:36:50 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:36:51 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:36:51 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:36:51 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:36:51 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:36:51 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:36:51 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:36:51 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:36:51 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:36:52 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:52 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:52 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:53 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:53 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:36:53 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:37:24 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:37:24 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:37:24 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:37:24 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:37:24 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:37:24 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:37:24 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:37:24 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:37:25 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:37:25 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:37:25 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:37:25 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:37:26 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:37:26 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:37:37 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:37:37 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:37:37 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:37:37 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:37:50 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"ORITTERG","departure_time":"05:05"}
+[05-Aug-2025 19:37:50 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'ORITTERG', departure_time: '05:05'
+[05-Aug-2025 19:37:50 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:37:50 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:37:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:00 Europe/Budapest] validateLocomotiveAvailability: Locomotive 8, Departure: ORITTERG at 05:05
+[05-Aug-2025 19:38:00 Europe/Budapest] Found 4 assignments: [{"id":"4","train_number":"1111","departure_station_id":"BLAUMITH","arrival_station_id":"NADAHAZA","departure_time":"01:01:00","arrival_time":"01:39:00","departure_station_name":"Blausee Mitholz","arrival_station_name":"N\u00e1dah\u00e1za"},{"id":"8","train_number":"eeee","departure_station_id":"NADAHAZA","arrival_station_id":"BLAUMITH","departure_time":"01:27:00","arrival_time":"02:05:00","departure_station_name":"N\u00e1dah\u00e1za","arrival_station_name":"Blausee Mitholz"},{"id":"10","train_number":"xxx","departure_station_id":"BLAUMITH","arrival_station_id":"NADAHAZA","departure_time":"03:00:00","arrival_time":"03:38:00","departure_station_name":"Blausee Mitholz","arrival_station_name":"N\u00e1dah\u00e1za"},{"id":"12","train_number":"ALL","departure_station_id":"NADAHAZA","arrival_station_id":"ORITTERG","departure_time":"04:44:00","arrival_time":"05:14:00","departure_station_name":"N\u00e1dah\u00e1za","arrival_station_name":"Oberrittersgr\u00fcn"}]
+[05-Aug-2025 19:38:16 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:16 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"ORITTERG","departure_time":"05:55"}
+[05-Aug-2025 19:38:16 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'ORITTERG', departure_time: '05:55'
+[05-Aug-2025 19:38:16 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:38:16 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:38:25 Europe/Budapest] validateLocomotiveAvailability: Locomotive 8, Departure: ORITTERG at 05:55
+[05-Aug-2025 19:38:25 Europe/Budapest] Found 4 assignments: [{"id":"4","train_number":"1111","departure_station_id":"BLAUMITH","arrival_station_id":"NADAHAZA","departure_time":"01:01:00","arrival_time":"01:39:00","departure_station_name":"Blausee Mitholz","arrival_station_name":"N\u00e1dah\u00e1za"},{"id":"8","train_number":"eeee","departure_station_id":"NADAHAZA","arrival_station_id":"BLAUMITH","departure_time":"01:27:00","arrival_time":"02:05:00","departure_station_name":"N\u00e1dah\u00e1za","arrival_station_name":"Blausee Mitholz"},{"id":"10","train_number":"xxx","departure_station_id":"BLAUMITH","arrival_station_id":"NADAHAZA","departure_time":"03:00:00","arrival_time":"03:38:00","departure_station_name":"Blausee Mitholz","arrival_station_name":"N\u00e1dah\u00e1za"},{"id":"12","train_number":"ALL","departure_station_id":"NADAHAZA","arrival_station_id":"ORITTERG","departure_time":"04:44:00","arrival_time":"05:14:00","departure_station_name":"N\u00e1dah\u00e1za","arrival_station_name":"Oberrittersgr\u00fcn"}]
+[05-Aug-2025 19:38:25 Europe/Budapest] Most recent completed assignment: Train ALL, arrives at ORITTERG (Oberrittersgrün) at 05:14:00
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: distance in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 220
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:38:25 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:38:28 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:38:28 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:38:28 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:38:28 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:38:28 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:38:28 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:38:32 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:38:32 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:38:32 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:38:32 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:38:32 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:38:32 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:44 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:45 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:45 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:45 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:38:45 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:39:02 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:39:02 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:39:02 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:39:02 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:39:02 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:39:02 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:39:07 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:39:07 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:39:07 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:39:07 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:39:38 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:39:38 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:39:38 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:39:38 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:39:38 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:39:38 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:39:42 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:39:42 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:39:42 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:39:42 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:39:45 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:39:45 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:39:45 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:39:45 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:41:49 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:41:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:50 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:41:55 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:41:56 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:42:02 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:42:02 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:42:02 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:42:02 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:02 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:42:02 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:42:04 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:42:04 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:42:04 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:42:04 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:04 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:42:23 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:42:23 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:42:23 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:23 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:42:27 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"ATTILAPU","departure_time":"19:42"}
+[05-Aug-2025 19:42:27 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'ATTILAPU', departure_time: '19:42'
+[05-Aug-2025 19:42:27 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:27 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:42:27 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:42:32 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"ATTILAPU","departure_time":"06:42"}
+[05-Aug-2025 19:42:32 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'ATTILAPU', departure_time: '06:42'
+[05-Aug-2025 19:42:32 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:32 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:42:32 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:42:33 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"ATTILAPU","departure_time":"06:50"}
+[05-Aug-2025 19:42:33 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'ATTILAPU', departure_time: '06:50'
+[05-Aug-2025 19:42:33 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:33 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:42:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:42:40 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NADAHAZA","departure_time":"06:50"}
+[05-Aug-2025 19:42:40 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NADAHAZA', departure_time: '06:50'
+[05-Aug-2025 19:42:40 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:40 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:42:44 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"BLAUMITH","departure_time":"06:50"}
+[05-Aug-2025 19:42:44 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'BLAUMITH', departure_time: '06:50'
+[05-Aug-2025 19:42:44 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:44 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:42:47 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"ORITTERG","departure_time":"06:50"}
+[05-Aug-2025 19:42:47 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'ORITTERG', departure_time: '06:50'
+[05-Aug-2025 19:42:47 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:47 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:42:54 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NYIRKSOR","departure_time":"06:50"}
+[05-Aug-2025 19:42:54 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NYIRKSOR', departure_time: '06:50'
+[05-Aug-2025 19:42:54 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:54 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:42:57 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NYIRKOML","departure_time":"06:50"}
+[05-Aug-2025 19:42:57 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NYIRKOML', departure_time: '06:50'
+[05-Aug-2025 19:42:57 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:42:57 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:43:05 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NYIRKOML","departure_time":"23:51"}
+[05-Aug-2025 19:43:05 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NYIRKOML', departure_time: '23:51'
+[05-Aug-2025 19:43:05 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:43:05 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:43:05 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:08 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NINCSEH2","departure_time":"23:51"}
+[05-Aug-2025 19:43:08 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NINCSEH2', departure_time: '23:51'
+[05-Aug-2025 19:43:08 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:43:08 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:43:10 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NINCSEH1","departure_time":"23:51"}
+[05-Aug-2025 19:43:10 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NINCSEH1', departure_time: '23:51'
+[05-Aug-2025 19:43:10 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:43:10 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:43:15 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NADAHAZA","departure_time":"23:51"}
+[05-Aug-2025 19:43:15 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NADAHAZA', departure_time: '23:51'
+[05-Aug-2025 19:43:15 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:43:15 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 19:43:17 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"23:51"}
+[05-Aug-2025 19:43:17 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '23:51'
+[05-Aug-2025 19:43:17 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:43:17 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:43:30 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"06:51"}
+[05-Aug-2025 19:43:30 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '06:51'
+[05-Aug-2025 19:43:30 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:43:30 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:43:30 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:32 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:43:32 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:33 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:37 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"06:52"}
+[05-Aug-2025 19:43:37 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '06:52'
+[05-Aug-2025 19:43:37 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:43:37 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:43:37 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:43:56 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:43:56 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:43:56 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:43:56 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:43:56 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:43:56 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:45:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:47:13 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:47:13 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:47:13 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:47:13 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:47:14 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:48:52 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:48:52 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:48:52 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:48:52 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:48:52 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:48:52 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:49:02 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:49:02 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:49:02 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:49:02 Europe/Budapest] Found 2 locomotives in database
+[05-Aug-2025 19:49:02 Europe/Budapest] Returning 2 available locomotives
+[05-Aug-2025 19:49:02 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:50:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:55:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:56:18 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:56:18 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:56:18 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:56:18 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:56:18 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:56:18 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:56:20 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:56:20 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:56:20 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:56:20 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:56:20 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:56:34 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:56:34 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:56:34 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:56:34 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:56:34 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:56:34 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:56:35 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:56:35 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:56:35 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:56:35 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:56:35 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:56:57 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:56:57 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:56:57 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:56:57 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:57:01 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:57:01 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:57:01 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:57:01 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:57:04 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NYIRKOML","departure_time":"19:57"}
+[05-Aug-2025 19:57:04 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NYIRKOML', departure_time: '19:57'
+[05-Aug-2025 19:57:04 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:57:04 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:57:04 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:57:08 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NYIRKOML","departure_time":"10:57"}
+[05-Aug-2025 19:57:08 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NYIRKOML', departure_time: '10:57'
+[05-Aug-2025 19:57:08 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:57:08 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:57:09 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:57:10 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NYIRKOML","departure_time":"10:47"}
+[05-Aug-2025 19:57:10 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NYIRKOML', departure_time: '10:47'
+[05-Aug-2025 19:57:10 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:57:10 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:57:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:57:26 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:57:26 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:57:26 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:57:26 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:57:26 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:57:26 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:57:34 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:57:34 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:57:34 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:57:34 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:57:34 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:57:43 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:57:43 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:57:43 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:57:43 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:57:43 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:57:43 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:57:48 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:57:48 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:57:48 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:57:48 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:57:48 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:58:22 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:58:22 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:58:22 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:58:22 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:58:31 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:58:31 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NYIRKOML","departure_time":"10:00"}
+[05-Aug-2025 19:58:31 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NYIRKOML', departure_time: '10:00'
+[05-Aug-2025 19:58:31 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:58:31 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:58:59 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:58:59 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:58:59 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:58:59 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 19:59:04 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NINCSEH1","departure_time":"19:59"}
+[05-Aug-2025 19:59:04 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NINCSEH1', departure_time: '19:59'
+[05-Aug-2025 19:59:04 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:59:04 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:59:04 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:59:08 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NINCSEH1","departure_time":"10:59"}
+[05-Aug-2025 19:59:08 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NINCSEH1', departure_time: '10:59'
+[05-Aug-2025 19:59:08 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:59:08 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:59:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:59:10 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NINCSEH1","departure_time":"10:00"}
+[05-Aug-2025 19:59:10 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NINCSEH1', departure_time: '10:00'
+[05-Aug-2025 19:59:10 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:59:10 Europe/Budapest] Returning 1 available locomotives
+[05-Aug-2025 19:59:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 19:59:38 Europe/Budapest] validateLocomotiveAvailability: Locomotive 13, Departure: NINCSEH1 at 10:00
+[05-Aug-2025 19:59:38 Europe/Budapest] Found 0 assignments: []
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: distance in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 220
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1415
+[05-Aug-2025 19:59:38 Europe/Budapest] PHP Notice:  Undefined index: from_station in /home/highball/public_html/dcc/enhanced_train_creator_api.php on line 1416
+[05-Aug-2025 19:59:48 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 19:59:48 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 19:59:48 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 19:59:48 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 19:59:48 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 19:59:48 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:00:00 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"14"}
+[05-Aug-2025 20:00:00 Europe/Budapest] trains_api.php handleGet called with id parameter: '14'
+[05-Aug-2025 20:00:00 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:00 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"14"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '14'
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:08 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:00:12 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"BLAUMITH","departure_time":"10:00"}
+[05-Aug-2025 20:00:12 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'BLAUMITH', departure_time: '10:00'
+[05-Aug-2025 20:00:12 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:00:12 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 20:00:21 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"NADAHAZA","departure_time":"10:00"}
+[05-Aug-2025 20:00:21 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'NADAHAZA', departure_time: '10:00'
+[05-Aug-2025 20:00:21 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:00:21 Europe/Budapest] Returning 0 available locomotives
+[05-Aug-2025 20:00:47 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"10:00"}
+[05-Aug-2025 20:00:47 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '10:00'
+[05-Aug-2025 20:00:47 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:00:47 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:01:48 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"00:00"}
+[05-Aug-2025 20:01:48 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '00:00'
+[05-Aug-2025 20:01:48 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:01:48 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:01:48 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:01:52 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:00"}
+[05-Aug-2025 20:01:52 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:00'
+[05-Aug-2025 20:01:52 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:01:52 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:01:52 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:02:03 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:05"}
+[05-Aug-2025 20:02:03 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:05'
+[05-Aug-2025 20:02:03 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:02:03 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:02:03 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:02:03 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:59"}
+[05-Aug-2025 20:02:03 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:59'
+[05-Aug-2025 20:02:03 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:02:03 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:02:03 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:02:22 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:04"}
+[05-Aug-2025 20:02:22 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:04'
+[05-Aug-2025 20:02:22 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:02:22 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:02:22 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:02:24 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:49"}
+[05-Aug-2025 20:02:24 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:49'
+[05-Aug-2025 20:02:24 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:02:24 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:02:24 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:02:34 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:05"}
+[05-Aug-2025 20:02:34 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:05'
+[05-Aug-2025 20:02:34 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:02:34 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:02:34 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:02:35 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:50"}
+[05-Aug-2025 20:02:35 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:50'
+[05-Aug-2025 20:02:35 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:02:35 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:02:35 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:03:09 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:03:09 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:05"}
+[05-Aug-2025 20:03:09 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:05'
+[05-Aug-2025 20:03:09 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:03:09 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:03:10 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives","departure_station":"LAUBACMU","departure_time":"09:56"}
+[05-Aug-2025 20:03:10 Europe/Budapest] handleAvailableLocomotives called with departure_station: 'LAUBACMU', departure_time: '09:56'
+[05-Aug-2025 20:03:10 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 20:03:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:03:10 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"14"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php handleGet called with id parameter: '14'
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:04:41 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:08 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 20:30:08 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 20:30:09 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 20:30:09 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 20:30:09 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"14"}
+[05-Aug-2025 20:30:09 Europe/Budapest] trains_api.php handleGet called with id parameter: '14'
+[05-Aug-2025 20:30:09 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 20:30:09 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 20:30:09 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 20:30:09 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:10 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:16 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 20:30:16 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 20:30:17 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:30:17 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"14"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php handleGet called with id parameter: '14'
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:36:37 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:36:38 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:36:38 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:36:38 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:36:38 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:36:38 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 20:36:38 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 21:53:03 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 21:53:03 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 21:53:03 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 21:53:03 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 21:53:03 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 21:53:03 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 21:58:42 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 21:58:42 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 21:58:51 Europe/Budapest] trains_api.php called with action: 'available_locomotives', GET params: {"action":"available_locomotives"}
+[05-Aug-2025 21:58:51 Europe/Budapest] handleAvailableLocomotives called with departure_station: '', departure_time: ''
+[05-Aug-2025 21:58:51 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","page":"1","limit":"20","search":"","type":""}
+[05-Aug-2025 21:58:51 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 21:58:51 Europe/Budapest] Found 3 locomotives in database
+[05-Aug-2025 21:58:51 Europe/Budapest] Returning 3 available locomotives
+[05-Aug-2025 22:05:53 Europe/Budapest] trains_api.php called with action: 'list', GET params: {"action":"list","limit":"100"}
+[05-Aug-2025 22:05:53 Europe/Budapest] trains_api.php called with action: 'stations', GET params: {"action":"stations"}
+[05-Aug-2025 22:05:53 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"4"}
+[05-Aug-2025 22:05:53 Europe/Budapest] trains_api.php handleGet called with id parameter: '4'
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"14"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php handleGet called with id parameter: '14'
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"12"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php handleGet called with id parameter: '12'
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"8"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php handleGet called with id parameter: '8'
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"11"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php handleGet called with id parameter: '11'
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"13"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php handleGet called with id parameter: '13'
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"9"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php handleGet called with id parameter: '9'
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'get', GET params: {"action":"get","id":"10"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php handleGet called with id parameter: '10'
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}
+[05-Aug-2025 22:05:54 Europe/Budapest] trains_api.php called with action: 'calculate_schedule', GET params: {"action":"calculate_schedule"}

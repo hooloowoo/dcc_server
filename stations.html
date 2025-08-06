@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stations Management - DCC Layout Control</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .user-header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-role {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .role-admin { background: #e74c3c; }
+        .role-operator { background: #f39c12; }
+        .role-viewer { background: #95a5a6; }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .navigation {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav-link {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 0 10px;
+            display: inline-block;
+        }
+        
+        .nav-link:hover {
+            background-color: #45a049;
+        }
+        
+        .nav-link.back {
+            background-color: #666;
+        }
+        
+        .nav-link.back:hover {
+            background-color: #555;
+        }
+        
+        .actions-bar {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .search-input {
+            flex: 1;
+            max-width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-secondary {
+            background-color: #666;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+        
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .stations-table {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        th:hover {
+            background-color: #e9ecef;
+        }
+        
+        th.sortable::after {
+            content: ' ↕';
+            color: #999;
+        }
+        
+        th.sort-asc::after {
+            content: ' ↑';
+            color: #4CAF50;
+        }
+        
+        th.sort-desc::after {
+            content: ' ↓';
+            color: #4CAF50;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .station-id {
+            font-family: monospace;
+            background-color: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        .station-description {
+            color: #666;
+            font-style: italic;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            margin: 0;
+            font-size: 18px;
+        }
+        
+        .close {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+        
+        .close:hover {
+            opacity: 0.7;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .pagination-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .actions-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-controls {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                max-width: none;
+            }
+            
+            .modal-content {
+                margin: 2% auto;
+                width: 95%;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 8px 4px;
+            }
+            
+            .station-description {
+                max-width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="user-header">
+        <div class="user-info">
+            <span class="user-name" id="userName">Loading...</span>
+            <span class="user-role" id="userRole"></span>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <h1>🚉 Stations Management</h1>
+        <p class="subtitle">Manage railway stations and locations</p>
+        
+        <div class="navigation">
+            <a href="index.html" class="nav-link back">← Back to Layout Control</a>
+            <a href="monitor.html" class="nav-link">📊 Monitor</a>
+            <a href="station_connections.html" class="nav-link">🔗 Station Connections</a>
+            <a href="station_tracks.html" class="nav-link">🛤️ Station Tracks</a>
+            <a href="#" class="nav-link" onclick="refreshStations()">🔄 Refresh</a>
+        </div>
+        
+        <div class="actions-bar">
+            <div class="search-controls">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search stations..." 
+                       onkeyup="handleSearchInput()" onkeydown="handleSearchKeydown(event)">
+                <button class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+            </div>
+            <button id="addStationBtn" class="btn btn-primary" onclick="openCreateModal()" style="display: none;">+ Add New Station</button>
+        </div>
+        
+        <div id="errorMessage"></div>
+        <div id="successMessage"></div>
+        
+        <div class="stations-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sortable" onclick="sortTable('id')">Station ID</th>
+                        <th class="sortable" onclick="sortTable('name')">Name</th>
+                        <th>Description</th>
+                        <th class="sortable" onclick="sortTable('created_at')">Created</th>
+                        <th class="sortable" onclick="sortTable('updated_at')">Modified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="stationsTableBody">
+                    <tr>
+                        <td colspan="6" class="loading">Loading stations...</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="pagination" id="pagination" style="display: none;">
+                <button class="btn btn-secondary btn-small" id="prevBtn" onclick="previousPage()" disabled>← Previous</button>
+                <span class="pagination-info" id="paginationInfo">-</span>
+                <button class="btn btn-secondary btn-small" id="nextBtn" onclick="nextPage()" disabled>Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Station Modal -->
+    <div id="stationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add New Station</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="stationForm">
+                    <div class="form-group" id="stationCodeGroup">
+                        <label class="form-label" for="stationCode">Station Code *</label>
+                        <input type="text" id="stationCode" class="form-input" required maxlength="8" 
+                               placeholder="e.g., CTRL001A" style="text-transform: uppercase;">
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            <strong>Format:</strong> Maximum 8 characters using A-Z and 0-9<br>
+                            <strong>Examples:</strong> CTRL001A, NJCT002B, YARD03C, TERM4D, EAST, WEST
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="stationName">Station Name *</label>
+                        <input type="text" id="stationName" class="form-input" required maxlength="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="stationDescription">Description</label>
+                        <textarea id="stationDescription" class="form-textarea" maxlength="1000" 
+                                  placeholder="Optional description of the station"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="stationSvg">Station Icon (SVG)</label>
+                        <textarea id="stationSvg" class="form-textarea" maxlength="2000" 
+                                  placeholder="Optional SVG icon for the station (e.g., &lt;svg width=&quot;40&quot; height=&quot;40&quot;&gt;...&lt;/svg&gt;)"></textarea>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            SVG markup for station icon on layout diagrams
+                        </div>
+                    </div>
+                    <div id="modalError"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveStation()" id="saveBtn">Save Station</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Station Accessories Modal -->
+    <div id="accessoriesModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3 class="modal-title" id="accessoriesModalTitle">Station Accessories</h3>
+                <span class="close" onclick="closeAccessoriesModal()">&times;</span>
+            </div>
+            <div class="modal-body" style="max-height: 600px; overflow-y: auto;">
+                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-weight: bold; color: #333;">
+                        <span id="currentStationName">Station Name</span> 
+                        <span style="color: #666; font-size: 14px;">(<span id="currentStationId">STATION_ID</span>)</span>
+                    </div>
+                    <button id="addAccessoryBtn" class="btn btn-primary btn-small" onclick="openAddAccessoryModal()" style="display: none;">+ Add Accessory</button>
+                </div>
+                
+                <div id="accessoriesTableContainer">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 8px; border-bottom: 1px solid #eee; text-align: left;">Address</th>
+                                <th style="padding: 8px; border-bottom: 1px solid #eee; text-align: left;">Name</th>
+                                <th style="padding: 8px; border-bottom: 1px solid #eee; text-align: left;">Type</th>
+                                <th style="padding: 8px; border-bottom: 1px solid #eee; text-align: left;">Description</th>
+                                <th style="padding: 8px; border-bottom: 1px solid #eee; text-align: left;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accessoriesTableBody">
+                            <tr>
+                                <td colspan="5" style="padding: 20px; text-align: center; color: #666;">Loading accessories...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="accessoriesError"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Accessory Modal -->
+    <div id="accessoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="accessoryModalTitle">Add Accessory</h3>
+                <span class="close" onclick="closeAccessoryModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="accessoryForm">
+                    <div class="form-group">
+                        <label class="form-label" for="accessoryAddress">DCC Address *</label>
+                        <input type="number" id="accessoryAddress" class="form-input" required min="1" max="2048" placeholder="e.g., 101">
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            DCC accessory address (1-2048)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="accessoryName">Accessory Name *</label>
+                        <input type="text" id="accessoryName" class="form-input" required maxlength="100" placeholder="e.g., Platform 1 Signal">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="accessoryType">Type</label>
+                        <select id="accessoryType" class="form-input">
+                            <option value="">Select type...</option>
+                            <option value="Signal">Signal</option>
+                            <option value="Turnout">Turnout</option>
+                            <option value="Crossing">Crossing</option>
+                            <option value="Lighting">Lighting</option>
+                            <option value="Sound">Sound</option>
+                            <option value="Turntable">Turntable</option>
+                            <option value="Crane">Crane</option>
+                            <option value="Service">Service</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="accessoryDescription">Description</label>
+                        <textarea id="accessoryDescription" class="form-textarea" maxlength="500" 
+                                  placeholder="Optional description of the accessory"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="xCoordinate">X Coordinate</label>
+                        <input type="number" id="xCoordinate" class="form-input" step="0.1" placeholder="e.g., 100.5">
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            Horizontal position on layout diagram
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="yCoordinate">Y Coordinate</label>
+                        <input type="number" id="yCoordinate" class="form-input" step="0.1" placeholder="e.g., 75.2">
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            Vertical position on layout diagram
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="svgLeft">SVG Left State</label>
+                        <textarea id="svgLeft" class="form-textarea" maxlength="1000" 
+                                  placeholder="SVG markup for left/inactive state (optional)"></textarea>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            SVG graphics for the inactive/left position
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="text-align: center; margin: 10px 0;">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="swapSvgContents()" 
+                                style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                            ⇅ Swap Left ↔ Right SVG
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="svgRight">SVG Right State</label>
+                        <textarea id="svgRight" class="form-textarea" maxlength="1000" 
+                                  placeholder="SVG markup for right/active state (optional)"></textarea>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">
+                            SVG graphics for the active/right position
+                        </div>
+                    </div>
+                    <div id="accessoryModalError"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAccessoryModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveAccessoryAndContinue()" id="saveAndContinueBtn" 
+                        style="background: #28a745; margin-right: 10px;">Save & Continue</button>
+                <button class="btn btn-primary" onclick="saveAccessory()" id="saveAccessoryBtn">Save & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stations = [];
+        let currentPage = 0;
+        let pageSize = 20;
+        let totalStations = 0;
+        let currentSearch = '';
+        let currentSort = 'name';
+        let currentSortDir = 'ASC';
+        let editingStationId = null;
+        let currentStationId = null;
+        let currentStationName = null;
+        let editingAccessoryId = null;
+        let stationAccessories = [];
+        let refreshInterval = null;
+        let currentUser = null; // User authentication state
+
+        // Check authentication on page load - allow viewing without auth, require auth for editing
+        async function checkAuth() {
+            try {
+                const response = await fetch('auth_api.php?action=validate');
+                const result = await response.json();
+                
+                if (result.status === 'success' && result.data.valid) {
+                    // Get user profile
+                    const profileResponse = await fetch('auth_api.php?action=profile');
+                    const profileResult = await profileResponse.json();
+                    
+                    if (profileResult.status === 'success') {
+                        currentUser = profileResult.data;
+                        updateUserHeader();
+                        return true;
+                    }
+                }
+                
+                // Not authenticated - set as guest user for viewing
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            } catch (error) {
+                console.error('Auth check error:', error);
+                // Allow viewing even if auth check fails
+                currentUser = null;
+                updateUserHeader();
+                return false;
+            }
+        }
+
+        function updateUserHeader() {
+            const userNameElement = document.getElementById('userName');
+            const userRoleElement = document.getElementById('userRole');
+            const logoutBtn = document.querySelector('.logout-btn');
+            const addStationBtn = document.getElementById('addStationBtn');
+            
+            if (currentUser) {
+                const userName = currentUser.first_name && currentUser.last_name 
+                    ? `${currentUser.first_name} ${currentUser.last_name}` 
+                    : currentUser.username;
+                userNameElement.textContent = userName;
+                
+                userRoleElement.textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+                userRoleElement.className = `user-role role-${currentUser.role}`;
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Logout';
+                logoutBtn.onclick = logout;
+                
+                // Show add button for admin/operator
+                if (currentUser.role === 'admin' || currentUser.role === 'operator') {
+                    addStationBtn.style.display = 'block';
+                } else {
+                    addStationBtn.style.display = 'none';
+                }
+            } else {
+                userNameElement.textContent = 'Guest User';
+                userRoleElement.textContent = 'View Only';
+                userRoleElement.className = 'user-role role-viewer';
+                
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = 'Login';
+                logoutBtn.onclick = () => window.location.href = 'login.html';
+                
+                // Hide add button for guests
+                addStationBtn.style.display = 'none';
+            }
+            
+            // Refresh the stations table to update button visibility
+            renderStationsTable();
+        }
+
+        async function logout() {
+            try {
+                await fetch('auth_api.php?action=logout', { method: 'POST' });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function requireAuth(action = 'perform this action') {
+            if (!currentUser) {
+                alert(`Please login to ${action}. Click "Login" in the top right corner.`);
+                return false;
+            }
+            if (currentUser.role !== 'admin' && currentUser.role !== 'operator') {
+                alert('You do not have permission to edit. Only administrators and operators can make changes.');
+                return false;
+            }
+            return true;
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication first
+            await checkAuth();
+            
+            refreshStations();
+            // Auto-refresh every 30 seconds
+            refreshInterval = setInterval(refreshStations, 30000);
+            
+            // Add real-time validation for station code
+            const stationCodeInput = document.getElementById('stationCode');
+            const stationNameInput = document.getElementById('stationName');
+            
+            stationCodeInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+                validateStationCodeInput();
+            });
+            
+            stationNameInput.addEventListener('input', function() {
+                suggestStationCode();
+            });
+        });
+        
+        function validateStationCodeInput() {
+            const input = document.getElementById('stationCode');
+            const value = input.value;
+            
+            // Remove any styling
+            input.style.borderColor = '';
+            
+            if (value.length > 0) {
+                if (!/^[A-Z0-9]*$/.test(value)) {
+                    input.style.borderColor = '#f44336';
+                } else if (value.length === 8) {
+                    input.style.borderColor = '#4CAF50';
+                } else {
+                    input.style.borderColor = '#FFC107';
+                }
+            }
+        }
+        
+        function suggestStationCode() {
+            const nameInput = document.getElementById('stationName');
+            const codeInput = document.getElementById('stationCode');
+            
+            // Only suggest if code field is empty and we're creating a new station
+            if (!editingStationId && codeInput.value === '' && nameInput.value.length >= 4) {
+                const name = nameInput.value.toUpperCase();
+                let suggestion = '';
+                
+                // Extract letters from the name
+                const letters = name.match(/[A-Z]/g);
+                if (letters && letters.length >= 4) {
+                    suggestion = letters.slice(0, 4).join('');
+                } else {
+                    // Fallback: use first 4 characters, replacing spaces/special chars with letters
+                    suggestion = name.substring(0, 4).replace(/[^A-Z]/g, 'X');
+                }
+                
+                // Add numbers to make it 8 characters
+                suggestion += '001A';
+                
+                // Set as placeholder to hint the user
+                codeInput.placeholder = `Suggestion: ${suggestion}`;
+            }
+        }
+        
+        async function refreshStations() {
+            try {
+                clearMessages();
+                
+                const params = new URLSearchParams({
+                    limit: pageSize,
+                    offset: currentPage * pageSize,
+                    order: currentSort,
+                    dir: currentSortDir
+                });
+                
+                if (currentSearch) {
+                    params.append('search', currentSearch);
+                }
+                
+                const response = await fetch(`stations_api.php?${params}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    stations = result.data;
+                    totalStations = result.pagination.total;
+                    renderStationsTable();
+                    updatePagination();
+                } else {
+                    throw new Error(result.error || 'Failed to load stations');
+                }
+            } catch (error) {
+                console.error('Error refreshing stations:', error);
+                showError('Error loading stations: ' + error.message);
+                document.getElementById('stationsTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="no-data">Error loading stations</td></tr>';
+            }
+        }
+        
+        function renderStationsTable() {
+            const tbody = document.getElementById('stationsTableBody');
+            
+            if (stations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-data">No stations found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = stations.map(station => {
+                const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.role === 'operator');
+                return `
+                <tr>
+                    <td><span class="station-id">${station.id}</span></td>
+                    <td><strong>${escapeHtml(station.name)}</strong></td>
+                    <td><span class="station-description">${station.description ? escapeHtml(station.description) : '-'}</span></td>
+                    <td>${formatDateTime(station.created_at)}</td>
+                    <td>${formatDateTime(station.updated_at)}</td>
+                    <td>
+                        <div class="actions">
+                            <a href="station_view.html?id=${station.id}" class="btn btn-primary btn-small">View</a>
+                            <a href="station_tracks.html?station=${station.id}" class="btn btn-secondary btn-small">Tracks</a>
+                            <button class="btn btn-secondary btn-small" onclick="viewAccessories('${station.id}', '${escapeHtml(station.name)}')">Accessories</button>
+                            ${canEdit ? `<button class="btn btn-secondary btn-small" onclick="editStation('${station.id}')">Edit</button>` : ''}
+                            ${canEdit ? `<button class="btn btn-danger btn-small" onclick="deleteStation('${station.id}', '${escapeHtml(station.name)}')">Delete</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+        
+        function updatePagination() {
+            const pagination = document.getElementById('pagination');
+            const paginationInfo = document.getElementById('paginationInfo');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (totalStations > pageSize) {
+                pagination.style.display = 'flex';
+                
+                const startItem = currentPage * pageSize + 1;
+                const endItem = Math.min((currentPage + 1) * pageSize, totalStations);
+                paginationInfo.textContent = `${startItem}-${endItem} of ${totalStations}`;
+                
+                prevBtn.disabled = currentPage === 0;
+                nextBtn.disabled = (currentPage + 1) * pageSize >= totalStations;
+            } else {
+                pagination.style.display = 'none';
+            }
+        }
+        
+        function previousPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                refreshStations();
+            }
+        }
+        
+        function nextPage() {
+            if ((currentPage + 1) * pageSize < totalStations) {
+                currentPage++;
+                refreshStations();
+            }
+        }
+        
+        function sortTable(column) {
+            if (currentSort === column) {
+                currentSortDir = currentSortDir === 'ASC' ? 'DESC' : 'ASC';
+            } else {
+                currentSort = column;
+                currentSortDir = 'ASC';
+            }
+            
+            currentPage = 0; // Reset to first page when sorting
+            updateSortUI();
+            refreshStations();
+        }
+        
+        function updateSortUI() {
+            // Remove all sort classes
+            document.querySelectorAll('th.sortable').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+            
+            // Add current sort class
+            const currentTh = document.querySelector(`th.sortable[onclick="sortTable('${currentSort}')"]`);
+            if (currentTh) {
+                currentTh.classList.add(currentSortDir === 'ASC' ? 'sort-asc' : 'sort-desc');
+            }
+        }
+        
+        let searchTimeout;
+        function handleSearchInput() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchValue = document.getElementById('searchInput').value.trim();
+                if (searchValue !== currentSearch) {
+                    currentSearch = searchValue;
+                    currentPage = 0;
+                    refreshStations();
+                }
+            }, 300);
+        }
+        
+        function handleSearchKeydown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                clearTimeout(searchTimeout);
+                const searchValue = document.getElementById('searchInput').value.trim();
+                currentSearch = searchValue;
+                currentPage = 0;
+                refreshStations();
+            }
+        }
+        
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            if (currentSearch !== '') {
+                currentSearch = '';
+                currentPage = 0;
+                refreshStations();
+            }
+        }
+        
+        function openCreateModal() {
+            if (!requireAuth('create stations')) return;
+            
+            editingStationId = null;
+            document.getElementById('modalTitle').textContent = 'Add New Station';
+            document.getElementById('stationCode').value = '';
+            document.getElementById('stationName').value = '';
+            document.getElementById('stationDescription').value = '';
+            document.getElementById('stationSvg').value = '';
+            document.getElementById('saveBtn').textContent = 'Save Station';
+            document.getElementById('stationCodeGroup').style.display = 'block';
+            document.getElementById('stationCode').disabled = false;
+            clearModalError();
+            document.getElementById('stationModal').style.display = 'block';
+            document.getElementById('stationCode').focus();
+        }
+        
+        async function editStation(stationId) {
+            if (!requireAuth('edit stations')) return;
+            
+            try {
+                const response = await fetch(`stations_api.php?id=${stationId}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    editingStationId = stationId;
+                    document.getElementById('modalTitle').textContent = 'Edit Station';
+                    document.getElementById('stationCode').value = result.data.id;
+                    document.getElementById('stationName').value = result.data.name;
+                    document.getElementById('stationDescription').value = result.data.description || '';
+                    document.getElementById('stationSvg').value = result.data.svg_icon || '';
+                    document.getElementById('saveBtn').textContent = 'Update Station';
+                    document.getElementById('stationCodeGroup').style.display = 'none'; // Hide code field when editing
+                    clearModalError();
+                    document.getElementById('stationModal').style.display = 'block';
+                    document.getElementById('stationName').focus();
+                } else {
+                    throw new Error(result.error || 'Failed to load station data');
+                }
+            } catch (error) {
+                console.error('Error loading station for edit:', error);
+                showError('Error loading station: ' + error.message);
+            }
+        }
+        
+        async function saveStation() {
+            if (!requireAuth('save stations')) return;
+            
+            try {
+                const name = document.getElementById('stationName').value.trim();
+                const description = document.getElementById('stationDescription').value.trim();
+                const svgIcon = document.getElementById('stationSvg').value.trim();
+                
+                if (!name) {
+                    showModalError('Station name is required');
+                    return;
+                }
+                
+                const data = {
+                    name: name,
+                    description: description || null,
+                    svg_icon: svgIcon || null
+                };
+                
+                // Add station code for new stations
+                if (!editingStationId) {
+                    const code = document.getElementById('stationCode').value.trim().toUpperCase();
+                    if (!code) {
+                        showModalError('Station code is required');
+                        return;
+                    }
+                    if (code.length > 8) {
+                        showModalError('Station code must be maximum 8 characters long');
+                        return;
+                    }
+                    if (!/^[A-Z0-9]{1,8}$/.test(code)) {
+                        showModalError('Station code must contain only uppercase letters (A-Z) and numbers (0-9) and be 1-8 characters');
+                        return;
+                    }
+                    data.id = code;
+                }
+                
+                const url = editingStationId ? `stations_api.php?id=${editingStationId}` : 'stations_api.php';
+                const method = editingStationId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    closeModal();
+                    showSuccess(result.message);
+                    refreshStations();
+                } else {
+                    if (result.details && Array.isArray(result.details)) {
+                        showModalError(result.details.join('<br>'));
+                    } else {
+                        showModalError(result.error || 'Failed to save station');
+                    }
+                }
+            } catch (error) {
+                console.error('Error saving station:', error);
+                showModalError('Error saving station: ' + error.message);
+            }
+        }
+        
+        async function deleteStation(stationId, stationName) {
+            if (!requireAuth('delete stations')) return;
+            
+            if (!confirm(`Are you sure you want to delete station "${stationName}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`stations_api.php?id=${stationId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showSuccess(result.message);
+                    refreshStations();
+                } else {
+                    throw new Error(result.error || 'Failed to delete station');
+                }
+            } catch (error) {
+                console.error('Error deleting station:', error);
+                showError('Error deleting station: ' + error.message);
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('stationModal').style.display = 'none';
+            editingStationId = null;
+            clearModalError();
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.innerHTML = `<div class="error">${message}</div>`;
+            setTimeout(() => { errorDiv.innerHTML = ''; }, 5000);
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.innerHTML = `<div class="success">${message}</div>`;
+            setTimeout(() => { successDiv.innerHTML = ''; }, 3000);
+        }
+        
+        function showModalError(message) {
+            document.getElementById('modalError').innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        function clearModalError() {
+            document.getElementById('modalError').innerHTML = '';
+        }
+        
+        function clearMessages() {
+            document.getElementById('errorMessage').innerHTML = '';
+            document.getElementById('successMessage').innerHTML = '';
+        }
+        
+        function formatDateTime(timestamp) {
+            if (!timestamp) return '-';
+            const date = new Date(timestamp);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Modal close on click outside
+        window.onclick = function(event) {
+            const stationModal = document.getElementById('stationModal');
+            const accessoriesModal = document.getElementById('accessoriesModal');
+            const accessoryModal = document.getElementById('accessoryModal');
+            
+            if (event.target === stationModal) {
+                closeModal();
+            } else if (event.target === accessoriesModal) {
+                closeAccessoriesModal();
+            } else if (event.target === accessoryModal) {
+                closeAccessoryModal();
+            }
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+                closeAccessoriesModal();
+                closeAccessoryModal();
+            }
+        });
+        
+        // =============================================
+        // ACCESSORIES MANAGEMENT FUNCTIONS
+        // =============================================
+        
+        async function viewAccessories(stationId, stationName) {
+            currentStationId = stationId;
+            currentStationName = stationName;
+            
+            document.getElementById('currentStationId').textContent = stationId;
+            document.getElementById('currentStationName').textContent = stationName;
+            document.getElementById('accessoriesModalTitle').textContent = `Accessories - ${stationName}`;
+            
+            // Show/hide Add Accessory button based on user permissions
+            const addAccessoryBtn = document.getElementById('addAccessoryBtn');
+            const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.role === 'operator');
+            addAccessoryBtn.style.display = canEdit ? 'block' : 'none';
+            
+            document.getElementById('accessoriesModal').style.display = 'block';
+            await loadStationAccessories();
+        }
+        
+        async function loadStationAccessories() {
+            try {
+                document.getElementById('accessoriesError').innerHTML = '';
+                
+                const response = await fetch(`station_accessories_api.php?station_id=${currentStationId}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    stationAccessories = result.data;
+                    renderAccessoriesTable();
+                } else {
+                    throw new Error(result.error || 'Failed to load accessories');
+                }
+            } catch (error) {
+                console.error('Error loading accessories:', error);
+                showAccessoriesError('Error loading accessories: ' + error.message);
+                document.getElementById('accessoriesTableBody').innerHTML = 
+                    '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #666;">Error loading accessories</td></tr>';
+            }
+        }
+        
+        function renderAccessoriesTable() {
+            const tbody = document.getElementById('accessoriesTableBody');
+            
+            if (stationAccessories.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #666;">No accessories defined for this station</td></tr>';
+                return;
+            }
+            
+            // Sort by address
+            stationAccessories.sort((a, b) => a.accessory_address - b.accessory_address);
+            
+            const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.role === 'operator');
+            
+            tbody.innerHTML = stationAccessories.map(accessory => `
+                <tr>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                        <strong>${accessory.accessory_address}</strong>
+                    </td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                        ${escapeHtml(accessory.accessory_name)}
+                    </td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                        <span style="background-color: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
+                            ${accessory.accessory_type || 'Unknown'}
+                        </span>
+                    </td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${accessory.description ? escapeHtml(accessory.description) : '-'}
+                    </td>
+                    <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                        <div style="display: flex; gap: 5px;">
+                            ${canEdit ? `<button class="btn btn-secondary btn-small" onclick="editAccessory(${accessory.id})">Edit</button>` : ''}
+                            ${canEdit ? `<button class="btn btn-danger btn-small" onclick="deleteAccessory(${accessory.id}, '${escapeHtml(accessory.accessory_name)}')">Delete</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function openAddAccessoryModal() {
+            if (!requireAuth('add accessories')) return;
+            
+            editingAccessoryId = null;
+            document.getElementById('accessoryModalTitle').textContent = 'Add Accessory';
+            document.getElementById('accessoryAddress').value = '';
+            document.getElementById('accessoryName').value = '';
+            document.getElementById('accessoryType').value = '';
+            document.getElementById('accessoryDescription').value = '';
+            document.getElementById('xCoordinate').value = '';
+            document.getElementById('yCoordinate').value = '';
+            document.getElementById('svgLeft').value = '';
+            document.getElementById('svgRight').value = '';
+            document.getElementById('saveAccessoryBtn').textContent = 'Save & Close';
+            clearAccessoryModalError();
+            document.getElementById('accessoryModal').style.display = 'block';
+            document.getElementById('accessoryAddress').focus();
+        }
+        
+        async function editAccessory(accessoryId) {
+            if (!requireAuth('edit accessories')) return;
+            
+            try {
+                const response = await fetch(`station_accessories_api.php?id=${accessoryId}`);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    editingAccessoryId = accessoryId;
+                    document.getElementById('accessoryModalTitle').textContent = 'Edit Accessory';
+                    document.getElementById('accessoryAddress').value = result.data.accessory_address;
+                    document.getElementById('accessoryName').value = result.data.accessory_name;
+                    document.getElementById('accessoryType').value = result.data.accessory_type || '';
+                    document.getElementById('accessoryDescription').value = result.data.description || '';
+                    document.getElementById('xCoordinate').value = result.data.x_coordinate || '';
+                    document.getElementById('yCoordinate').value = result.data.y_coordinate || '';
+                    document.getElementById('svgLeft').value = result.data.svg_left || '';
+                    document.getElementById('svgRight').value = result.data.svg_right || '';
+                    document.getElementById('saveAccessoryBtn').textContent = 'Save & Close';
+                    clearAccessoryModalError();
+                    document.getElementById('accessoryModal').style.display = 'block';
+                    document.getElementById('accessoryName').focus();
+                } else {
+                    throw new Error(result.error || 'Failed to load accessory data');
+                }
+            } catch (error) {
+                console.error('Error loading accessory for edit:', error);
+                showAccessoriesError('Error loading accessory: ' + error.message);
+            }
+        }
+        
+        async function saveAccessory() {
+            if (!requireAuth('save accessories')) return;
+            
+            try {
+                const address = parseInt(document.getElementById('accessoryAddress').value);
+                const name = document.getElementById('accessoryName').value.trim();
+                const type = document.getElementById('accessoryType').value.trim();
+                const description = document.getElementById('accessoryDescription').value.trim();
+                const xCoordinate = parseFloat(document.getElementById('xCoordinate').value) || 0;
+                const yCoordinate = parseFloat(document.getElementById('yCoordinate').value) || 0;
+                const svgLeft = document.getElementById('svgLeft').value.trim();
+                const svgRight = document.getElementById('svgRight').value.trim();
+                
+                if (!name) {
+                    showAccessoryModalError('Accessory name is required');
+                    return;
+                }
+                
+                if (!address || address < 1 || address > 2048) {
+                    showAccessoryModalError('Valid DCC address (1-2048) is required');
+                    return;
+                }
+                
+                const data = {
+                    accessory_address: address,
+                    accessory_name: name,
+                    accessory_type: type || null,
+                    description: description || null,
+                    x_coordinate: xCoordinate,
+                    y_coordinate: yCoordinate,
+                    svg_left: svgLeft || null,
+                    svg_right: svgRight || null
+                };
+                
+                // Add station ID for new accessories
+                if (!editingAccessoryId) {
+                    data.station_id = currentStationId;
+                }
+                
+                const url = editingAccessoryId ? `station_accessories_api.php?id=${editingAccessoryId}` : 'station_accessories_api.php';
+                const method = editingAccessoryId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    closeAccessoryModal();
+                    await loadStationAccessories(); // Refresh the accessories list
+                    showAccessoriesSuccess(result.message);
+                } else {
+                    if (result.details && Array.isArray(result.details)) {
+                        showAccessoryModalError(result.details.join('<br>'));
+                    } else {
+                        showAccessoryModalError(result.error || 'Failed to save accessory');
+                    }
+                }
+            } catch (error) {
+                console.error('Error saving accessory:', error);
+                showAccessoryModalError('Error saving accessory: ' + error.message);
+            }
+        }
+        
+        async function saveAccessoryAndContinue() {
+            if (!requireAuth('save accessories')) return;
+            
+            try {
+                const address = parseInt(document.getElementById('accessoryAddress').value);
+                const name = document.getElementById('accessoryName').value.trim();
+                const type = document.getElementById('accessoryType').value.trim();
+                const description = document.getElementById('accessoryDescription').value.trim();
+                const xCoordinate = parseFloat(document.getElementById('xCoordinate').value) || 0;
+                const yCoordinate = parseFloat(document.getElementById('yCoordinate').value) || 0;
+                const svgLeft = document.getElementById('svgLeft').value.trim();
+                const svgRight = document.getElementById('svgRight').value.trim();
+                
+                if (!name) {
+                    showAccessoryModalError('Accessory name is required');
+                    return;
+                }
+                
+                if (!address || address < 1 || address > 2048) {
+                    showAccessoryModalError('Valid DCC address (1-2048) is required');
+                    return;
+                }
+                
+                const data = {
+                    accessory_address: address,
+                    accessory_name: name,
+                    accessory_type: type || null,
+                    description: description || null,
+                    x_coordinate: xCoordinate,
+                    y_coordinate: yCoordinate,
+                    svg_left: svgLeft || null,
+                    svg_right: svgRight || null
+                };
+                
+                // Add station ID for new accessories
+                if (!editingAccessoryId) {
+                    data.station_id = currentStationId;
+                }
+                
+                const url = editingAccessoryId ? `station_accessories_api.php?id=${editingAccessoryId}` : 'station_accessories_api.php';
+                const method = editingAccessoryId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    // Don't close the modal, just refresh the accessories list and show success
+                    await loadStationAccessories(); // Refresh the accessories list
+                    showAccessoriesSuccess(result.message);
+                    
+                    // If we were adding a new accessory, we now have an ID to edit
+                    if (!editingAccessoryId && result.id) {
+                        editingAccessoryId = result.id;
+                        document.getElementById('accessoryModalTitle').textContent = 'Edit Accessory';
+                        document.getElementById('saveAccessoryBtn').textContent = 'Save & Close';
+                        document.getElementById('saveAndContinueBtn').textContent = 'Save & Continue';
+                    }
+                    
+                    // Clear any previous errors
+                    clearAccessoryModalError();
+                    
+                    // Show brief success feedback on the button
+                    const button = document.getElementById('saveAndContinueBtn');
+                    const originalText = button.textContent;
+                    const originalBackground = button.style.backgroundColor;
+                    
+                    button.textContent = '✓ Saved!';
+                    button.style.backgroundColor = '#20c997';
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.backgroundColor = originalBackground;
+                    }, 1500);
+                    
+                } else {
+                    if (result.details && Array.isArray(result.details)) {
+                        showAccessoryModalError(result.details.join('<br>'));
+                    } else {
+                        showAccessoryModalError(result.error || 'Failed to save accessory');
+                    }
+                }
+            } catch (error) {
+                console.error('Error saving accessory:', error);
+                showAccessoryModalError('Error saving accessory: ' + error.message);
+            }
+        }
+        
+        async function deleteAccessory(accessoryId, accessoryName) {
+            if (!requireAuth('delete accessories')) return;
+            
+            if (!confirm(`Are you sure you want to delete accessory "${accessoryName}"?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`station_accessories_api.php?id=${accessoryId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    await loadStationAccessories(); // Refresh the accessories list
+                    showAccessoriesSuccess(result.message);
+                } else {
+                    throw new Error(result.error || 'Failed to delete accessory');
+                }
+            } catch (error) {
+                console.error('Error deleting accessory:', error);
+                showAccessoriesError('Error deleting accessory: ' + error.message);
+            }
+        }
+        
+        function closeAccessoriesModal() {
+            document.getElementById('accessoriesModal').style.display = 'none';
+            currentStationId = null;
+            currentStationName = null;
+            stationAccessories = [];
+        }
+        
+        function swapSvgContents() {
+            const svgLeftElement = document.getElementById('svgLeft');
+            const svgRightElement = document.getElementById('svgRight');
+            
+            // Get the current values
+            const leftContent = svgLeftElement.value;
+            const rightContent = svgRightElement.value;
+            
+            // Swap the contents
+            svgLeftElement.value = rightContent;
+            svgRightElement.value = leftContent;
+            
+            // Optional: Show a brief confirmation
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✓ Swapped!';
+            button.style.background = '#28a745';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.background = '#6c757d';
+            }, 1000);
+        }
+        
+        function closeAccessoryModal() {
+            document.getElementById('accessoryModal').style.display = 'none';
+            editingAccessoryId = null;
+            clearAccessoryModalError();
+        }
+        
+        function showAccessoriesError(message) {
+            const errorDiv = document.getElementById('accessoriesError');
+            errorDiv.innerHTML = `<div class="error" style="margin-top: 15px;">${message}</div>`;
+            setTimeout(() => { errorDiv.innerHTML = ''; }, 5000);
+        }
+        
+        function showAccessoriesSuccess(message) {
+            const errorDiv = document.getElementById('accessoriesError');
+            errorDiv.innerHTML = `<div class="success" style="margin-top: 15px;">${message}</div>`;
+            setTimeout(() => { errorDiv.innerHTML = ''; }, 3000);
+        }
+        
+        function showAccessoryModalError(message) {
+            document.getElementById('accessoryModalError').innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        function clearAccessoryModalError() {
+            document.getElementById('accessoryModalError').innerHTML = '';
+        }
+        
+        // Cleanup interval on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

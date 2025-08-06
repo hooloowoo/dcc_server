@@ -1,0 +1,363 @@
+<?php
+/**
+ * DCC Station Network API
+ * Provides network analysis, pathfinding, and route planning
+ * GET requests allow guest access for route information
+ */
+
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+require_once 'config.php';
+require_once 'auth_utils.php';
+
+// Dijkstra's algorithm implementation for shortest path
+function findShortestPath($conn, $startStation, $endStation) {
+    // Get all active connections
+    $stmt = $conn->prepare("
+        SELECT from_station_id, to_station_id, 
+               distance_km, 
+               bidirectional
+        FROM dcc_station_connections 
+        WHERE is_active = 1
+    ");
+    $stmt->execute();
+    $connections = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Build adjacency list
+    $graph = [];
+    foreach ($connections as $conn_data) {
+        $from = $conn_data['from_station_id'];
+        $to = $conn_data['to_station_id'];
+        $distance = floatval($conn_data['distance_km']);
+        
+        if (!isset($graph[$from])) $graph[$from] = [];
+        $graph[$from][] = ['station' => $to, 'distance' => $distance];
+        
+        // Add reverse connection if bidirectional
+        if ($conn_data['bidirectional']) {
+            if (!isset($graph[$to])) $graph[$to] = [];
+            $graph[$to][] = ['station' => $from, 'distance' => $distance];
+        }
+    }
+    
+    // Initialize distances
+    $distances = [];
+    $previous = [];
+    $unvisited = [];
+    
+    // Get all stations
+    $stationStmt = $conn->prepare("SELECT id FROM dcc_stations");
+    $stationStmt->execute();
+    $stations = $stationStmt->fetchAll(PDO::FETCH_COLUMN);
+    
+    foreach ($stations as $station) {
+        $distances[$station] = PHP_FLOAT_MAX;
+        $previous[$station] = null;
+        $unvisited[$station] = true;
+    }
+    
+    if (!isset($distances[$startStation]) || !isset($distances[$endStation])) {
+        return null; // Station not found
+    }
+    
+    $distances[$startStation] = 0;
+    
+    while (!empty($unvisited)) {
+        // Find unvisited node with minimum distance
+        $current = null;
+        $minDistance = PHP_FLOAT_MAX;
+        foreach ($unvisited as $station => $ignored) {
+            if ($distances[$station] < $minDistance) {
+                $minDistance = $distances[$station];
+                $current = $station;
+            }
+        }
+        
+        if ($current === null || $distances[$current] === PHP_FLOAT_MAX) {
+            break; // No path found
+        }
+        
+        unset($unvisited[$current]);
+        
+        // If we reached the destination, we can stop
+        if ($current === $endStation) {
+            break;
+        }
+        
+        // Update distances to neighbors
+        if (isset($graph[$current])) {
+            foreach ($graph[$current] as $neighbor) {
+                $neighborStation = $neighbor['station'];
+                if (isset($unvisited[$neighborStation])) {
+                    $alt = $distances[$current] + $neighbor['distance'];
+                    if ($alt < $distances[$neighborStation]) {
+                        $distances[$neighborStation] = $alt;
+                        $previous[$neighborStation] = $current;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Reconstruct path
+    if ($distances[$endStation] === PHP_FLOAT_MAX) {
+        return null; // No path found
+    }
+    
+    $path = [];
+    $current = $endStation;
+    while ($current !== null) {
+        array_unshift($path, $current);
+        $current = $previous[$current];
+    }
+    
+    return [
+        'path' => $path,
+        'total_distance' => $distances[$endStation],
+        'stations_count' => count($path)
+    ];
+}
+
+// Get station neighbors
+function getStationNeighbors($conn, $stationId) {
+    $stmt = $conn->prepare("
+        SELECT 
+            c.to_station_id as neighbor_id,
+            s.name as neighbor_name,
+            c.distance_km,
+            c.connection_type,
+            c.track_speed_limit,
+            c.track_condition,
+            c.bidirectional,
+            'outgoing' as direction
+        FROM dcc_station_connections c
+        JOIN dcc_stations s ON c.to_station_id = s.id
+        WHERE c.from_station_id = ? AND c.is_active = 1
+        
+        UNION ALL
+        
+        SELECT 
+            c.from_station_id as neighbor_id,
+            s.name as neighbor_name,
+            c.distance_km,
+            c.connection_type,
+            c.track_speed_limit,
+            c.track_condition,
+            c.bidirectional,
+            'incoming' as direction
+        FROM dcc_station_connections c
+        JOIN dcc_stations s ON c.from_station_id = s.id
+        WHERE c.to_station_id = ? AND c.is_active = 1 AND c.bidirectional = 1
+        
+        ORDER BY distance_km
+    ");
+    $stmt->execute([$stationId, $stationId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Get network statistics
+function getNetworkStats($conn) {
+    $stats = [];
+    
+    // Total connections
+    $stmt = $conn->query("SELECT COUNT(*) as total FROM dcc_station_connections WHERE is_active = 1");
+    $stats['total_connections'] = intval($stmt->fetch(PDO::FETCH_ASSOC)['total']);
+    
+    // Total distance
+    $stmt = $conn->query("SELECT SUM(distance_km) as total FROM dcc_station_connections WHERE is_active = 1");
+    $stats['total_distance_km'] = floatval($stmt->fetch(PDO::FETCH_ASSOC)['total']);
+    
+    // Connection types breakdown
+    $stmt = $conn->query("
+        SELECT connection_type, COUNT(*) as count 
+        FROM dcc_station_connections 
+        WHERE is_active = 1 
+        GROUP BY connection_type
+    ");
+    $stats['connection_types'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Average distance
+    if ($stats['total_connections'] > 0) {
+        $stats['average_distance_km'] = $stats['total_distance_km'] / $stats['total_connections'];
+    } else {
+        $stats['average_distance_km'] = 0;
+    }
+    
+    // Stations with most connections
+    $stmt = $conn->query("
+        SELECT 
+            s.id,
+            s.name,
+            COUNT(*) as connection_count
+        FROM dcc_stations s
+        JOIN (
+            SELECT from_station_id as station_id FROM dcc_station_connections WHERE is_active = 1
+            UNION ALL
+            SELECT to_station_id as station_id FROM dcc_station_connections WHERE is_active = 1 AND bidirectional = 1
+        ) conn ON s.id = conn.station_id
+        GROUP BY s.id, s.name
+        ORDER BY connection_count DESC
+        LIMIT 5
+    ");
+    $stats['most_connected_stations'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    return $stats;
+}
+
+try {
+    $database = new Database();
+    $conn = $database->getConnection();
+    
+    // Allow guest access for network information
+    $user = getCurrentUser($conn);
+    
+    $action = $_GET['action'] ?? 'info';
+    
+    switch ($action) {
+        case 'shortest_path':
+            $from = $_GET['from'] ?? null;
+            $to = $_GET['to'] ?? null;
+            
+            if (!$from || !$to) {
+                http_response_code(400);
+                echo json_encode([
+                    'status' => 'error',
+                    'error' => 'Both "from" and "to" station IDs are required'
+                ]);
+                break;
+            }
+            
+            $result = findShortestPath($conn, $from, $to);
+            
+            if ($result === null) {
+                echo json_encode([
+                    'status' => 'success',
+                    'data' => null,
+                    'message' => 'No path found between stations'
+                ]);
+            } else {
+                // Get station names for the path
+                $stationNames = [];
+                if (!empty($result['path'])) {
+                    $placeholders = str_repeat('?,', count($result['path']) - 1) . '?';
+                    $stmt = $conn->prepare("SELECT id, name FROM dcc_stations WHERE id IN ($placeholders)");
+                    $stmt->execute($result['path']);
+                    $stations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    foreach ($stations as $station) {
+                        $stationNames[$station['id']] = $station['name'];
+                    }
+                }
+                
+                $result['path_details'] = array_map(function($stationId) use ($stationNames) {
+                    return [
+                        'station_id' => $stationId,
+                        'station_name' => $stationNames[$stationId] ?? 'Unknown'
+                    ];
+                }, $result['path']);
+                
+                echo json_encode([
+                    'status' => 'success',
+                    'data' => $result
+                ]);
+            }
+            break;
+            
+        case 'neighbors':
+            $stationId = $_GET['station_id'] ?? null;
+            
+            if (!$stationId) {
+                http_response_code(400);
+                echo json_encode([
+                    'status' => 'error',
+                    'error' => 'Station ID is required'
+                ]);
+                break;
+            }
+            
+            $neighbors = getStationNeighbors($conn, $stationId);
+            
+            echo json_encode([
+                'status' => 'success',
+                'data' => $neighbors
+            ]);
+            break;
+            
+        case 'stats':
+            $stats = getNetworkStats($conn);
+            
+            echo json_encode([
+                'status' => 'success',
+                'data' => $stats
+            ]);
+            break;
+            
+        case 'network_graph':
+            // Get all active connections for visualization
+            $stmt = $conn->query("
+                SELECT 
+                    c.*,
+                    fs.name as from_station_name,
+                    ts.name as to_station_name
+                FROM dcc_station_connections c
+                JOIN dcc_stations fs ON c.from_station_id = fs.id
+                JOIN dcc_stations ts ON c.to_station_id = ts.id
+                WHERE c.is_active = 1
+                ORDER BY c.distance_km
+            ");
+            $connections = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Get all stations
+            $stmt = $conn->query("SELECT id, name FROM dcc_stations ORDER BY name");
+            $stations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode([
+                'status' => 'success',
+                'data' => [
+                    'stations' => $stations,
+                    'connections' => $connections
+                ]
+            ]);
+            break;
+            
+        default:
+            // General network information
+            $stats = getNetworkStats($conn);
+            
+            echo json_encode([
+                'status' => 'success',
+                'data' => [
+                    'message' => 'DCC Station Network API',
+                    'available_actions' => [
+                        'shortest_path' => 'Find shortest path between stations (?action=shortest_path&from=STATION1&to=STATION2)',
+                        'neighbors' => 'Get station neighbors (?action=neighbors&station_id=STATION1)',
+                        'stats' => 'Get network statistics (?action=stats)',
+                        'network_graph' => 'Get full network for visualization (?action=network_graph)'
+                    ],
+                    'network_stats' => $stats
+                ]
+            ]);
+            break;
+    }
+
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode([
+        'status' => 'error',
+        'error' => 'Database error: ' . $e->getMessage()
+    ]);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode([
+        'status' => 'error',
+        'error' => 'Server error: ' . $e->getMessage()
+    ]);
+}
+?>
